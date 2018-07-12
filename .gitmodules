@@ -10,3 +10,6 @@
 [submodule "ThirdParty/nativefiledialog/nativefiledialog"]
 	path = ThirdParty/nativefiledialog/nativefiledialog
 	url = https://github.com/mlabbe/nativefiledialog.git
+[submodule "ThirdParty/ImGuizmo/ImGuizmo"]
+	path = ThirdParty/ImGuizmo/ImGuizmo
+	url = https://github.com/CedricGuillemet/ImGuizmo.git
