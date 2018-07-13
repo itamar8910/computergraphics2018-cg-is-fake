@@ -60,9 +60,9 @@ The course schedule is tentative and *will* be adjusted along the way.
 
 * [Assignment 1: Wireframe Viewer](Assignment1/homework1.pdf)
 
-* [Assignment 2: Basic Shading]
+* [Assignment 2: Basic Shading](Assignment2/homework2.pdf)
 
-* [Assignment 3: OpenGL Renderer]
+* [Assignment 3: OpenGL Renderer](Assignment3/homework3.pdf)
 
 ## General Instructions
 
