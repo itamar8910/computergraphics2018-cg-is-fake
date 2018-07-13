@@ -102,6 +102,8 @@ git add README.md
 git commit -m "Adjust README.md"
 git push
 ```
+**Never push large files to the remote repository! You should almost always only push code. Never push executables or build data**
+
 Please refer to the git book for an explanation on the differences between those steps.
 You should be able to see your name online on your private repository: https://github.com/HaifaGraphics/computergraphics2018-'Your_Team_Name'.git
 
