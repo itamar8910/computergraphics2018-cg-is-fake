@@ -21,7 +21,7 @@ set(glad_INCLUDE_DIRS "ThirdParty/glad/include")
 set(glfw_INCLUDE_DIRS "ThirdParty/glfw/include")
 set(glm_INCLUDE_DIRS "ThirdParty/glm")
 set(imgui_INCLUDE_DIRS "ThirdParty/imgui")
-set(nfd_INCLUDE_DIRS "ThirdParty/nativefiledialog/nativefiledialog/src/include")
+#set(nfd_INCLUDE_DIRS "ThirdParty/nativefiledialog/nativefiledialog/src/include")
 set(ImGuizmo_INCLUDE_DIRS "ThirdParty/ImGuizmo/ImGuizmo")
 
 # set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -32,7 +32,7 @@ set(ImGuizmo_INCLUDE_DIRS "ThirdParty/ImGuizmo/ImGuizmo")
 add_subdirectory(ThirdParty/glad)  # glad is a static library (depends on nothing)
 add_subdirectory(ThirdParty/glfw)  # glfw is a static library (depends on nothing)
 add_subdirectory(ThirdParty/imgui) # imgui is a static library (depends on nothing)
-add_subdirectory(ThirdParty/nativefiledialog) # nativefiledialog is a static library (depends on nothing)
+#add_subdirectory(ThirdParty/nativefiledialog) # nativefiledialog is a static library (depends on nothing)
 add_subdirectory(ThirdParty/ImGuizmo)	# ImGuizmo is a static library (depends on nothing)
 # We need to supply ImGuizmo with the include dirs of imgui.
 target_include_directories(ImGuizmo PUBLIC ${imgui_INCLUDE_DIRS}/imgui)
@@ -86,7 +86,7 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER ${PROJECT_NAME})
 
 # link subprojects	 
-target_link_libraries(${PROJECT_NAME} glad glfw imgui nativefiledialog ImGuizmo ${OPENGL_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} glad glfw imgui ImGuizmo ${OPENGL_LIBRARIES})
 # Turn on the ability to create folders to organize projects (.vcproj)
 # It creates "CMakePredefinedTargets" folder by default and adds CMake
 # defined projects like INSTALL.vcproj and ZERO_CHECK.vcproj
@@ -96,7 +96,7 @@ target_link_libraries(${PROJECT_NAME} glad glfw imgui nativefiledialog ImGuizmo 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set_target_properties(${PROJECT_NAME} glad glfw imgui nativefiledialog
+set_target_properties(${PROJECT_NAME} glad glfw imgui
     PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
