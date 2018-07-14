@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 // open file dialog cross platform https://github.com/mlabbe/nativefiledialog
-#include <nfd.h>
+// #include <nfd.h>
 
 bool showDemoWindow = false;
 bool showAnotherWindow = false;
@@ -68,16 +68,16 @@ void DrawImguiMenus(ImGuiIO& io, Scene* scene)
 			{
 				if (ImGui::MenuItem("Open", "CTRL+O"))
 				{
-					nfdchar_t *outPath = NULL;
-					nfdresult_t result = NFD_OpenDialog("obj;png,jpg", NULL, &outPath);
-					if (result == NFD_OKAY) {
-						ImGui::Text("Hello from another window!");
-						free(outPath);
-					}
-					else if (result == NFD_CANCEL) {
-					}
-					else {
-					}
+					// nfdchar_t *outPath = NULL;
+					// nfdresult_t result = NFD_OpenDialog("obj;png,jpg", NULL, &outPath);
+					// if (result == NFD_OKAY) {
+					// 	ImGui::Text("Hello from another window!");
+					// 	free(outPath);
+					// }
+					// else if (result == NFD_CANCEL) {
+					// }
+					// else {
+					// }
 
 				}
 				ImGui::EndMenu();
