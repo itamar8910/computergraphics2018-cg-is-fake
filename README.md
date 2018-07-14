@@ -1,11 +1,11 @@
 # Computer Graphics 203.3710, Summer 2018
 ## Students Team data
 
-Name: 'Your real name'  
-Student Number: 'Your student number'
+Name: Itamar Shenhar  
+Student Number: 318826104
 
-Name: 'Your real name'  
-Student Number: 'Your student number'
+Name: Tomer Keren  
+Student Number: 318678471
 
 ### Lecturer
 *Roi Poranne*
