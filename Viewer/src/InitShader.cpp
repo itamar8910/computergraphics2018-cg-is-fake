@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <cstdlib>
 
 // get line that takes line endings into account. The stack overflow thread:
 // https://stackoverflow.com/questions/6089231/getting-std-ifstream-to-handle-lf-cr-and-crlf
@@ -18,9 +19,14 @@ std::istream& safeGetline(std::istream& is, std::string& t)
 
 	std::istream::sentry se(is, true);
 	std::streambuf* sb = is.rdbuf();
-
 	for (;;) {
 		int c = sb->sbumpc();
+		if(c == std::streambuf::traits_type::eof()){
+			// Also handle the case when the last line has no line ending
+			if (t.empty())
+				is.setstate(std::ios::eofbit);
+			return is;
+		}
 		switch (c) {
 		case '\n':
 			return is;
@@ -28,11 +34,8 @@ std::istream& safeGetline(std::istream& is, std::string& t)
 			if (sb->sgetc() == '\n')
 				sb->sbumpc();
 			return is;
-		case std::streambuf::traits_type::eof():
-			// Also handle the case when the last line has no line ending
-			if (t.empty())
-				is.setstate(std::ios::eofbit);
-			return is;
+		
+			
 		default:
 			t += (char)c;
 		}
@@ -47,7 +50,7 @@ string ReadShaderSource(const string& shaderFile)
 	std::ifstream ifs(path.c_str());
 	if (!ifs) {
 		std::cerr << "Failed to read " << path << std::endl;
-		exit(EXIT_FAILURE);
+		exit(1);
 	}
 
 	std::string line;
@@ -97,7 +100,7 @@ InitShader(const string& vShaderFile, const string& fShaderFile)
 			std::cerr << logMsg << std::endl;
 			delete [] logMsg;
 
-			exit( EXIT_FAILURE );
+			exit( 1 );
 		}
 
 		//delete [] s.source;
@@ -119,7 +122,7 @@ InitShader(const string& vShaderFile, const string& fShaderFile)
 		std::cerr << logMsg << std::endl;
 		delete [] logMsg;
 
-		exit( EXIT_FAILURE );
+		exit( 1 );
     }
 
     /* use program object */
