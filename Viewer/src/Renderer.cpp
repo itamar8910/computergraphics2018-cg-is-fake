@@ -1,7 +1,7 @@
 #include "Renderer.h"
 #include "InitShader.h"
 #include <imgui/imgui.h>
-
+#define ABS(x) (x > 0 ? x : -x)
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 
 Renderer::Renderer() : width(1280), height(720)
@@ -26,10 +26,9 @@ void Renderer::DrawLine(const glm::vec2 &point1, const	glm::vec2 &point2, const 
 	// TODO: handle simetries
 	int dx = point2.x - point1.x;
 	int dy = point2.y - point1.y;
-	if(dx > 0 && dy > 0){
-		DrawLineHelper(point1, point2, color);		
-		
-	}
+
+	DrawLineHelper(point1, point2, color);		
+	
 }
 
 /**
@@ -49,14 +48,17 @@ void Renderer::DrawLineHelper(const glm::vec2 &point1, const glm::vec2 &point2, 
 	int progressor_delta = is_a_normal ? dp : dq;
 	int estimator_delta = is_a_normal ? dq : dp;
 	int e = is_a_normal ? -dp : -dq;
+	
+	int progressor_sign = progressor_delta > 0 ? 1 : -1;
+	int estimator_sign = estimator_delta > 0 ? 1 : -1;
 
-	while(progressor <= progressor_end){
-		if(e > 0){
-			estimator++;
-			e-= 2 * progressor_delta;
+	while(progressor_delta > 0 ? progressor <= progressor_end : progressor >= progressor_end){
+		if(estimator_delta > 0 ? e > 0 : e < 0){
+			estimator += estimator_sign;
+			e -= 2 * ABS(progressor_delta) * estimator_sign;
 		}
 		putPixel(is_a_normal ? progressor : estimator, is_a_normal ? estimator : progressor, color);
-		progressor++;
+		progressor += progressor_sign;
 		e += 2 * estimator_delta;
 	}
 }
