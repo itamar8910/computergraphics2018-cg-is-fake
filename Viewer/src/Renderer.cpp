@@ -22,23 +22,44 @@ Renderer::~Renderer()
 }
 
 void Renderer::DrawLine(const glm::vec2 &point1, const	glm::vec2 &point2, const glm::vec3& color){
+
 	// TODO: handle simetries
-	int p1 = point1.x, q1 = point1.y, p2 = point2.x, q2 = point2.y;
-	int dp = p2 - p1;
-	int dq = q2 - q1;
-	int x = p1, y = q1;
-	int e = -dp;
-	while(x <= p2){
-		if(e > 0){
-			y++;
-			e-= 2 * dp;
-		}
-		putPixel(x, y, color);
-		x++;
-		e += 2 * dq;
+	int dx = point2.x - point1.x;
+	int dy = point2.y - point1.y;
+	if(dx > 0 && dy > 0){
+		DrawLineHelper(point1, point2, color);		
+		
 	}
 }
 
+/**
+ * draws lines while assuming 0 < a < 1
+*/
+void Renderer::DrawLineHelper(const glm::vec2 &point1, const glm::vec2 &point2, const glm::vec3& color){
+	int p1 = point1.x, q1 = point1.y, p2 = point2.x, q2 = point2.y;
+	int dp = p2 - p1; // dx
+	int dq = q2 - q1; // dy
+	bool is_a_normal = dp > dq;
+	int x = p1, y = q1;
+
+	int progressor = is_a_normal ? x : y; // this is x in the normal case
+	int estimator = is_a_normal ? y : x; // this is y in the normal case
+
+	int progressor_end = is_a_normal ? p2 : q2;
+	int progressor_delta = is_a_normal ? dp : dq;
+	int estimator_delta = is_a_normal ? dq : dp;
+	int e = is_a_normal ? -dp : -dq;
+
+	while(progressor <= progressor_end){
+		if(e > 0){
+			estimator++;
+			e-= 2 * progressor_delta;
+		}
+		putPixel(is_a_normal ? progressor : estimator, is_a_normal ? estimator : progressor, color);
+		progressor++;
+		e += 2 * estimator_delta;
+	}
+}
 
 void Renderer::putPixel(int i, int j, const glm::vec3& color)
 {
