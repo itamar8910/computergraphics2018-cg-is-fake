@@ -21,6 +21,25 @@ Renderer::~Renderer()
 	delete[] colorBuffer;
 }
 
+void Renderer::DrawLine(const glm::vec2 &point1, const	glm::vec2 &point2, const glm::vec3& color){
+	// TODO: handle simetries
+	int p1 = point1.x, q1 = point1.y, p2 = point2.x, q2 = point2.y;
+	int dp = p2 - p1;
+	int dq = q2 - q1;
+	int x = p1, y = q1;
+	int e = -dp;
+	while(x <= p2){
+		if(e > 0){
+			y++;
+			e-= 2 * dp;
+		}
+		putPixel(x, y, color);
+		x++;
+		e += 2 * dq;
+	}
+}
+
+
 void Renderer::putPixel(int i, int j, const glm::vec3& color)
 {
 	if (i < 0) return; if (i >= width) return;

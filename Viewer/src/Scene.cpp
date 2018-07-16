@@ -22,3 +22,10 @@ void Scene::DrawDemo()
 	renderer->SetDemoBuffer();
 	renderer->SwapBuffers();
 }
+
+void Scene::DrawLineTest(){
+	renderer->SetDemoBuffer();
+
+	renderer->DrawLine(glm::vec2(10.0, 100.0), glm::vec2(100.0, 150.0));
+	renderer->SwapBuffers();
+}

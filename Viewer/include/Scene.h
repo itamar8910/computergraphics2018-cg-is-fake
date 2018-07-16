@@ -31,6 +31,8 @@ public:
 	// Draws an example.
 	void DrawDemo();
 	
+	void DrawLineTest();
+
 	int ActiveModel;
 	int ActiveLight;
 	int ActiveCamera;
