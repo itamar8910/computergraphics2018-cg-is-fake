@@ -25,6 +25,20 @@ Renderer::~Renderer()
 	delete[] colorBuffer;
 }
 
+void Renderer::SetCameraTransform(const glm::mat4x4& cTransform){
+	this->cTransform = cTransform;
+}
+
+void Renderer::SetProjection(const glm::mat4x4& projection){
+	this->cProjection = projection;
+}
+
+void Renderer::SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x4& nTransform){
+	this->oTransform = oTransform;
+	this->nTransform = nTransform;
+}
+
+
 void Renderer::DrawLine(const glm::vec2 &point1, const	glm::vec2 &point2, const glm::vec3& color){
 
 	int dx = point2.x - point1.x;
@@ -112,6 +126,11 @@ void Renderer::SetDemoBuffer()
 
 	}
 }
+
+
+
+
+
 
 //##############################
 //##OpenGL stuff. Don't touch.##
