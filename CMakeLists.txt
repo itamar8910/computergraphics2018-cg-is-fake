@@ -18,7 +18,12 @@ endif ()
 
 # set some include dirs for all the subprojects
 set(glad_INCLUDE_DIRS "ThirdParty/glad/include")
-set(glfw_INCLUDE_DIRS "/usr/local/Cellar/glfw/3.2.1/include") #TODO: run this only for mac and use a generic path
+if(APPLE) #Macs have problem with building glfw. need to install using `brew install glfw`
+    message("Mac detected, attempting to link existing glfw")
+    set(glfw_INCLUDE_DIRS "/usr/local/Cellar/glfw/3.2.1/include") 
+else()
+    set(glfw_INCLUDE_DIRS "ThirdParty/glfw/include")
+endif()
 set(glm_INCLUDE_DIRS "ThirdParty/glm")
 set(imgui_INCLUDE_DIRS "ThirdParty/imgui")
 #set(nfd_INCLUDE_DIRS "ThirdParty/nativefiledialog/nativefiledialog/src/include")
@@ -30,8 +35,11 @@ set(ImGuizmo_INCLUDE_DIRS "ThirdParty/ImGuizmo/ImGuizmo")
 # When done tweaking common stuff, configure the components (subprojects).
 # NOTE: The order matters! The most independent ones should go first.
 add_subdirectory(ThirdParty/glad)  # glad is a static library (depends on nothing)
-#TODO: run this only for mac and use a generic path
-LINK_DIRECTORIES(/usr/local/Cellar/glfw/3.2.1/lib)  # glfw is a static library (depends on nothing)
+if(APPLE)
+    LINK_DIRECTORIES(/usr/local/Cellar/glfw/3.2.1/lib)  # TODO: change to generic glfw path
+else()
+    add_subdirectory(ThirdParty/glfw)  # glfw is a static library (depends on nothing)
+endif()
 add_subdirectory(ThirdParty/imgui) # imgui is a static library (depends on nothing)
 #add_subdirectory(ThirdParty/nativefiledialog) # nativefiledialog is a static library (depends on nothing)
 add_subdirectory(ThirdParty/ImGuizmo)	# ImGuizmo is a static library (depends on nothing)
