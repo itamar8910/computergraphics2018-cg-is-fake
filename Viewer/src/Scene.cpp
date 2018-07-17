@@ -37,5 +37,11 @@ void Scene::DrawLineTest(){
 	renderer->DrawLine(glm::vec2(500.0, 500.0), glm::vec2(300, 350.0), glm::vec3(0, 1, 0));
 	renderer->DrawLine(glm::vec2(500.0, 500.0), glm::vec2(300, 250.0), glm::vec3(0, 1, 0));
 
+	// draw a triangle
+	renderer->DrawLine(glm::vec2(600.0, 600.0), glm::vec2(820, 410.0), glm::vec3(1, 1, 0));
+	renderer->DrawLine(glm::vec2(820.0, 410.0), glm::vec2(712, 680.0), glm::vec3(1, 1, 0));
+	renderer->DrawLine(glm::vec2(712, 680.0), glm::vec2(600.0, 600.0), glm::vec3(1, 1, 0));
+
+
 	renderer->SwapBuffers();
 }
