@@ -152,9 +152,9 @@ void MeshModel::Draw(Renderer& renderer)
 }
 
 void MeshModel::scale(float s){
-	glm::mat4x4 scale;
-	scale[3][3] = s;
-	worldTransform = s * worldTransform;
+	glm::mat4x4 scale = glm::mat4(1.0);
+	scale[3][3] = 1.0 / s;
+	worldTransform = scale * worldTransform;
 }
 
 void MeshModel::translate(float x, float y, float z){
