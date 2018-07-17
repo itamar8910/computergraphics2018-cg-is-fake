@@ -5,6 +5,11 @@
 
 
 using namespace std;
+
+void Scene::AddCamera(Camera& c){
+	cameras.push_back(&c);
+}
+
 void Scene::LoadOBJModel(string fileName)
 {
 	MeshModel *model = new MeshModel(fileName);
@@ -13,8 +18,17 @@ void Scene::LoadOBJModel(string fileName)
 
 void Scene::Draw()
 {
-	// 1. Send the renderer the current camera transform and the projection
-	// 2. Tell all models to draw themselves
+	// Send the renderer the current camera transform and the projection
+	Camera& activeCamera = *cameras[ActiveCamera];
+	renderer->SetProjection(activeCamera.projection);
+	renderer->SetCameraTransform(activeCamera.cTransform);
+
+	// Tell all models to draw themselves
+	for(Model* model : models){
+		// TODO: what if model is not a MeshModel?
+		MeshModel* meshModel = static_cast<MeshModel*>(model);
+		meshModel->Draw();
+	}
 
 	renderer->SwapBuffers();
 }

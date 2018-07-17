@@ -41,7 +41,7 @@ public:
 	void Init();
 
 	// Draws wireframe triangles to the color buffer
-	void DrawTriangles(const vector<glm::vec3>* vertices, const vector<glm::vec3>* normals=NULL);
+	void DrawTriangles(const vector<vector<glm::vec3>>& triangles, const vector<glm::vec3>* normals=NULL);
 
 	void DrawLine(const glm::vec2 &point1, const	glm::vec2 &point2, const glm::vec3& color = glm::vec3(0.0, 0.0, 0.0));
 	
