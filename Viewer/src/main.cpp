@@ -14,7 +14,7 @@
 #include "Renderer.h"
 #include "Scene.h"
 #include "ImguiMenus.h"
-
+#include "MeshModel.h"
 
 // Callback for the error state of glfw
 static void GlfwErrorCallback(int error, const char* description);
@@ -39,6 +39,8 @@ int main(int argc, char **argv)
 	// Setup renderer and scene
 	Renderer renderer = Renderer(w,h);
 	Scene scene = Scene(&renderer);
+
+	scene.LoadOBJModel("../../Data/camera.obj");
     // Setup Dear ImGui binding
 	ImGuiIO& io = SetupDearImgui(window);
     // Main loop - the famous "Game Loop" in video games :)
