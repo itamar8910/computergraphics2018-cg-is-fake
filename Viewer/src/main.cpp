@@ -15,6 +15,8 @@
 #include "Scene.h"
 #include "ImguiMenus.h"
 #include "MeshModel.h"
+#include <iostream>
+using namespace std;
 
 // Callback for the error state of glfw
 static void GlfwErrorCallback(int error, const char* description);
@@ -30,9 +32,9 @@ void RenderFrame(GLFWwindow* window, Renderer* renderer);
 void Cleanup(GLFWwindow* window);
 
 void setup_scene(Scene& scene){
-	Camera c = Camera();
-	c.Ortho(-1, 1, -1, 1, -1, 1);
-	scene.AddCamera(c);
+	Camera* c = new Camera();
+	c->Ortho(-1, 1, -1, 1, 1, -1);
+	scene.AddCamera(*c);
 	scene.ActiveCamera = 0;
 	scene.LoadOBJModel("../../Data/obj_examples/teapot.obj");
 	scene.ActiveModel = 0;
@@ -49,12 +51,13 @@ int main(int argc, char **argv)
 	// Setup renderer and scene
 	Renderer renderer = Renderer(w,h);
 	Scene scene = Scene(&renderer);
-
+	setup_scene(scene);
     // Setup Dear ImGui binding
 	ImGuiIO& io = SetupDearImgui(window);
     // Main loop - the famous "Game Loop" in video games :)
     while (!glfwWindowShouldClose(window))
     {
+		// cout << "loop" << endl;
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
         // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.

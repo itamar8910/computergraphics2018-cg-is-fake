@@ -2,13 +2,17 @@
 
 
 
-Camera::Camera()
+Camera::Camera() : cTransform(glm::mat4(1)), projection(glm::mat4(1))
 {
 }
 
 
 Camera::~Camera()
 {
+}
+
+void Camera::SetTransformation(const glm::mat4x4& transform){
+    cTransform = transform;
 }
 
 void Camera::Ortho( const float left, const float right,

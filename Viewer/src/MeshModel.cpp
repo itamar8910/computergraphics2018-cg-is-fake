@@ -73,7 +73,7 @@ glm::vec2 vec2fFromStream(std::istream& issLine)
 	return glm::vec2(x, y);
 }
 
-MeshModel::MeshModel(const string& fileName)
+MeshModel::MeshModel(const string& fileName) : worldTransform(glm::mat4(1)), normalTransform(glm::mat4(1))
 {
 	LoadFile(fileName);
 }
@@ -149,4 +149,18 @@ void MeshModel::Draw(Renderer& renderer)
 
 	// send triangles to renderer
 	renderer.DrawTriangles(triangles);
+}
+
+void MeshModel::scale(float s){
+	glm::mat4x4 scale;
+	scale[3][3] = s;
+	worldTransform = s * worldTransform;
+}
+
+void MeshModel::translate(float x, float y, float z){
+	glm::mat4x4 trans = glm::mat4(1.0); // identity matrix
+	trans[3][0] = x;
+	trans[3][1] = y;
+	trans[3][2] = z;
+	// worldTransform 
 }

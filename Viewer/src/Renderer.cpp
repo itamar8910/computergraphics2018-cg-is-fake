@@ -38,8 +38,8 @@ void Renderer::SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x
 	this->nTransform = nTransform;
 }
 
-void Renderer::DrawTriangles(const vector<vector<glm::vec3>>& triangles, const vector<glm::vec3>* normals){
-	for(auto& triangle : triangles){
+void Renderer::DrawTriangles(const vector<vector<glm::vec3> >& triangles, const vector<glm::vec3>* normals){
+	for(const vector<glm::vec3> triangle : triangles){
 		DrawTriangle(triangle);
 	}
 }
@@ -58,13 +58,21 @@ void Renderer::DrawTriangle(const vector<glm::vec3>& triangle){
 		homogPoint = cTransform * homogPoint; // TODO: maybe should be the inverse of cTransform?
 		homogPoint = cProjection * homogPoint;
 
-		transformedTriangle.push_back(glm::vec2(homogPoint.x, homogPoint.y));
+		// homogPoint.x /= homogPoint.w;
+		// homogPoint.y /= homogPoint.w;
+		// homogPoint.z /= homogPoint.w;
 		
+		transformedTriangle.push_back(glm::vec2(homogPoint.x, homogPoint.y));
 	} 
+
+	// draw 3 edges of transformed triangle
+	DrawLine(transformedTriangle[0], transformedTriangle[1]);
+	DrawLine(transformedTriangle[1], transformedTriangle[2]);
+	DrawLine(transformedTriangle[0], transformedTriangle[2]);
 }
 
 void Renderer::DrawLine(const glm::vec2 &point1, const	glm::vec2 &point2, const glm::vec3& color){
-
+	// cout << "Drawing line:" << point1.x << "," << point1.y << "," << point2.x << "," << point2.y << endl;
 	int dx = point2.x - point1.x;
 	int dy = point2.y - point1.y;
 	

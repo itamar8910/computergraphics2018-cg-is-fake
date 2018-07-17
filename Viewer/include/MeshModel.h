@@ -15,7 +15,7 @@ class MeshModel : public Model
 public:
 	//MeshModel() {}
 
-	vector<vector<glm::vec3>> triangles;
+	vector<vector<glm::vec3> > triangles;
 
 	// Add more attributes.
 	glm::mat4x4 worldTransform;
@@ -30,4 +30,6 @@ public:
 	 * This function sends the renderer all nesessary information to draw the model
 	*/
 	void Draw(Renderer& renderer);
+	void scale(float s);
+	void translate(float x, float y, float z);
 };

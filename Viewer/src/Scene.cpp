@@ -13,6 +13,7 @@ void Scene::AddCamera(Camera& c){
 void Scene::LoadOBJModel(string fileName)
 {
 	MeshModel *model = new MeshModel(fileName);
+	model->scale(200); // TODO: remove later, for dbg
 	models.push_back(model);
 }
 
@@ -27,7 +28,7 @@ void Scene::Draw()
 	for(Model* model : models){
 		// TODO: what if model is not a MeshModel?
 		MeshModel* meshModel = static_cast<MeshModel*>(model);
-		meshModel->Draw();
+		meshModel->Draw(*renderer);
 	}
 
 	renderer->SwapBuffers();
