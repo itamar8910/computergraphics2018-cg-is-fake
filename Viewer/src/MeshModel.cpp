@@ -73,7 +73,7 @@ glm::vec2 vec2fFromStream(std::istream& issLine)
 	return glm::vec2(x, y);
 }
 
-MeshModel::MeshModel(const string& fileName) : worldTransform(glm::mat4(1)), normalTransform(glm::mat4(1))
+MeshModel::MeshModel(const string& fileName) : worldTransform(glm::mat4(1)), normalTransform(glm::mat4(1)), x(0), y(0), z(0)
 {
 	LoadFile(fileName);
 }
@@ -157,10 +157,45 @@ void MeshModel::scale(float s){
 	worldTransform = scale * worldTransform;
 }
 
-void MeshModel::translate(float x, float y, float z){
+glm::mat4x4 MeshModel::getTranslationMatrix(float x, float y, float z){
 	glm::mat4x4 trans = glm::mat4(1.0); // identity matrix
 	trans[3][0] = x;
 	trans[3][1] = y;
 	trans[3][2] = z;
-	// worldTransform 
+	return trans;
+}
+
+void MeshModel::translate(float x, float y, float z){
+	glm::mat4x4 trans = getTranslationMatrix(x, y, z);
+	worldTransform = trans * worldTransform;
+	this->x += x;
+	this->y += y;
+	this->x += z;
+}
+
+void MeshModel::rotateX(float theta){
+	glm::mat4x4 rotate = glm::mat4(1.0); // identity matrix
+	rotate[1][1] = glm::cos(glm::radians(theta));
+	rotate[1][2] = glm::sin(glm::radians(theta));
+	rotate[2][1] = -glm::sin(glm::radians(theta));
+	rotate[2][2] = glm::cos(glm::radians(theta));
+	worldTransform = getTranslationMatrix(x, y, z) * rotate * getTranslationMatrix(-x, -y, -z) * worldTransform;
+}
+
+void MeshModel::rotateY(float theta){
+	glm::mat4x4 rotate = glm::mat4(1.0); // identity matrix
+	rotate[0][0] = glm::cos(glm::radians(theta));
+	rotate[0][2] = glm::sin(glm::radians(theta));
+	rotate[2][0] = -glm::sin(glm::radians(theta));
+	rotate[2][2] = glm::cos(glm::radians(theta));
+	worldTransform = getTranslationMatrix(x, y, z) * rotate * getTranslationMatrix(-x, -y, -z) * worldTransform;
+}
+
+void MeshModel::rotateZ(float theta){
+	glm::mat4x4 rotate = glm::mat4(1.0); // identity matrix
+	rotate[0][0] = glm::cos(glm::radians(theta));
+	rotate[0][1] = glm::sin(glm::radians(theta));
+	rotate[1][0] = -glm::sin(glm::radians(theta));
+	rotate[1][1] = glm::cos(glm::radians(theta));
+	worldTransform = getTranslationMatrix(x, y, z) * rotate * getTranslationMatrix(-x, -y, -z) * worldTransform;
 }
