@@ -1,7 +1,7 @@
 #include "Scene.h"
 #include "MeshModel.h"
 #include <string>
-
+#include <iostream>
 using namespace std;
 void Scene::LoadOBJModel(string fileName)
 {
@@ -24,17 +24,18 @@ void Scene::DrawDemo()
 }
 
 void Scene::DrawLineTest(){
-	renderer->DrawLine(glm::vec2(500.0, 500.0), glm::vec2(600, 550.0));
-	renderer->DrawLine(glm::vec2(500.0, 500.0), glm::vec2(600, 850.0));
+	cout << "---" << endl;
+	renderer->DrawLine(glm::vec2(500.0, 500.0), glm::vec2(700, 650.0));
+	renderer->DrawLine(glm::vec2(500.0, 500.0), glm::vec2(700, 750.0));
 
-	renderer->DrawLine(glm::vec2(500.0, 500.0), glm::vec2(600, 450.0), glm::vec3(1, 0, 0));
-	renderer->DrawLine(glm::vec2(500.0, 500.0), glm::vec2(500, 150.0), glm::vec3(1, 1, 0));
-	// renderer->DrawLine(glm::vec2(400.0, 400.0), glm::vec2(450, 500.0), glm::vec3(0, 1, 0));
+	renderer->DrawLine(glm::vec2(500.0, 500.0), glm::vec2(700, 350.0), glm::vec3(1, 0, 0));
+	renderer->DrawLine(glm::vec2(500.0, 500.0), glm::vec2(700, 250.0), glm::vec3(1, 0, 0)); 
 
-	renderer->DrawLine(glm::vec2(500.0, 500.0), glm::vec2(400, 550.0), glm::vec3(0, 0, 1));
-	renderer->DrawLine(glm::vec2(500.0, 500.0), glm::vec2(400, 850.0), glm::vec3(0, 0, 1));
+	renderer->DrawLine(glm::vec2(500.0, 500.0), glm::vec2(300, 650.0), glm::vec3(0, 0, 1));
+	renderer->DrawLine(glm::vec2(500.0, 500.0), glm::vec2(300, 750.0), glm::vec3(0, 0, 1));
 
-	// renderer->DrawLine(glm::vec2(500.0, 500.0), glm::vec2(400, 450.0), glm::vec3(0, 1, 0));
-	// renderer->DrawLine(glm::vec2(500.0, 500.0), glm::vec2(400, 250.0), glm::vec3(1, 1, 0));
+	renderer->DrawLine(glm::vec2(500.0, 500.0), glm::vec2(300, 350.0), glm::vec3(0, 1, 0));
+	renderer->DrawLine(glm::vec2(500.0, 500.0), glm::vec2(300, 250.0), glm::vec3(0, 1, 0));
+
 	renderer->SwapBuffers();
 }

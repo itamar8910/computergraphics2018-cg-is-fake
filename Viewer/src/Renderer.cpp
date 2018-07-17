@@ -1,6 +1,10 @@
 #include "Renderer.h"
 #include "InitShader.h"
 #include <imgui/imgui.h>
+#include <iostream>
+
+using namespace std;
+
 #define ABS(x) (x > 0 ? x : -x)
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 
@@ -26,8 +30,10 @@ void Renderer::DrawLine(const glm::vec2 &point1, const	glm::vec2 &point2, const 
 	// TODO: handle simetries
 	int dx = point2.x - point1.x;
 	int dy = point2.y - point1.y;
-
+	
 	DrawLineHelper(point1, point2, color);		
+	
+
 	
 }
 
@@ -38,7 +44,7 @@ void Renderer::DrawLineHelper(const glm::vec2 &point1, const glm::vec2 &point2, 
 	int p1 = point1.x, q1 = point1.y, p2 = point2.x, q2 = point2.y;
 	int dp = p2 - p1; // dx
 	int dq = q2 - q1; // dy
-	bool is_a_normal = dp > dq;
+	bool is_a_normal = ABS(dp) > ABS(dq);
 	int x = p1, y = q1;
 
 	int progressor = is_a_normal ? x : y; // this is x in the normal case
