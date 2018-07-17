@@ -31,6 +31,7 @@ void Cleanup(GLFWwindow* window);
 
 void setup_scene(Scene& scene){
 	Camera c = Camera();
+	c.Ortho(-1, 1, -1, 1, -1, 1);
 	scene.AddCamera(c);
 	scene.ActiveCamera = 0;
 	scene.LoadOBJModel("../../Data/obj_examples/teapot.obj");
