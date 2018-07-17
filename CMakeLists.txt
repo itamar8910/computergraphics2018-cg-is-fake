@@ -4,6 +4,7 @@
 # https://cognitivewaves.wordpress.com/cmake-and-visual-studio/
 cmake_minimum_required (VERSION 3.11)
 project (MeshViewer C CXX)
+set (CMAKE_CXX_STANDARD 11) # use cpp 11
 # Turn on the ability to create folders to organize projects (.vcproj)
 # It creates "CMakePredefinedTargets" folder by default and adds CMake
 # defined projects like INSTALL.vcproj and ZERO_CHECK.vcproj

@@ -12,7 +12,7 @@
 using namespace std;
 
 class Scene {
-private:
+public:
 	vector<Model*> models;
 	vector<Light*> lights;
 	vector<Camera*> cameras;
