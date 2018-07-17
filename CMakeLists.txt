@@ -18,7 +18,7 @@ endif ()
 
 # set some include dirs for all the subprojects
 set(glad_INCLUDE_DIRS "ThirdParty/glad/include")
-set(glfw_INCLUDE_DIRS "ThirdParty/glfw/include")
+set(glfw_INCLUDE_DIRS "/usr/local/Cellar/glfw/3.2.1/include") #TODO: run this only for mac and use a generic path
 set(glm_INCLUDE_DIRS "ThirdParty/glm")
 set(imgui_INCLUDE_DIRS "ThirdParty/imgui")
 #set(nfd_INCLUDE_DIRS "ThirdParty/nativefiledialog/nativefiledialog/src/include")
@@ -30,7 +30,8 @@ set(ImGuizmo_INCLUDE_DIRS "ThirdParty/ImGuizmo/ImGuizmo")
 # When done tweaking common stuff, configure the components (subprojects).
 # NOTE: The order matters! The most independent ones should go first.
 add_subdirectory(ThirdParty/glad)  # glad is a static library (depends on nothing)
-add_subdirectory(ThirdParty/glfw)  # glfw is a static library (depends on nothing)
+#TODO: run this only for mac and use a generic path
+LINK_DIRECTORIES(/usr/local/Cellar/glfw/3.2.1/lib)  # glfw is a static library (depends on nothing)
 add_subdirectory(ThirdParty/imgui) # imgui is a static library (depends on nothing)
 #add_subdirectory(ThirdParty/nativefiledialog) # nativefiledialog is a static library (depends on nothing)
 add_subdirectory(ThirdParty/ImGuizmo)	# ImGuizmo is a static library (depends on nothing)
@@ -96,7 +97,7 @@ target_link_libraries(${PROJECT_NAME} glad glfw imgui ImGuizmo ${OPENGL_LIBRARIE
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set_target_properties(${PROJECT_NAME} glad glfw imgui
+set_target_properties(${PROJECT_NAME} glad imgui
     PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
