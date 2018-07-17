@@ -2,6 +2,7 @@
 #include "ImguiMenus.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "MeshModel.h"
 // open file dialog cross platform https://github.com/mlabbe/nativefiledialog
 // #include <nfd.h>
 
@@ -22,10 +23,14 @@ void DrawImguiMenus(ImGuiIO& io, Scene* scene)
 	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
 	{
 		ImGui::Begin("Test Menu");
-		static float f = 0.0f;
+		static float xRotate = 0.0f, prev_xRotate = 0.0f;
+		static float yRotate = 0.0f, prev_yRotate = 0.0f;
+		static float zRotate = 0.0f, prev_zRotate = 0.0f;
 		static int counter = 0;
 		ImGui::Text("Hello, world!");                           // Display some text (you can use a format string too)
-		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f    
+		ImGui::SliderFloat("rotate X", &xRotate, 0.0f, 360.0f);            // Edit 1 float using a slider from 0.0f to 1.0f    
+		ImGui::SliderFloat("rotate Y", &yRotate, 0.0f, 360.0f);            // Edit 1 float using a slider from 0.0f to 1.0f    
+		ImGui::SliderFloat("rotate Z", &zRotate, 0.0f, 360.0f);            // Edit 1 float using a slider from 0.0f to 1.0f    
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 
 		ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our windows open/close state
@@ -37,6 +42,21 @@ void DrawImguiMenus(ImGuiIO& io, Scene* scene)
 		ImGui::Text("counter = %d", counter);
 
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		
+		MeshModel* active = static_cast<MeshModel*>(scene->models[scene->ActiveModel]);
+		if(prev_xRotate != xRotate){
+			active->rotateX(xRotate - prev_xRotate);
+		}
+		if(prev_yRotate != yRotate){
+			active->rotateY(yRotate - prev_yRotate);
+		}
+		if(prev_zRotate != zRotate){
+			active->rotateZ(zRotate - prev_zRotate);
+		}
+		
+		prev_xRotate = xRotate;
+		prev_yRotate = yRotate;
+		prev_zRotate = zRotate;
 		ImGui::End();
 	}
 
