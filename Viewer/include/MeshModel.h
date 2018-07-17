@@ -14,14 +14,20 @@ class MeshModel : public Model
 {
 public:
 	//MeshModel() {}
-	vector<glm::vec3> vertexPositions;
+
+	vector<vector<glm::vec3>> triangles;
+
 	// Add more attributes.
-	glm::mat4x4 worldTransform; // tranformation in world frame
-	glm::mat4x4 normalTransform; // transformation in model frame
+	glm::mat4x4 worldTransform;
+	glm::mat4x4 normalTransform; 
 
 public:
 	MeshModel(const string& fileName);
 	~MeshModel();
 	void LoadFile(const string& fileName);
-	const vector<glm::vec3>* Draw();
+	
+	/**
+	 * This function sends the renderer all nesessary information to draw the model
+	*/
+	void Draw(Renderer& renderer);
 };

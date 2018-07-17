@@ -129,19 +129,24 @@ void MeshModel::LoadFile(const string& fileName)
 	//Then vertexPositions should contain:
 	//vertexPositions={v1,v2,v3,v1,v3,v4}
 
-	// vertexPositions = new glm::vec3[faces.size() * FACE_ELEMENTS]; // we need to store 3 vertices for every face
 	// iterate through all stored faces and create triangles
 	int k=0;
 	for (vector<FaceIdx>::iterator it = faces.begin(); it != faces.end(); ++it) // iterate over faces
 	{
+		vector<glm::vec3> triangle;
 		for (int i = 0; i < FACE_ELEMENTS; i++) // iterate over face's vertices
 		{
-			vertexPositions.push_back(vertices[it->v[i]]); // append i'th vetice of current face to list of all vertices
+			triangle.push_back(vertices[it->v[i]]); // append i'th vetice of current face to list of all vertices
 		}
+		triangles.push_back(triangle);
 	}
 }
 
-const vector<glm::vec3>* MeshModel::Draw()
+void MeshModel::Draw(Renderer& renderer)
 {
-	return NULL;
+	// send transformation to renderer
+	renderer.SetObjectMatrices(worldTransform, normalTransform);
+
+	// send triangles to renderer
+	renderer.DrawTriangles(triangles);
 }

@@ -22,6 +22,8 @@ public:
 	Scene() {};
 	Scene(Renderer *renderer) : renderer(renderer) {};
 
+	void AddCamera(Camera& c);
+
 	// Loads an obj file into the scene.
 	void LoadOBJModel(string fileName);
 

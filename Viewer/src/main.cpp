@@ -29,6 +29,15 @@ void RenderFrame(GLFWwindow* window, Renderer* renderer);
 // Cleanup routines of all the systems used here.
 void Cleanup(GLFWwindow* window);
 
+void setup_scene(Scene& scene){
+	Camera c = Camera();
+	scene.AddCamera(c);
+	scene.ActiveCamera = 0;
+	scene.LoadOBJModel("../../Data/obj_examples/teapot.obj");
+	scene.ActiveModel = 0;
+
+}
+
 int main(int argc, char **argv)
 {
     // Setup window
@@ -40,7 +49,6 @@ int main(int argc, char **argv)
 	Renderer renderer = Renderer(w,h);
 	Scene scene = Scene(&renderer);
 
-	scene.LoadOBJModel("../../Data/camera.obj");
     // Setup Dear ImGui binding
 	ImGuiIO& io = SetupDearImgui(window);
     // Main loop - the famous "Game Loop" in video games :)
@@ -53,7 +61,7 @@ int main(int argc, char **argv)
         // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
         glfwPollEvents();
 		// draw scene here
-		scene.DrawLineTest();
+		scene.Draw();
         // Start the ImGui frame
 		StartFrame();
 		// imgui stuff here

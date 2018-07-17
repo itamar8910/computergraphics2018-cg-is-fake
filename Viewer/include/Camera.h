@@ -6,7 +6,7 @@
  */
 class Camera
 {
-private:
+public:
 	glm::mat4x4 cTransform;
 	glm::mat4x4 projection;
 public:

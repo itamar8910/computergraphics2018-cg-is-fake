@@ -27,14 +27,10 @@ Renderer::~Renderer()
 
 void Renderer::DrawLine(const glm::vec2 &point1, const	glm::vec2 &point2, const glm::vec3& color){
 
-	// TODO: handle simetries
 	int dx = point2.x - point1.x;
 	int dy = point2.y - point1.y;
 	
-	DrawLineHelper(point1, point2, color);		
-	
-
-	
+	DrawLineHelper(point1, point2, color);			
 }
 
 /**
