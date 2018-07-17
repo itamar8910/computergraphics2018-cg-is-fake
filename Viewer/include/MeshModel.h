@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <string>
+#include <vector>
 #include "Model.h"
 
 using namespace std;
@@ -11,12 +12,12 @@ using namespace std;
  */
 class MeshModel : public Model
 {
-protected :
+public:
 	//MeshModel() {}
-	glm::vec3 *vertexPositions;
+	vector<glm::vec3> vertexPositions;
 	// Add more attributes.
-	glm::mat4x4 worldTransform;
-	glm::mat4x4 normalTransform;
+	glm::mat4x4 worldTransform; // tranformation in world frame
+	glm::mat4x4 normalTransform; // transformation in model frame
 
 public:
 	MeshModel(const string& fileName);

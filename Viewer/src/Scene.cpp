@@ -2,6 +2,8 @@
 #include "MeshModel.h"
 #include <string>
 #include <iostream>
+
+
 using namespace std;
 void Scene::LoadOBJModel(string fileName)
 {
@@ -24,7 +26,7 @@ void Scene::DrawDemo()
 }
 
 void Scene::DrawLineTest(){
-	cout << "---" << endl;
+	
 	renderer->DrawLine(glm::vec2(500.0, 500.0), glm::vec2(700, 650.0));
 	renderer->DrawLine(glm::vec2(500.0, 500.0), glm::vec2(700, 750.0));
 

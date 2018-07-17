@@ -101,13 +101,17 @@ void MeshModel::LoadFile(const string& fileName)
 		issLine >> std::ws >> lineType;
 
 		// based on the type parse data
-		if (lineType == "?") /*BUG*/
+		if (lineType == "v") // vertex
 		{
 			vertices.push_back(vec3fFromStream(issLine));
 		}
-		else if (lineType == "?") /*BUG*/
+		else if (lineType == "f") // face
 		{
 			faces.push_back(issLine);
+		}
+		else if (lineType == "vn") // vertex normal
+		{
+			// TODO: implement
 		}
 		else if (lineType == "#" || lineType == "")
 		{
@@ -125,14 +129,14 @@ void MeshModel::LoadFile(const string& fileName)
 	//Then vertexPositions should contain:
 	//vertexPositions={v1,v2,v3,v1,v3,v4}
 
-	vertexPositions = new glm::vec3[7]; /*BUG*/
+	// vertexPositions = new glm::vec3[faces.size() * FACE_ELEMENTS]; // we need to store 3 vertices for every face
 	// iterate through all stored faces and create triangles
 	int k=0;
-	for (vector<FaceIdx>::iterator it = faces.begin(); it != faces.end(); ++it)
+	for (vector<FaceIdx>::iterator it = faces.begin(); it != faces.end(); ++it) // iterate over faces
 	{
-		for (int i = 0; i < FACE_ELEMENTS; i++)
+		for (int i = 0; i < FACE_ELEMENTS; i++) // iterate over face's vertices
 		{
-			vertexPositions[k++] = glm::vec3(); /*BUG*/
+			vertexPositions.push_back(vertices[it->v[i]]); // append i'th vetice of current face to list of all vertices
 		}
 	}
 }
