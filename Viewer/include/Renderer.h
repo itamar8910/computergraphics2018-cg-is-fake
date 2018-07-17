@@ -21,6 +21,12 @@ private:
 	// Screen dimensions
 	int width, height;
 
+	// TODO: make these a smart pointer to avoid copying each time
+	glm::mat4x4 cTransform; // camera transform
+	glm::mat4x4 cProjection; // camera projection
+	glm::mat4x4 oTransform; // object transform
+	glm::mat4x4 nTransform; // normals transform
+
 	// Draw's a pixel in location p with color color
 	void putPixel(int i, int j, const glm::vec3& color);
 	// creates float array of dimension [3,w,h]
