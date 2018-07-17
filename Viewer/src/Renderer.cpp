@@ -58,9 +58,9 @@ void Renderer::DrawTriangle(const vector<glm::vec3>& triangle){
 		homogPoint = cTransform * homogPoint; // TODO: maybe should be the inverse of cTransform?
 		homogPoint = cProjection * homogPoint;
 
-		// homogPoint.x /= homogPoint.w;
-		// homogPoint.y /= homogPoint.w;
-		// homogPoint.z /= homogPoint.w;
+		homogPoint.x /= homogPoint.w;
+		homogPoint.y /= homogPoint.w;
+		homogPoint.z /= homogPoint.w;
 		
 		transformedTriangle.push_back(glm::vec2(homogPoint.x, homogPoint.y));
 	} 
