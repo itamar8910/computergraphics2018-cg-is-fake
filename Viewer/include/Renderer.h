@@ -31,6 +31,9 @@ private:
 	void putPixel(int i, int j, const glm::vec3& color);
 	// creates float array of dimension [3,w,h]
 	void createBuffers(int w, int h);
+	
+	void DrawTriangle(const vector<glm::vec3>& triangle);
+
 	//##############################
 	//##openGL stuff. Don't touch.##
 	//##############################

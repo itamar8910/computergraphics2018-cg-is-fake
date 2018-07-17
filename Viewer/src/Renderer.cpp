@@ -38,6 +38,30 @@ void Renderer::SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x
 	this->nTransform = nTransform;
 }
 
+void Renderer::DrawTriangles(const vector<vector<glm::vec3>>& triangles, const vector<glm::vec3>* normals){
+	for(auto& triangle : triangles){
+		DrawTriangle(triangle);
+	}
+}
+
+void Renderer::DrawTriangle(const vector<glm::vec3>& triangle){
+	vector<glm::vec2> transformedTriangle;
+	for(const glm::vec3& originalPoint : triangle){
+		glm::vec4 homogPoint;
+		homogPoint.x = originalPoint.x;
+		homogPoint.y = originalPoint.y;
+		homogPoint.z = originalPoint.z;
+		homogPoint.w = 1;
+		
+		homogPoint = oTransform * homogPoint;
+		// TODO: handle normal transformations
+		homogPoint = cTransform * homogPoint; // TODO: maybe should be the inverse of cTransform?
+		homogPoint = cProjection * homogPoint;
+
+		transformedTriangle.push_back(glm::vec2(homogPoint.x, homogPoint.y));
+		
+	} 
+}
 
 void Renderer::DrawLine(const glm::vec2 &point1, const	glm::vec2 &point2, const glm::vec3& color){
 
