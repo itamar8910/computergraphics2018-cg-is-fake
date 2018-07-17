@@ -6,7 +6,7 @@
 // #include <nfd.h>
 
 bool showDemoWindow = false;
-bool showAnotherWindow = false;
+bool showAnotherWindow = true;
 bool showFile = false;
 glm::vec4 clearColor = glm::vec4(0.4f, 0.55f, 0.60f, 1.00f);
 
@@ -29,7 +29,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene* scene)
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 
 		ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our windows open/close state
-		ImGui::Checkbox("Another Window", &showAnotherWindow);
+		ImGui::Checkbox("Mouse Window", &showAnotherWindow);
 
 		if (ImGui::Button("Button"))                            // Buttons return true when clicked (NB: most widgets return true when edited/activated)
 			counter++;
@@ -43,8 +43,11 @@ void DrawImguiMenus(ImGuiIO& io, Scene* scene)
 	// 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
 	if (showAnotherWindow)
 	{
-		int val[2]; val[0] = io.MousePos.x; val[1] = io.MousePos.y;
-		ImGui::Begin("Another Window", &showAnotherWindow);
+		int HEIGHT = 720; // todo: use the values that's stored in the renderer to support resizes
+		int val[2];
+		val[0] = io.MousePos.x;
+		val[1] = HEIGHT - io.MousePos.y; // to fix y axis
+		ImGui::Begin("Mouse Window", &showAnotherWindow);
 		ImGui::InputInt2("(x,y)", val, 3);
 		ImGui::Text("Hello from another window!");
 		if (ImGui::Button("Close Me"))
