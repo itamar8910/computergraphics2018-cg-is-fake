@@ -20,6 +20,7 @@ public:
 	// Add more attributes.
 	glm::mat4x4 worldTransform;
 	glm::mat4x4 normalTransform; 
+	int x, y, z; // current position in the world, used for translation before rotation
 
 public:
 	MeshModel(const string& fileName);
@@ -32,4 +33,11 @@ public:
 	void Draw(Renderer& renderer);
 	void scale(float s);
 	void translate(float x, float y, float z);
+	void rotateX(float theta);
+	void rotateY(float theta);
+	void rotateZ(float theta);
+
+private:
+	glm::mat4x4 getTranslationMatrix(float x, float y, float z);
+
 };
