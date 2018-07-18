@@ -31,16 +31,16 @@ void RenderFrame(GLFWwindow* window, Renderer* renderer);
 // Cleanup routines of all the systems used here.
 void Cleanup(GLFWwindow* window);
 
-void setup_scene(Scene& scene){
+void setup_scene(Scene& scene,const string& model_path){
 	Camera* c = new Camera();
 	c->Ortho(-1, 1, -1, 1, 1, -1);
 	scene.AddCamera(*c);
 	scene.ActiveCamera = 0;
-	scene.LoadOBJModel("../../Data/obj_examples/teapot.obj");
+	scene.LoadOBJModel(model_path);
 	scene.ActiveModel = 0;
 
 }
-
+#define TEAPOT_MODEL "../../Data/obj_examples/teapot.obj"
 int main(int argc, char **argv)
 {
     // Setup window
@@ -51,8 +51,9 @@ int main(int argc, char **argv)
 	// Setup renderer and scene
 	Renderer renderer = Renderer(w,h);
 	Scene scene = Scene(&renderer);
-	setup_scene(scene);
-    // Setup Dear ImGui binding
+	string model_path = argc > 2 ? argv[1] : TEAPOT_MODEL;
+	setup_scene(scene, argv[1]);
+	// Setup Dear ImGui binding
 	ImGuiIO& io = SetupDearImgui(window);
     // Main loop - the famous "Game Loop" in video games :)
     while (!glfwWindowShouldClose(window))
