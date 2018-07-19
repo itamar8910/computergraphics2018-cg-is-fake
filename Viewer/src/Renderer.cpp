@@ -47,20 +47,14 @@ void Renderer::DrawTriangles(const vector<vector<glm::vec3> >& triangles, const 
 void Renderer::DrawTriangle(const vector<glm::vec3>& triangle){
 	vector<glm::vec2> transformedTriangle;
 	for(const glm::vec3& originalPoint : triangle){
-		glm::vec4 homogPoint;
-		homogPoint.x = originalPoint.x;
-		homogPoint.y = originalPoint.y;
-		homogPoint.z = originalPoint.z;
-		homogPoint.w = 1;
+		glm::vec4 homogPoint(originalPoint, 1);
 		
 		homogPoint = oTransform * homogPoint;
 		// TODO: handle normal transformations
 		homogPoint = cTransform * homogPoint; // TODO: maybe should be the inverse of cTransform?
 		homogPoint = cProjection * homogPoint;
 
-		homogPoint.x /= homogPoint.w;
-		homogPoint.y /= homogPoint.w;
-		homogPoint.z /= homogPoint.w;
+		homogPoint /= homogPoint.w;
 		
 		transformedTriangle.push_back(glm::vec2(homogPoint.x, homogPoint.y));
 	} 
@@ -71,18 +65,9 @@ void Renderer::DrawTriangle(const vector<glm::vec3>& triangle){
 	DrawLine(transformedTriangle[0], transformedTriangle[2]);
 }
 
-void Renderer::DrawLine(const glm::vec2 &point1, const	glm::vec2 &point2, const glm::vec3& color){
+void Renderer::DrawLine(const glm::vec2 &point1, const glm::vec2 &point2, const glm::vec3 &color)
+{
 	// cout << "Drawing line:" << point1.x << "," << point1.y << "," << point2.x << "," << point2.y << endl;
-	int dx = point2.x - point1.x;
-	int dy = point2.y - point1.y;
-	
-	DrawLineHelper(point1, point2, color);			
-}
-
-/**
- * draws lines while assuming 0 < a < 1
-*/
-void Renderer::DrawLineHelper(const glm::vec2 &point1, const glm::vec2 &point2, const glm::vec3& color){
 	int p1 = point1.x, q1 = point1.y, p2 = point2.x, q2 = point2.y;
 	int dp = p2 - p1; // dx
 	int dq = q2 - q1; // dy
@@ -90,18 +75,20 @@ void Renderer::DrawLineHelper(const glm::vec2 &point1, const glm::vec2 &point2, 
 	int x = p1, y = q1;
 
 	int progressor = is_a_normal ? x : y; // this is x in the normal case
-	int estimator = is_a_normal ? y : x; // this is y in the normal case
+	int estimator = is_a_normal ? y : x;  // this is y in the normal case
 
 	int progressor_end = is_a_normal ? p2 : q2;
 	int progressor_delta = is_a_normal ? dp : dq;
 	int estimator_delta = is_a_normal ? dq : dp;
 	int e = is_a_normal ? -dp : -dq;
-	
+
 	int progressor_sign = progressor_delta > 0 ? 1 : -1;
 	int estimator_sign = estimator_delta > 0 ? 1 : -1;
 
-	while(progressor_delta > 0 ? progressor <= progressor_end : progressor >= progressor_end){
-		if(estimator_delta > 0 ? e > 0 : e < 0){
+	while (progressor_delta > 0 ? progressor <= progressor_end : progressor >= progressor_end)
+	{
+		if (estimator_delta > 0 ? e > 0 : e < 0)
+		{
 			estimator += estimator_sign;
 			e -= 2 * ABS(progressor_delta) * estimator_sign;
 		}
