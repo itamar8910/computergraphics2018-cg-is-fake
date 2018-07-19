@@ -51,8 +51,8 @@ int main(int argc, char **argv)
 	// Setup renderer and scene
 	Renderer renderer = Renderer(w,h);
 	Scene scene = Scene(&renderer);
-	string model_path = argc > 2 ? argv[1] : TEAPOT_MODEL;
-	setup_scene(scene, argv[1]);
+	string model_path = argc >= 2 ? argv[1] : TEAPOT_MODEL;
+	setup_scene(scene, model_path);
 	// Setup Dear ImGui binding
 	ImGuiIO& io = SetupDearImgui(window);
     // Main loop - the famous "Game Loop" in video games :)
