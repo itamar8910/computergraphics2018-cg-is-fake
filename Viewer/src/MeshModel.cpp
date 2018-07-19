@@ -136,7 +136,9 @@ void MeshModel::LoadFile(const string& fileName)
 		vector<glm::vec3> triangle;
 		for (int i = 0; i < FACE_ELEMENTS; i++) // iterate over face's vertices
 		{
-			triangle.push_back(vertices[it->v[i]]); // append i'th vetice of current face to list of all vertices
+			// append i'th vetice of current face to list of all vertices
+			// obj files are 1-indexed
+			triangle.push_back(vertices[it->v[i]-1]);
 		}
 		triangles.push_back(triangle);
 	}
