@@ -21,6 +21,7 @@ public:
 	glm::mat4x4 worldTransform;
 	glm::mat4x4 normalTransform; 
 	int x, y, z; // current position in the world, used for translation before rotation
+	int current_scale; // original scale of this model
 
 public:
 	MeshModel(const string& fileName);

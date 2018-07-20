@@ -13,8 +13,6 @@ void Scene::AddCamera(Camera& c){
 void Scene::LoadOBJModel(string fileName)
 {
 	MeshModel *model = new MeshModel(fileName);
-	model->scale(100); // TODO: remove later, for dbg
-	// model->rotateY(60); // TODO: remove later, for dbg
 	model->translate(500, 300, 0); // TODO: remove later, for dbg
 	models.push_back(model);
 }

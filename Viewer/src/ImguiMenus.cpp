@@ -3,8 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "MeshModel.h"
+#include <iostream>
 // open file dialog cross platform https://github.com/mlabbe/nativefiledialog
 // #include <nfd.h>
+using namespace std;
 
 bool showDemoWindow = false;
 bool showAnotherWindow = true;
@@ -26,11 +28,13 @@ void DrawImguiMenus(ImGuiIO& io, Scene* scene)
 		static float xRotate = 0.0f, prev_xRotate = 0.0f;
 		static float yRotate = 0.0f, prev_yRotate = 0.0f;
 		static float zRotate = 0.0f, prev_zRotate = 0.0f;
+		static float scale = 100.0f, prevScale = 100.0f;
 		static int counter = 0;
 		ImGui::Text("Hello, world!");                           // Display some text (you can use a format string too)
 		ImGui::SliderFloat("rotate X", &xRotate, 0.0f, 360.0f);            // Edit 1 float using a slider from 0.0f to 1.0f    
 		ImGui::SliderFloat("rotate Y", &yRotate, 0.0f, 360.0f);            // Edit 1 float using a slider from 0.0f to 1.0f    
 		ImGui::SliderFloat("rotate Z", &zRotate, 0.0f, 360.0f);            // Edit 1 float using a slider from 0.0f to 1.0f    
+		ImGui::SliderFloat("scale", &scale, 0.0f, 1000.0f);            // Edit 1 float using a slider from 0.0f to 1.0f    
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 
 		ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our windows open/close state
@@ -53,10 +57,19 @@ void DrawImguiMenus(ImGuiIO& io, Scene* scene)
 		if(prev_zRotate != zRotate){
 			active->rotateZ(zRotate - prev_zRotate);
 		}
+		if((int)prevScale != (int)scale){
+			if(scale <= 0){
+				cout << "scale must be > 0" << endl;
+			}else{
+				active->scale(scale);
+			}
+		}
+	
 		
 		prev_xRotate = xRotate;
 		prev_yRotate = yRotate;
 		prev_zRotate = zRotate;
+		prevScale = scale;
 		ImGui::End();
 	}
 

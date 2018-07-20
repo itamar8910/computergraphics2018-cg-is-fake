@@ -5,7 +5,7 @@
 #include <fstream>
 #include <sstream>
 #define FACE_ELEMENTS 3
-
+#define ORIGINAL_SCALE 100
 
 using namespace std;
 
@@ -73,9 +73,10 @@ glm::vec2 vec2fFromStream(std::istream& issLine)
 	return glm::vec2(x, y);
 }
 
-MeshModel::MeshModel(const string& fileName) : worldTransform(glm::mat4(1)), normalTransform(glm::mat4(1)), x(0), y(0), z(0)
+MeshModel::MeshModel(const string& fileName) : worldTransform(glm::mat4(1)), normalTransform(glm::mat4(1)), x(0), y(0), z(0), current_scale(1)
 {
 	LoadFile(fileName);
+	scale(ORIGINAL_SCALE);
 }
 
 MeshModel::~MeshModel()
@@ -155,7 +156,8 @@ void MeshModel::Draw(Renderer& renderer)
 
 void MeshModel::scale(float s){
 	glm::mat4x4 scale = glm::mat4(1.0);
-	scale[3][3] = 1.0 / s;
+	scale[3][3] = 1.0 / (((float)((int)s)) / ((float)current_scale));
+	current_scale = (int)s;
 	worldTransform = scale * worldTransform;
 }
 
