@@ -6,7 +6,7 @@
     "configurations": [
 
         {
-            "name": "(gdb) Launch",
+            "name": "(gdb) MeshViewer",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/bin/MeshViewer",
@@ -22,7 +22,8 @@
                     "text": "-enable-pretty-printing",
                     "ignoreFailures": true
                 }
-            ]
+            ],
+            
         }
 
         {
