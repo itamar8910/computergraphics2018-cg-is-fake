@@ -33,7 +33,8 @@ void Cleanup(GLFWwindow* window);
 
 void setup_scene(Scene& scene,const string& model_path){
 	Camera* c = new Camera();
-	c->Ortho(-1, 1, -1, 1, 1, -1);
+	// c->Ortho(-1, 1, -1, 1, 1, -1);
+	c->Perspective(90.0, 1, -5.0f, 100.0f);
 	scene.AddCamera(*c);
 	scene.ActiveCamera = 0;
 	scene.LoadOBJModel(model_path);

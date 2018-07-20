@@ -38,7 +38,7 @@ public:
 		const float zNear, const float zFar );
 
 	// Sets perspective projection matrix.
-	glm::mat4x4 Perspective( const float fovy, const float aspect,
+	void Perspective( const float fovy, const float aspect,
 		const float zNear, const float zFar);
 
 };

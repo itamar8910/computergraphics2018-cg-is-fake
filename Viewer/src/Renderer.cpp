@@ -66,8 +66,13 @@ void Renderer::DrawTriangle(const vector<glm::vec3>& triangle){
 }
 
 void Renderer::DrawLine(const glm::vec2 &point1, const glm::vec2 &point2, const glm::vec3 &color)
-{
-	// cout << "Drawing line:" << point1.x << "," << point1.y << "," << point2.x << "," << point2.y << endl;
+{	
+	// trying to debug inf values when using perspective projection
+	// float max = 10000;
+	// if(ABS(point1.x) > max || ABS(point1.y) >  max || ABS(point2.x) > max || ABS(point2.y) > max){
+	// 	return;
+	// }
+	cout << "Drawing line:" << point1.x << "," << point1.y << "," << point2.x << "," << point2.y << endl;
 	int p1 = point1.x, q1 = point1.y, p2 = point2.x, q2 = point2.y;
 	int dp = p2 - p1; // dx
 	int dq = q2 - q1; // dy
