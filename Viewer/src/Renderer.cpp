@@ -51,7 +51,7 @@ void Renderer::DrawTriangle(const vector<glm::vec3>& triangle){
 		
 		homogPoint = oTransform * homogPoint;
 		// TODO: handle normal transformations
-		homogPoint = cTransform * homogPoint; // TODO: maybe should be the inverse of cTransform?
+		homogPoint = inverse(cTransform) * homogPoint;
 		homogPoint = cProjection * homogPoint;
 
 		homogPoint /= homogPoint.w;
