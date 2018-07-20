@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include "utils.h"
+
 #define FACE_ELEMENTS 3
 #define ORIGINAL_SCALE 100
 
@@ -161,13 +163,6 @@ void MeshModel::scale(float s){
 	worldTransform = scale * worldTransform;
 }
 
-glm::mat4x4 MeshModel::getTranslationMatrix(float x, float y, float z){
-	glm::mat4x4 trans = glm::mat4(1.0); // identity matrix
-	trans[3][0] = x;
-	trans[3][1] = y;
-	trans[3][2] = z;
-	return trans;
-}
 
 void MeshModel::translate(float x, float y, float z){
 	glm::mat4x4 trans = getTranslationMatrix(x, y, z);

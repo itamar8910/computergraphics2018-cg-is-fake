@@ -38,7 +38,4 @@ public:
 	void rotateY(float theta);
 	void rotateZ(float theta);
 
-private:
-	glm::mat4x4 getTranslationMatrix(float x, float y, float z);
-
 };
