@@ -96,6 +96,7 @@ void Renderer::DrawLine(const glm::vec2 &point1, const glm::vec2 &point2, const 
 		progressor += progressor_sign;
 		e += 2 * estimator_delta;
 	}
+	// cout << "Drew line:[" << point1.x << "," << point1.y << "],[" << point2.x << "," << point2.y << "]" << endl;
 }
 
 void Renderer::putPixel(int i, int j, const glm::vec3& color)

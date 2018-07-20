@@ -29,12 +29,16 @@ void DrawImguiMenus(ImGuiIO& io, Scene* scene)
 		static float yRotate = 0.0f, prev_yRotate = 0.0f;
 		static float zRotate = 0.0f, prev_zRotate = 0.0f;
 		static float scale = 100.0f, prevScale = 100.0f;
+		static float xPos = 500, yPos = 300, zPos = 0;
 		static int counter = 0;
 		ImGui::Text("Hello, world!");                           // Display some text (you can use a format string too)
-		ImGui::SliderFloat("rotate X", &xRotate, 0.0f, 360.0f);            // Edit 1 float using a slider from 0.0f to 1.0f    
-		ImGui::SliderFloat("rotate Y", &yRotate, 0.0f, 360.0f);            // Edit 1 float using a slider from 0.0f to 1.0f    
-		ImGui::SliderFloat("rotate Z", &zRotate, 0.0f, 360.0f);            // Edit 1 float using a slider from 0.0f to 1.0f    
-		ImGui::SliderFloat("scale", &scale, 0.0f, 1000.0f);            // Edit 1 float using a slider from 0.0f to 1.0f    
+		ImGui::SliderFloat("translate X", &xPos, -1000.0f, 1000.0f);           
+		ImGui::SliderFloat("translate Y", &yPos, -1000.0f, 1000.0f);           
+		ImGui::SliderFloat("translate Z", &zPos, -1000.0f, 1000.0f);           
+		ImGui::SliderFloat("rotate X", &xRotate, 0.0f, 360.0f);           
+		ImGui::SliderFloat("rotate Y", &yRotate, 0.0f, 360.0f);           
+		ImGui::SliderFloat("rotate Z", &zRotate, 0.0f, 360.0f);               
+		ImGui::SliderFloat("scale", &scale, 0.0f, 1000.0f);           
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 
 		ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our windows open/close state
@@ -48,6 +52,15 @@ void DrawImguiMenus(ImGuiIO& io, Scene* scene)
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		
 		MeshModel* active = static_cast<MeshModel*>(scene->models[scene->ActiveModel]);
+		if((int)xPos != (int)active->x){
+			active->translate(xPos - active->x, 0, 0);
+		}
+		if((int)yPos != (int)active->y){
+			active->translate(0, yPos - active->y, 0);
+		}
+		if((int)zPos != (int)active->z){
+			active->translate(0, 0, zPos - active->z);
+		}
 		if(prev_xRotate != xRotate){
 			active->rotateX(xRotate - prev_xRotate);
 		}
