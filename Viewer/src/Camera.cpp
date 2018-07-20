@@ -1,8 +1,8 @@
 #include "Camera.h"
+#include "utils.h"
 
 
-
-Camera::Camera() : cTransform(glm::mat4(1)), projection(glm::mat4(1))
+Camera::Camera() : cTransform(glm::mat4(1)), projection(glm::mat4(1)), x(0), y(0), z(0)
 {
 }
 
@@ -13,6 +13,14 @@ Camera::~Camera()
 
 void Camera::SetTransformation(const glm::mat4x4& transform){
     cTransform = transform;
+}
+
+void Camera::translate(float x, float y, float z){
+	glm::mat4x4 trans = getTranslationMatrix(x, y, z);
+	SetTransformation(trans * cTransform);
+	this->x += x;
+	this->y += y;
+	this->z += z;
 }
 
 void Camera::Ortho( const float left, const float right,

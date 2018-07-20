@@ -9,12 +9,20 @@ class Camera
 public:
 	glm::mat4x4 cTransform;
 	glm::mat4x4 projection;
+	int x, y, z; // current position in the world, used for translation before rotation
+
 public:
 	Camera();
 	~Camera();
 
 	// Sets the camera transformations with relation to world coordinates
 	void SetTransformation(const glm::mat4x4& transform);
+
+	void translate(float x, float y, float z);
+	void rotateX(float theta);
+	void rotateY(float theta);
+	void rotateZ(float theta);
+
 
 	// Creates lookAt transformation.
 	void LookAt(const glm::vec4& eye, const glm::vec4& at, const glm::vec4& up );

@@ -9,6 +9,7 @@
 using namespace std;
 
 bool showDemoWindow = false;
+bool showCamPosWindow = false;
 bool showAnotherWindow = true;
 bool showFile = false;
 glm::vec4 clearColor = glm::vec4(0.4f, 0.55f, 0.60f, 1.00f);
@@ -16,6 +17,28 @@ glm::vec4 clearColor = glm::vec4(0.4f, 0.55f, 0.60f, 1.00f);
 const glm::vec4& GetClearColor()
 {
 	return clearColor;
+}
+
+void ShowCamPosWindow(Scene* scene){
+	ImGui::Begin("CamPos Window");
+	static float xPos = 0, yPos = 0, zPos = 0;
+	ImGui::Text("CamPos Window");
+	ImGui::SliderFloat("translate X", &xPos, -100.0f, 100.0f);           
+	ImGui::SliderFloat("translate Y", &yPos, -100.0f, 100.0f);           
+	ImGui::SliderFloat("translate Z", &zPos, -100.0f, 100.0f);   
+
+	Camera* cam  = scene->cameras[scene->ActiveCamera];
+	if((int)xPos != (int)cam->x){
+		cam->translate(xPos - cam->x, 0, 0);
+	}
+	if((int)yPos != (int)cam->y){
+		cam->translate(0, yPos - cam->y, 0);
+	}
+	if((int)zPos != (int)cam->z){
+		cam->translate(0, 0, zPos - cam->z);
+	}
+
+	ImGui::End();
 }
 
 void DrawImguiMenus(ImGuiIO& io, Scene* scene)
@@ -42,6 +65,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene* scene)
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 
 		ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our windows open/close state
+		ImGui::Checkbox("CamPos Window", &showCamPosWindow);      // Edit bools storing our windows open/close state
 		ImGui::Checkbox("Mouse Window", &showAnotherWindow);
 
 		if (ImGui::Button("Button"))                            // Buttons return true when clicked (NB: most widgets return true when edited/activated)
@@ -106,6 +130,10 @@ void DrawImguiMenus(ImGuiIO& io, Scene* scene)
 	{
 		ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
 		ImGui::ShowDemoWindow(&showDemoWindow);
+	}
+
+	if(showCamPosWindow){
+		ShowCamPosWindow(scene);
 	}
 
 	// Demonstrate creating a fullscreen menu bar and populating it.
