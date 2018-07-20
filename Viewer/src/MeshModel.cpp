@@ -174,7 +174,7 @@ void MeshModel::translate(float x, float y, float z){
 	worldTransform = trans * worldTransform;
 	this->x += x;
 	this->y += y;
-	this->x += z;
+	this->z += z;
 }
 
 void MeshModel::rotateX(float theta){
