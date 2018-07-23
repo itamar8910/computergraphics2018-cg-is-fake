@@ -1,4 +1,3 @@
-#pragma once
 #include "ImguiMenus.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,7 +40,7 @@ void ShowCamPosWindow(Scene* scene){
 	ImGui::End();
 }
 
-void DrawImguiMenus(ImGuiIO& io, Scene* scene)
+void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 {
 	ImGui::SetNextWindowPos(ImVec2(0, 20), ImGuiCond_Once);
 	// 1. Show a simple window.
@@ -61,7 +60,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene* scene)
 		ImGui::SliderFloat("rotate X", &xRotate, 0.0f, 360.0f);           
 		ImGui::SliderFloat("rotate Y", &yRotate, 0.0f, 360.0f);           
 		ImGui::SliderFloat("rotate Z", &zRotate, 0.0f, 360.0f);               
-		ImGui::SliderFloat("scale", &scale, 0.0f, 1000.0f);           
+		ImGui::SliderFloat("scale", &scale, 0.0f, 1000.0f);
+		ImGui::SliderInt("Active Model", &scene->ActiveModel, 0, number_of_models-1);
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 
 		ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our windows open/close state

@@ -31,53 +31,62 @@ void RenderFrame(GLFWwindow* window, Renderer* renderer);
 // Cleanup routines of all the systems used here.
 void Cleanup(GLFWwindow* window);
 
-void setup_scene(Scene& scene,const string& model_path){
+void setup_scene(Scene& scene){
 	Camera* c = new Camera();
 	c->Ortho(-1, 1, -1, 1, 1, -1);
 	scene.AddCamera(*c);
 	scene.ActiveCamera = 0;
-	scene.LoadOBJModel(model_path);
-	scene.ActiveModel = 0;
-
 }
 #define TEAPOT_MODEL "../../Data/obj_examples/teapot.obj"
 int main(int argc, char **argv)
 {
-    // Setup window
+	// Setup window
 	int w = 1280, h = 720;
-	GLFWwindow* window = SetupGlfwWindow(w,h,"Mesh Viewer");
+	GLFWwindow *window = SetupGlfwWindow(w, h, "Mesh Viewer");
 	if (!window)
 		return 1;
 	// Setup renderer and scene
-	Renderer renderer = Renderer(w,h);
+	Renderer renderer = Renderer(w, h);
 	Scene scene = Scene(&renderer);
-	string model_path = argc >= 2 ? argv[1] : TEAPOT_MODEL;
-	setup_scene(scene, model_path);
+	setup_scene(scene);
+	if (argc < 2)
+	{
+		scene.LoadOBJModel(TEAPOT_MODEL);
+	}
+	else
+	{
+		for (size_t i = 1; i < argc; i++)
+		{
+			scene.LoadOBJModel(argv[i]);
+		}
+	}
+	scene.ActiveModel = 0;
+
 	// Setup Dear ImGui binding
-	ImGuiIO& io = SetupDearImgui(window);
-    // Main loop - the famous "Game Loop" in video games :)
-    while (!glfwWindowShouldClose(window))
-    {
+	ImGuiIO &io = SetupDearImgui(window);
+	// Main loop - the famous "Game Loop" in video games :)
+	while (!glfwWindowShouldClose(window))
+	{
 		// cout << "loop" << endl;
-        // Poll and handle events (inputs, window resize, etc.)
-        // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-        // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-        // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
-        // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
-        glfwPollEvents();
+		// Poll and handle events (inputs, window resize, etc.)
+		// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
+		// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
+		// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
+		// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
+		glfwPollEvents();
 		// draw scene here
 		scene.Draw();
-        // Start the ImGui frame
+		// Start the ImGui frame
 		StartFrame();
 		// imgui stuff here
-		DrawImguiMenus(io,&scene);
-        // Rendering + user rendering - finishing the ImGui frame
+		DrawImguiMenus(io, &scene, argc - 1);
+		// Rendering + user rendering - finishing the ImGui frame
 		// go to function implementation to add your rendering calls.
-		RenderFrame(window, &renderer);// --> go to line 137
-    }
-    // Cleanup
+		RenderFrame(window, &renderer); // --> go to line 137
+	}
+	// Cleanup
 	Cleanup(window);
-    return 0;
+	return 0;
 }
 
 // Callback for the error state of glfw
