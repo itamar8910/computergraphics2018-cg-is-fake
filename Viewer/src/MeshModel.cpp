@@ -7,7 +7,7 @@
 #include "utils.h"
 
 #define FACE_ELEMENTS 3
-#define ORIGINAL_SCALE 100
+
 
 using namespace std;
 
@@ -75,11 +75,15 @@ glm::vec2 vec2fFromStream(std::istream& issLine)
 	return glm::vec2(x, y);
 }
 
+
 MeshModel::MeshModel(const string& fileName) : worldTransform(glm::mat4(1)), normalTransform(glm::mat4(1)), x(0), y(0), z(0), current_scale(1), centerOfMass(0)
 {
-	LoadFile(fileName);
-	scale(ORIGINAL_SCALE);
-	centerOfMass = calcCenterOfMass();
+	if(fileName.length() > 0){
+		LoadFile(fileName);
+		scale(ORIGINAL_SCALE);
+		centerOfMass = calcCenterOfMass();
+	}
+	
 }
 
 glm::vec3 MeshModel::calcCenterOfMass() const{

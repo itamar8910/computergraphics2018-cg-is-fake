@@ -4,6 +4,8 @@
 #include <vector>
 #include "Model.h"
 
+#define ORIGINAL_SCALE 100
+
 using namespace std;
 
 /*
@@ -26,7 +28,7 @@ public:
 	glm::vec3 centerOfMass;
 
 public:
-	MeshModel(const string& fileName);
+	MeshModel(const string& fileName = "");
 	~MeshModel();
 	void LoadFile(const string& fileName);
 	
