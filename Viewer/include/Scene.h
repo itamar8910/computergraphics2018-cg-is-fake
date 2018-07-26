@@ -8,7 +8,7 @@
 #include "Model.h"
 #include "Light.h"
 #include "Camera.h"
-
+#include "MeshModel.h"
 using namespace std;
 
 class Scene {
@@ -27,6 +27,8 @@ public:
 	// Loads an obj file into the scene.
 	void LoadOBJModel(string fileName);
 
+	void addModel(MeshModel& model);
+	
 	// Draws the current scene.
 	void Draw();
 

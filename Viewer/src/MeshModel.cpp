@@ -80,10 +80,14 @@ MeshModel::MeshModel(const string& fileName) : worldTransform(glm::mat4(1)), nor
 {
 	if(fileName.length() > 0){
 		LoadFile(fileName);
-		scale(ORIGINAL_SCALE);
-		centerOfMass = calcCenterOfMass();
+		initializeInternals();
 	}
 	
+}
+
+void MeshModel::initializeInternals(){
+	scale(ORIGINAL_SCALE);
+	centerOfMass = calcCenterOfMass();
 }
 
 glm::vec3 MeshModel::calcCenterOfMass() const{

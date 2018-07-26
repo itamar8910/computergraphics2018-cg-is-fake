@@ -15,6 +15,7 @@
 #include "Scene.h"
 #include "ImguiMenus.h"
 #include "MeshModel.h"
+#include "PrimMeshModel.h"
 #include <iostream>
 using namespace std;
 
@@ -53,13 +54,19 @@ int main(int argc, char **argv)
 	{
 		scene.LoadOBJModel(TEAPOT_MODEL);
 	}
-	else
+	
+	MeshModel pyramid = PrimMeshModel::CreatePyramid();
+	
+	for (size_t i = 1; i < argc; i++)
 	{
-		for (size_t i = 1; i < argc; i++)
-		{
-			scene.LoadOBJModel(argv[i]);
+		if(string(argv[i]) == "pyramid"){
+			scene.addModel(pyramid);
+		}else{
+		scene.LoadOBJModel(argv[i]);
 		}
 	}
+	
+
 	scene.ActiveModel = 0;
 
 	// Setup Dear ImGui binding

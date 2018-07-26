@@ -1,5 +1,4 @@
 #include "Scene.h"
-#include "MeshModel.h"
 #include <string>
 #include <iostream>
 
@@ -13,7 +12,11 @@ void Scene::AddCamera(Camera& c){
 void Scene::LoadOBJModel(string fileName)
 {
 	MeshModel *model = new MeshModel(fileName);
-	models.push_back(model);
+	addModel(*model);
+}
+
+void Scene::addModel(MeshModel& model){
+	models.push_back(&model);
 }
 
 void Scene::Draw()

@@ -31,6 +31,7 @@ public:
 	MeshModel(const string& fileName = "");
 	~MeshModel();
 	void LoadFile(const string& fileName);
+	void initializeInternals();
 	
 	/**
 	 * This function sends the renderer all nesessary information to draw the model
