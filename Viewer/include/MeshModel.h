@@ -23,6 +23,8 @@ public:
 	int x, y, z; // current position in the world, used for translation before rotation
 	int current_scale; // original scale of this model
 
+	glm::vec3 centerOfMass;
+
 public:
 	MeshModel(const string& fileName);
 	~MeshModel();
@@ -37,5 +39,6 @@ public:
 	void rotateX(float theta);
 	void rotateY(float theta);
 	void rotateZ(float theta);
+	glm::vec3 calcCenterOfMass() const;
 
 };

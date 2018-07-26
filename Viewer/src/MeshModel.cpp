@@ -75,10 +75,21 @@ glm::vec2 vec2fFromStream(std::istream& issLine)
 	return glm::vec2(x, y);
 }
 
-MeshModel::MeshModel(const string& fileName) : worldTransform(glm::mat4(1)), normalTransform(glm::mat4(1)), x(0), y(0), z(0), current_scale(1)
+MeshModel::MeshModel(const string& fileName) : worldTransform(glm::mat4(1)), normalTransform(glm::mat4(1)), x(0), y(0), z(0), current_scale(1), centerOfMass(0)
 {
 	LoadFile(fileName);
 	scale(ORIGINAL_SCALE);
+	centerOfMass = calcCenterOfMass();
+}
+
+glm::vec3 MeshModel::calcCenterOfMass() const{
+	glm::vec3 pointsSum(0);
+	for(const auto& triangle : triangles){
+		for(const auto& point  : triangle){
+			pointsSum += point;
+		}
+	}
+	return pointsSum * (float)(1.0 / (triangles.size() * 3.0));
 }
 
 MeshModel::~MeshModel()
@@ -178,7 +189,7 @@ void MeshModel::rotateX(float theta){
 	rotate[1][2] = glm::sin(glm::radians(theta));
 	rotate[2][1] = -glm::sin(glm::radians(theta));
 	rotate[2][2] = glm::cos(glm::radians(theta));
-	worldTransform = getTranslationMatrix(x, y, z) * rotate * getTranslationMatrix(-x, -y, -z) * worldTransform;
+	worldTransform = getTranslationMatrix(x + centerOfMass.x, y + centerOfMass.y, z + centerOfMass.z) * rotate * getTranslationMatrix(-x - centerOfMass.x, -y - centerOfMass.y, -z - centerOfMass.z) * worldTransform;
 }
 
 void MeshModel::rotateY(float theta){
@@ -187,7 +198,7 @@ void MeshModel::rotateY(float theta){
 	rotate[0][2] = glm::sin(glm::radians(theta));
 	rotate[2][0] = -glm::sin(glm::radians(theta));
 	rotate[2][2] = glm::cos(glm::radians(theta));
-	worldTransform = getTranslationMatrix(x, y, z) * rotate * getTranslationMatrix(-x, -y, -z) * worldTransform;
+	worldTransform = getTranslationMatrix(x + centerOfMass.x, y + centerOfMass.y, z + centerOfMass.z) * rotate * getTranslationMatrix(-x - centerOfMass.x, -y - centerOfMass.y, -z - centerOfMass.z) * worldTransform;
 }
 
 void MeshModel::rotateZ(float theta){
@@ -196,5 +207,5 @@ void MeshModel::rotateZ(float theta){
 	rotate[0][1] = glm::sin(glm::radians(theta));
 	rotate[1][0] = -glm::sin(glm::radians(theta));
 	rotate[1][1] = glm::cos(glm::radians(theta));
-	worldTransform = getTranslationMatrix(x, y, z) * rotate * getTranslationMatrix(-x, -y, -z) * worldTransform;
+	worldTransform = getTranslationMatrix(x + centerOfMass.x, y + centerOfMass.y, z + centerOfMass.z) * rotate * getTranslationMatrix(-x - centerOfMass.x, -y - centerOfMass.y, -z - centerOfMass.z) * worldTransform;
 }
