@@ -89,7 +89,7 @@ glm::vec3 MeshModel::calcCenterOfMass() const{
 			pointsSum += point;
 		}
 	}
-	return pointsSum * (float)(1.0 / (triangles.size() * 3.0));
+	return (pointsSum * (float)(1.0 / (triangles.size() * 3.0))) * (float)current_scale;
 }
 
 MeshModel::~MeshModel()
@@ -171,7 +171,12 @@ void MeshModel::scale(float s){
 	glm::mat4x4 scale = glm::mat4(1.0);
 	scale[3][3] = 1.0 / (((float)((int)s)) / ((float)current_scale));
 	current_scale = (int)s;
-	worldTransform = scale * worldTransform;
+	glm::vec3 centerOfMass = calcCenterOfMass();
+	worldTransform = getTranslationMatrix(x , y, z) * scale * getTranslationMatrix(-x, -y , -z ) * worldTransform;
+	// worldTransform = scale * worldTransform;
+	// glm::vec3 newCenterOfMass = centerOfMass * s;
+	// glm::vec3 delta = centerOfMass - newCenterOfMass;
+	// translate(delta.x, delta.y, delta.z);
 }
 
 
@@ -184,6 +189,8 @@ void MeshModel::translate(float x, float y, float z){
 }
 
 void MeshModel::rotateX(float theta){
+	centerOfMass = calcCenterOfMass();
+	// cout << "com:" << centerOfMass.x << "," << centerOfMass.y << "," << centerOfMass.z << endl;
 	glm::mat4x4 rotate = glm::mat4(1.0); // identity matrix
 	rotate[1][1] = glm::cos(glm::radians(theta));
 	rotate[1][2] = glm::sin(glm::radians(theta));
@@ -193,6 +200,7 @@ void MeshModel::rotateX(float theta){
 }
 
 void MeshModel::rotateY(float theta){
+	centerOfMass = calcCenterOfMass();
 	glm::mat4x4 rotate = glm::mat4(1.0); // identity matrix
 	rotate[0][0] = glm::cos(glm::radians(theta));
 	rotate[0][2] = glm::sin(glm::radians(theta));
@@ -202,6 +210,7 @@ void MeshModel::rotateY(float theta){
 }
 
 void MeshModel::rotateZ(float theta){
+	centerOfMass = calcCenterOfMass();
 	glm::mat4x4 rotate = glm::mat4(1.0); // identity matrix
 	rotate[0][0] = glm::cos(glm::radians(theta));
 	rotate[0][1] = glm::sin(glm::radians(theta));
