@@ -50,17 +50,17 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		static float xRotate = 0.0f, prev_xRotate = 0.0f;
 		static float yRotate = 0.0f, prev_yRotate = 0.0f;
 		static float zRotate = 0.0f, prev_zRotate = 0.0f;
-		static float scale = 100.0f, prevScale = 100.0f;
-		static float xPos = 500, yPos = 300, zPos = 0;
+		static float scale = 1.0f, prevScale = 1.0f;
+		static float xPos = 0, yPos = 0, zPos = 0;
 		static int counter = 0;
 		ImGui::Text("Hello, world!");                           // Display some text (you can use a format string too)
-		ImGui::SliderFloat("translate X", &xPos, -1000.0f, 1000.0f);           
-		ImGui::SliderFloat("translate Y", &yPos, -1000.0f, 1000.0f);           
-		ImGui::SliderFloat("translate Z", &zPos, -1000.0f, 1000.0f);           
+		ImGui::SliderFloat("translate X", &xPos, -10.0f, 10.0f);           
+		ImGui::SliderFloat("translate Y", &yPos, -10.0f, 10.0f);           
+		ImGui::SliderFloat("translate Z", &zPos, -10.0f, 10.0f);           
 		ImGui::SliderFloat("rotate X", &xRotate, 0.0f, 360.0f);           
 		ImGui::SliderFloat("rotate Y", &yRotate, 0.0f, 360.0f);           
 		ImGui::SliderFloat("rotate Z", &zRotate, 0.0f, 360.0f);               
-		ImGui::SliderFloat("scale", &scale, 0.0f, 1000.0f);
+		ImGui::SliderFloat("scale", &scale, 0.1f, 5.0f);
 		ImGui::SliderInt("Active Model", &scene->ActiveModel, 0, number_of_models-1);
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 

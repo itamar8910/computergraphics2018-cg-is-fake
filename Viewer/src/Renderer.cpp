@@ -71,7 +71,7 @@ void Renderer::DrawTriangle(const vector<glm::vec3>& triangle){
 	for(const glm::vec3& originalPoint : triangle){
 		glm::vec4 homogPoint(originalPoint, 1);
 		glm::vec4 transformed;
-		transformed = viewPort * projection * homogPoint;
+		transformed = viewPort * projection * inverse(cTransform) * oTransform * homogPoint;
 		transformed /= transformed.w;
 
 		// homogPoint = oTransform * homogPoint;
