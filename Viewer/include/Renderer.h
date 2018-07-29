@@ -26,7 +26,9 @@ private:
 	glm::mat4x4 cProjection; // camera projection
 	glm::mat4x4 oTransform; // object transform
 	glm::mat4x4 nTransform; // normals transform
+	glm::mat4x4 fullTransform; // full transform: world coordinates -> screen
 
+	glm::mat4x4 getViewport();
 	// Draw's a pixel in location p with color color
 	void putPixel(int i, int j, const glm::vec3& color);
 	// creates float array of dimension [3,w,h]

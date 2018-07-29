@@ -38,6 +38,7 @@ void Renderer::SetProjection(const glm::mat4x4& projection){
 void Renderer::SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x4& nTransform){
 	this->oTransform = oTransform;
 	this->nTransform = nTransform;
+	this->fullTransform = getViewport() * cProjection * inverse(cTransform) * oTransform;
 }
 
 void Renderer::DrawTriangles(const vector<vector<glm::vec3> >& triangles, const vector<glm::vec3>* normals){
@@ -46,44 +47,31 @@ void Renderer::DrawTriangles(const vector<vector<glm::vec3> >& triangles, const 
 	}
 }
 
-const int _width  = 800;
-const int _height = 800;
-const int _depth  = 255;
 
-glm::mat4x4 getViewport(int x, int y, int w, int h) {
+glm::mat4x4 Renderer::getViewport() {
+	int _depth = 255;
     glm::mat4x4 m(1);
-    m[0][3] = x+w/2.f;
-    m[1][3] = y+h/2.f;
-    m[2][3] = _depth/2.f;
+    m[3][0] = width/2.f;
+    m[3][1] = height/2.f;
+    m[3][2] = _depth/2.f;
 
-    m[0][0] = w/2.f;
-    m[1][1] = h/2.f;
+    m[0][0] = width/2.f;
+    m[1][1] = height/2.f;
     m[2][2] = _depth/2.f;
-	m = glm::transpose(m);
     return m;
 }
 
 void Renderer::DrawTriangle(const vector<glm::vec3>& triangle){
 	
-	float camera_z = 3.0;
-	// glm::mat4x4 projection(1);
-	// projection[2][3] = -1.0f / 3.0;
-	glm::mat4x4 projection = glm::perspective(45.0f, 1.0f, -0.1f, -100.0f) * glm::lookAt(glm::vec3(0, 0, 10.0f), glm::vec3(0, -1, 0), glm::vec3(0, 0, -1));
-	glm::mat4x4 viewPort = getViewport(_width/8, _height/8, _width*3/4, _height*3/4);
+	// glm::mat4x4 projection = cProjection;
+	// glm::mat4x4 viewPort = getViewport();
 	vector<glm::vec2> transformedTriangle;
 	for(const glm::vec3& originalPoint : triangle){
 		glm::vec4 homogPoint(originalPoint, 1);
 		glm::vec4 transformed;
-		transformed = viewPort * projection * inverse(cTransform) * oTransform * homogPoint;
+		transformed = this->fullTransform * homogPoint;
 		transformed /= transformed.w;
 
-		// homogPoint = oTransform * homogPoint;
-		// // TODO: handle normal transformations
-		// homogPoint = inverse(cTransform) * homogPoint;
-		// homogPoint = cProjection * homogPoint;
-
-		// homogPoint /= homogPoint.w;
-		// glm::vec4 tmp1 = projection * homogPoint;
 		homogPoint = transformed;
 		transformedTriangle.push_back(glm::vec2(homogPoint.x, homogPoint.y));
 	} 

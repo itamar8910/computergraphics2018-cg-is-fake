@@ -24,8 +24,8 @@ public:
 	void rotateZ(float theta);
 
 
-	// Creates lookAt transformation.
-	void LookAt(const glm::vec4& eye, const glm::vec4& at, const glm::vec4& up );
+	// returns lookAt transformation.
+	glm::mat4x4 LookAt(const glm::vec3& eye, const glm::vec3& up, const glm::vec3& direction );
 
 	// Sets orthographic projection matrix.
 	void Ortho( const float left, const float right,
@@ -38,7 +38,7 @@ public:
 		const float zNear, const float zFar );
 
 	// Sets perspective projection matrix.
-	glm::mat4x4 Perspective( const float fovy, const float aspect,
+	void Perspective( const float fovy, const float aspect,
 		const float zNear, const float zFar);
 
 };
