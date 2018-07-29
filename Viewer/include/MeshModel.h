@@ -23,7 +23,7 @@ public:
 	glm::mat4x4 worldTransform;
 	glm::mat4x4 normalTransform; 
 	float x, y, z; // current position in the world, used for translation before rotation
-	int current_scale; // original scale of this model
+	float current_scale; // original scale of this model
 
 	glm::vec3 centerOfMass;
 

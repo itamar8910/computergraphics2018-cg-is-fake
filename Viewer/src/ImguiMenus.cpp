@@ -76,13 +76,13 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		
 		MeshModel* active = static_cast<MeshModel*>(scene->models[scene->ActiveModel]);
-		if((int)xPos != (int)active->x){
+		if(xPos != active->x){
 			active->translate(xPos - active->x, 0, 0);
 		}
-		if((int)yPos != (int)active->y){
+		if(yPos != active->y){
 			active->translate(0, yPos - active->y, 0);
 		}
-		if((int)zPos != (int)active->z){
+		if(zPos != active->z){
 			active->translate(0, 0, zPos - active->z);
 		}
 		if(prev_xRotate != xRotate){
@@ -94,7 +94,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		if(prev_zRotate != zRotate){
 			active->rotateZ(zRotate - prev_zRotate);
 		}
-		if((int)prevScale != (int)scale){
+		if(prevScale != scale){
 			if(scale <= 0){
 				cout << "scale must be > 0" << endl;
 			}else{

@@ -177,8 +177,8 @@ void MeshModel::Draw(Renderer& renderer)
 
 void MeshModel::scale(float s){
 	glm::mat4x4 scale = glm::mat4(1.0);
-	scale[3][3] = 1.0 / (((float)((int)s)) / ((float)current_scale));
-	current_scale = (int)s;
+	scale[3][3] = 1.0 / (s / ((float)current_scale));
+	current_scale = s;
 	glm::vec3 centerOfMass = calcCenterOfMass();
 	worldTransform = getTranslationMatrix(x , y, z) * scale * getTranslationMatrix(-x, -y , -z ) * worldTransform;
 	// worldTransform = scale * worldTransform;
