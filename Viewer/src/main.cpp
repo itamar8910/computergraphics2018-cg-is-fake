@@ -34,7 +34,7 @@ void Cleanup(GLFWwindow* window);
 
 void setup_scene(Scene& scene){
 	Camera* c = new Camera();
-	c->Ortho(-1, 1, -1, 1, 1, -1);
+	c->Perspective(45, 1, -0.1f, -100.0f);
 	scene.AddCamera(*c);
 	scene.ActiveCamera = 0;
 }

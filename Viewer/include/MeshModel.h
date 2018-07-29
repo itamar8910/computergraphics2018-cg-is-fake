@@ -4,7 +4,7 @@
 #include <vector>
 #include "Model.h"
 
-#define ORIGINAL_SCALE 100
+#define ORIGINAL_SCALE 1
 
 using namespace std;
 
@@ -22,8 +22,8 @@ public:
 	// Add more attributes.
 	glm::mat4x4 worldTransform;
 	glm::mat4x4 normalTransform; 
-	int x, y, z; // current position in the world, used for translation before rotation
-	int current_scale; // original scale of this model
+	float x, y, z; // current position in the world, used for translation before rotation
+	float current_scale; // original scale of this model
 
 	glm::vec3 centerOfMass;
 

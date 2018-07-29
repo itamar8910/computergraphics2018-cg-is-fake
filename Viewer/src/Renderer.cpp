@@ -36,6 +36,7 @@ void Renderer::SetProjection(const glm::mat4x4& projection){
 void Renderer::SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x4& nTransform){
 	this->oTransform = oTransform;
 	this->nTransform = nTransform;
+	this->fullTransform = getViewport() * cProjection * inverse(cTransform) * oTransform;
 }
 
 void Renderer::DrawTriangles(const vector<vector<glm::vec3> >& triangles, const vector<glm::vec3>* normals){
@@ -44,18 +45,30 @@ void Renderer::DrawTriangles(const vector<vector<glm::vec3> >& triangles, const 
 	}
 }
 
+
+glm::mat4x4 Renderer::getViewport() {
+	int _depth = 255;
+    glm::mat4x4 m(1);
+    m[3][0] = width/2.f;
+    m[3][1] = height/2.f;
+    m[3][2] = _depth/2.f;
+
+    m[0][0] = width/2.f;
+    m[1][1] = height/2.f;
+    m[2][2] = _depth/2.f;
+    return m;
+}
+
 void Renderer::DrawTriangle(const vector<glm::vec3>& triangle){
+	
 	vector<glm::vec2> transformedTriangle;
 	for(const glm::vec3& originalPoint : triangle){
 		glm::vec4 homogPoint(originalPoint, 1);
-		
-		homogPoint = oTransform * homogPoint;
-		// TODO: handle normal transformations
-		homogPoint = inverse(cTransform) * homogPoint;
-		homogPoint = cProjection * homogPoint;
+		glm::vec4 transformed;
+		transformed = this->fullTransform * homogPoint;
+		transformed /= transformed.w;
 
-		homogPoint /= homogPoint.w;
-		
+		homogPoint = transformed;
 		transformedTriangle.push_back(glm::vec2(homogPoint.x, homogPoint.y));
 	} 
 
