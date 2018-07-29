@@ -3,8 +3,6 @@
 #include <imgui/imgui.h>
 #include <iostream>
 
-#include <glm/gtc/matrix_transform.hpp> //translate, rotate, scale, perspective 
-
 using namespace std;
 
 #define ABS(x) (x > 0 ? x : -x)
@@ -63,8 +61,6 @@ glm::mat4x4 Renderer::getViewport() {
 
 void Renderer::DrawTriangle(const vector<glm::vec3>& triangle){
 	
-	// glm::mat4x4 projection = cProjection;
-	// glm::mat4x4 viewPort = getViewport();
 	vector<glm::vec2> transformedTriangle;
 	for(const glm::vec3& originalPoint : triangle){
 		glm::vec4 homogPoint(originalPoint, 1);
