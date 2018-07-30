@@ -1,6 +1,5 @@
 #include "Camera.h"
 #include "utils.h"
-#include <glm/gtc/matrix_transform.hpp>
 #include <utils.h>
 
 Camera::Camera() : cTransform(glm::mat4(1)), projection(glm::mat4(1)), x(0), y(0), z(0)
@@ -36,21 +35,17 @@ void Camera::Ortho( const float left, const float right,
 }
 
 
-// glm::mat4x4 Camera::LookAt(const glm::vec3& eye, const glm::vec3& up, const glm::vec3& direction ){
-//     return glm::lookAt(eye, up, direction); // TODO: write matrix manually
-// }
-
 glm::mat4x4 Camera::LookAt(const glm::vec3& eye, const glm::vec3& up, const glm::vec3& direction ){
-    bool DO_MANUAL_LOOKAT = false;
-    if(!DO_MANUAL_LOOKAT){
-        return glm::lookAt(eye, -up, direction); // TODO: write matrix manually
-    }
-    glm::vec4 n = glm::normalize(glm::vec4(eye - direction, 1));
-    glm::vec4 u = glm::vec4(glm::normalize(glm::cross(up, glm::vec3(n))), 1);
-    glm::vec4 v = glm::vec4(glm::normalize(glm::cross(glm::vec3(n), glm::vec3(u))), 1);
-    glm::vec4 t = glm::vec4(0, 0, 0, 1.0);
-    glm::mat4x4 c = glm::mat4x4(u, v, n, t);
-    return c * getTranslationMatrix(-eye.x, -eye.y, -eye.z);
+    glm::vec3 n = glm::normalize(direction - eye);
+    glm::vec3 u = glm::normalize(glm::cross(n, up));
+    glm::vec3 v = glm::cross(u, n);
+    
+    glm::mat4x4 c(1);
+    c[0] = glm::vec4(u, -glm::dot(u, eye));
+    c[1] = glm::vec4(v, -glm::dot(v, eye));
+    c[2] = glm::vec4(-n, glm::dot(n, eye));
+    c = glm::transpose(c);
+    return c;
 }
 
 void Camera::Perspective( const float fovy, const float aspect,
