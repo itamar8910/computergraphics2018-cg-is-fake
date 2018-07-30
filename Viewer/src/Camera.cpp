@@ -3,7 +3,7 @@
 #include <utils.h>
 
 Camera::Camera() : cTransform(glm::mat4(1)), projection(glm::mat4(1)), x(0), y(0), z(10),
-                    fovY(45.0), aspectRatio(1.0), zNear(-1.0f), zFar(-100.0f)
+                    fovY(45.0), aspectRatio(1.0), zNear(-1.0f), zFar(-100.0f), lookDirection(0, 0, -1)
 {
 }
 
@@ -69,7 +69,7 @@ void Camera::Perspective( const float fovy, const float aspect,
     float right = top * aspect;
     float left = -top * aspect;
     Frustum(left, right, bottom, top,zNear, zFar);
-    projection = projection * LookAt(glm::vec3(x, y, z), glm::vec3(0, 1, 0), glm::vec3(0, 0, -1));
+    projection = projection * LookAt(glm::vec3(x, y, z), glm::vec3(0, 1, 0), lookDirection);
 }
 
 void Camera::Frustum( const float left, const float right,

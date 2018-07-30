@@ -8,10 +8,11 @@
 using namespace std;
 
 #define MOUSE_WHEEL_INCREMENT 10.0f
+#define WASD_INCREMENT 0.1f
 
 bool showDemoWindow = false;
 bool showCamPosWindow = false;
-bool showAnotherWindow = true;
+bool showAnotherWindow = false;
 bool showFile = false;
 glm::vec4 clearColor = glm::vec4(0.4f, 0.55f, 0.60f, 1.00f);
 
@@ -22,6 +23,7 @@ const glm::vec4& GetClearColor()
 
 void ShowCamPosWindow(Scene* scene){
 	ImGui::Begin("CamPos Window");
+	
 	Camera* cam  = scene->cameras[scene->ActiveCamera];
 	static float xPos = cam->x, yPos = cam->y, zPos = cam->z, fovY = cam->fovY, aspect = cam->aspectRatio, zNear = cam->zNear, zFar = cam->zFar;
 	static float xRotate = 0.0f, prev_xRotate = 0.0f;
@@ -71,10 +73,13 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 	ImGui::SetNextWindowPos(ImVec2(0, 20), ImGuiCond_Once);
 
 	bool isAnyWindowFocused = false;
-	
+	MeshModel* active = static_cast<MeshModel*>(scene->models[scene->ActiveModel]);
+	Camera* cam  = scene->cameras[scene->ActiveCamera];
+
 	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
 	{
 		ImGui::Begin("Test Menu");
+	
 		isAnyWindowFocused |= ImGui::IsWindowFocused(); // set to true if this window is focused
 		static float xRotate = 0.0f, prev_xRotate = 0.0f;
 		static float yRotate = 0.0f, prev_yRotate = 0.0f;
@@ -82,6 +87,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		static float scale = 1.0f, prevScale = 1.0f;
 		static float xPos = 0, yPos = 0, zPos = 0;
 		static int counter = 0;
+		static int prevActiveModel = scene->ActiveModel;
 		ImGui::Text("Hello, world!");                           // Display some text (you can use a format string too)
 		ImGui::SliderFloat("translate X", &xPos, -10.0f, 10.0f);           
 		ImGui::SliderFloat("translate Y", &yPos, -10.0f, 10.0f);           
@@ -97,14 +103,17 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		ImGui::Checkbox("CamPos Window", &showCamPosWindow);      // Edit bools storing our windows open/close state
 		ImGui::Checkbox("Mouse Window", &showAnotherWindow);
 
-		if (ImGui::Button("Button"))                            // Buttons return true when clicked (NB: most widgets return true when edited/activated)
-			counter++;
+
 		ImGui::SameLine();
-		ImGui::Text("counter = %d", counter);
 
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		
-		MeshModel* active = static_cast<MeshModel*>(scene->models[scene->ActiveModel]);
+		if(prevActiveModel != scene->ActiveModel){
+			prevActiveModel = scene->ActiveModel;
+			xPos = active->x;
+			yPos = active->y;
+			zPos = active->z;
+		}
 		if(xPos != active->x){
 			active->translate(xPos - active->x, 0, 0);
 		}
@@ -135,7 +144,21 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 				active->scale(scale);
 			}
 		}
-	
+		if(ImGui::IsKeyPressed('A')){
+			cam->translate(-WASD_INCREMENT, 0, 0);
+		}
+		
+		if(ImGui::IsKeyPressed('D')){
+			cam->translate(WASD_INCREMENT, 0, 0);
+		}
+		
+		if(ImGui::IsKeyPressed('W')){
+			cam->translate(0, WASD_INCREMENT, 0);
+		}
+		
+		if(ImGui::IsKeyPressed('S')){
+			cam->translate(0, -WASD_INCREMENT, 0);
+		}
 		
 		prev_xRotate = xRotate;
 		prev_yRotate = yRotate;

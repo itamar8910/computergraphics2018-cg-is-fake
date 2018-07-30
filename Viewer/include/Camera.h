@@ -13,6 +13,7 @@ public:
 	float fovY;
 	float aspectRatio;
 	float zNear, zFar;
+	glm::vec3 lookDirection;
 
 public:
 	Camera();
