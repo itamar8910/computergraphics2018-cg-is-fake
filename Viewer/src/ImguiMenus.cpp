@@ -7,6 +7,8 @@
 // #include <nfd.h>
 using namespace std;
 
+#define MOUSE_WHEEL_INCREMENT 10.0f
+
 bool showDemoWindow = false;
 bool showCamPosWindow = false;
 bool showAnotherWindow = true;
@@ -43,10 +45,13 @@ void ShowCamPosWindow(Scene* scene){
 void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 {
 	ImGui::SetNextWindowPos(ImVec2(0, 20), ImGuiCond_Once);
-	// 1. Show a simple window.
+
+	bool isAnyWindowFocused = false;
+	
 	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
 	{
 		ImGui::Begin("Test Menu");
+		isAnyWindowFocused |= ImGui::IsWindowFocused(); // set to true if this window is focused
 		static float xRotate = 0.0f, prev_xRotate = 0.0f;
 		static float yRotate = 0.0f, prev_yRotate = 0.0f;
 		static float zRotate = 0.0f, prev_zRotate = 0.0f;
@@ -93,6 +98,11 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		}
 		if(prev_zRotate != zRotate){
 			active->rotateZ(zRotate - prev_zRotate);
+		}
+		if(!isAnyWindowFocused && io.MouseWheel != 0.0f){ // we don't want to re-scale the model if the user scrolls the gui
+			scale += io.MouseWheel/MOUSE_WHEEL_INCREMENT;
+			active->scale(scale);
+			prevScale = scale;
 		}
 		if(prevScale != scale){
 			if(scale <= 0){
@@ -177,4 +187,5 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 			ImGui::EndMainMenuBar();
 		}
 	}
+
 }
