@@ -9,6 +9,9 @@ using namespace std;
 
 #define MOUSE_WHEEL_INCREMENT 10.0f
 #define WASD_INCREMENT 0.1f
+#define REVERSE_TRANSFORM_Z 0.1f
+#define CAM_LOOK_MOVE_FACTOR 10
+#define CAM_LOOK_MOVE_COMUL_FACTOR 0.1f // makes camera move faster as you hold
 
 bool showDemoWindow = false;
 bool showCamPosWindow = false;
@@ -166,19 +169,23 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		}
 		
 		// move camera's look direction freely with right mouse button
+		static float cam_look_factor_comulative = CAM_LOOK_MOVE_FACTOR;
 		if(io.MouseDown[1]){
+			cam_look_factor_comulative += CAM_LOOK_MOVE_COMUL_FACTOR;
 			float x = io.MousePos.x;
 			float y = io.MousePos.y;
 			//we want to reset the transformation of the previously drawn object
 			scene->renderer->SetObjectMatrices(glm::mat4x4(1), glm::mat4x4(1));
 			float centerX = scene->renderer->width/2.0;
 			float centerY = scene->renderer->height/2.0;
-			x += (x - centerX) * 10;
-			y += (y - centerY) * 10;
-			glm::vec4 screenVec = glm::vec4(x, y, -0.1f, 1);
+			x += (x - centerX) * cam_look_factor_comulative;
+			y += (y - centerY) * cam_look_factor_comulative;
+			glm::vec4 screenVec = glm::vec4(x, y, REVERSE_TRANSFORM_Z, 1);
 			glm::vec4 worldCoordinates = glm::inverse(scene->renderer->fullTransform) * screenVec;
-			cam->lookDirection = glm::vec3(worldCoordinates.x, -worldCoordinates.y, -0.1f);
+			cam->lookDirection = glm::vec3(worldCoordinates.x, -worldCoordinates.y, REVERSE_TRANSFORM_Z);
 			cam->Perspective();
+		}else{
+			cam_look_factor_comulative = CAM_LOOK_MOVE_FACTOR;
 		}
 
 		prev_xRotate = xRotate;
