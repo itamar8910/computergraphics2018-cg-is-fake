@@ -133,17 +133,20 @@ void MeshModel::LoadFile(const string& fileName)
 		}
 		else if (lineType == "vn") // vertex normal
 		{
-			// TODO: implement
+			point relevant_vertex = vertices[vertex_normals.size()];
+			vertex_normals.push_back(pair<point,point>(vec3fFromStream(issLine),relevant_vertex));
 		}
 		else if (lineType == "#" || lineType == "")
 		{
 			// comment / empty line
+			continue;
 		}
 		else
 		{
 			cout << "Found unknown line Type \"" << lineType << "\"";
 		}
 	}
+
 	//Vertex_positions is an array of vec3. Every three elements define a triangle in 3D.
 	//If the face part of the obj is
 	//f 1 2 3
@@ -171,6 +174,10 @@ void MeshModel::Draw(Renderer& renderer)
 	// send transformation to renderer
 	renderer.SetObjectMatrices(worldTransform, normalTransform);
 
+	for(auto& pair: this->vertex_normals)
+	{
+		renderer.DrawLine(pair.first, pair.second, glm::vec3(0, 0, 1));
+	}
 	// send triangles to renderer
 	renderer.DrawTriangles(triangles);
 }

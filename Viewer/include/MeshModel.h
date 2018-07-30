@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include "Model.h"
+#include <utility>
 
 #define ORIGINAL_SCALE 1
 
@@ -12,12 +13,17 @@ using namespace std;
  * MeshModel class. Mesh model object represents a triangle mesh (loaded fron an obj file).
  * 
  */
+typedef vector<glm::vec3> triangle;
+typedef glm::vec3 point;
+
 class MeshModel : public Model
 {
 public:
 	//MeshModel() {}
 
-	vector<vector<glm::vec3> > triangles;
+	vector<triangle> triangles;
+	vector<pair<point, point>> vertex_normals;
+	vector<pair<point, triangle>> triangle_normal;
 
 	// Add more attributes.
 	glm::mat4x4 worldTransform;
