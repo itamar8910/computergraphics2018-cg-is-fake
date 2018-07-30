@@ -61,6 +61,9 @@ glm::mat4x4 Renderer::getViewport() {
     m[2][2] = _depth/2.f;
     return m;
 }
+const glm::mat4x4 projection = glm::perspective(45.0f, 1.0f, -0.1f, -100.0f) * glm::lookAt(glm::vec3(0, 0, 10.0f), glm::vec3(0, -1, 0), glm::vec3(0, 0, -1));
+const glm::mat4x4 viewPort = getViewport(_width/8, _height/8, _width*3/4, _height*3/4);
+
 
 void Renderer::DrawTriangle(const vector<glm::vec3>& triangle) 
 {
@@ -89,7 +92,7 @@ glm::vec2 Renderer::TransformPoint(const glm::vec3 &originalPoint) const
 }
 
 void Renderer::DrawLine(const glm::vec3 &point1, const glm::vec3 &point2, const glm::vec3 &color){
-	DrawLineHelper(TransformPoint(point1), TransformPoint(point2), color);
+	DrawLineHelper(TransformPoint(point1), TransformPoint(point2));
 }
 
 void Renderer::DrawLineHelper(const glm::vec2 &point1, const glm::vec2 &point2, const glm::vec3 &color)
