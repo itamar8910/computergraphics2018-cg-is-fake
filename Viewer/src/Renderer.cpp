@@ -50,7 +50,7 @@ void Renderer::DrawTriangles(const vector<vector<glm::vec3>> &triangles, const v
 const int _width  = 800;
 const int _height = 800;
 const int _depth  = 255;
-glm::mat4x4 getViewport(int x, int y, int w, int h) {
+glm::mat4x4 Renderer::getViewport() {
     glm::mat4x4 m(1);
     m[3][0] = width/2.f;
     m[3][1] = height/2.f;
@@ -61,9 +61,6 @@ glm::mat4x4 getViewport(int x, int y, int w, int h) {
     m[2][2] = _depth/2.f;
     return m;
 }
-const glm::mat4x4 projection = glm::perspective(45.0f, 1.0f, -0.1f, -100.0f) * glm::lookAt(glm::vec3(0, 0, 10.0f), glm::vec3(0, -1, 0), glm::vec3(0, 0, -1));
-const glm::mat4x4 viewPort = getViewport(_width/8, _height/8, _width*3/4, _height*3/4);
-
 
 void Renderer::DrawTriangle(const vector<glm::vec3>& triangle) 
 {
@@ -88,19 +85,11 @@ glm::vec2 Renderer::TransformPoint(const glm::vec3 &originalPoint) const
 		glm::vec4 transformed;
 		transformed = this->fullTransform * homogPoint;
 		transformed /= transformed.w;
-
-		// homogPoint = oTransform * homogPoint;
-		// // TODO: handle normal transformations
-		// homogPoint = inverse(cTransform) * homogPoint;
-		// homogPoint = cProjection * homogPoint;
-
-		// homogPoint /= homogPoint.w;
-		// glm::vec4 tmp1 = projection * homogPoint;
 		return glm::vec2(transformed.x, transformed.y);
 }
 
 void Renderer::DrawLine(const glm::vec3 &point1, const glm::vec3 &point2, const glm::vec3 &color){
-	DrawLineHelper(TransformPoint(point1), TransformPoint(point2));
+	DrawLineHelper(TransformPoint(point1), TransformPoint(point2), color);
 }
 
 void Renderer::DrawLineHelper(const glm::vec2 &point1, const glm::vec2 &point2, const glm::vec3 &color)
