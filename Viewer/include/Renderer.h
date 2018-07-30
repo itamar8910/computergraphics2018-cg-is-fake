@@ -19,14 +19,13 @@ private:
 	// width*height
 	float *zBuffer;
 	// Screen dimensions
-	int width, height;
+
 
 	// TODO: make these a smart pointer to avoid copying each time
 	glm::mat4x4 cTransform; // camera transform
 	glm::mat4x4 cProjection; // camera projection
 	glm::mat4x4 oTransform; // object transform
 	glm::mat4x4 nTransform; // normals transform
-	glm::mat4x4 fullTransform; // full transform: world coordinates -> screen
 
 	glm::mat4x4 getViewport();
 	// Draw's a pixel in location p with color color
@@ -45,6 +44,9 @@ private:
 	void initOpenGLRendering();
 	//##############################
 public:
+	glm::mat4x4 fullTransform; // full transform: world coordinates -> screen
+	int width, height;
+	
 	Renderer();
 	Renderer(int w, int h);
 	~Renderer();

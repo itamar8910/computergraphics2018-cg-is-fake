@@ -165,6 +165,22 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 			cam->translate(0, -WASD_INCREMENT, 0);
 		}
 		
+		// move camera's look direction freely with right mouse button
+		if(io.MouseDown[1]){
+			float x = io.MousePos.x;
+			float y = io.MousePos.y;
+			//we want to reset the transformation of the previously drawn object
+			scene->renderer->SetObjectMatrices(glm::mat4x4(1), glm::mat4x4(1));
+			float centerX = scene->renderer->width/2.0;
+			float centerY = scene->renderer->height/2.0;
+			x += (x - centerX) * 10;
+			y += (y - centerY) * 10;
+			glm::vec4 screenVec = glm::vec4(x, y, -0.1f, 1);
+			glm::vec4 worldCoordinates = glm::inverse(scene->renderer->fullTransform) * screenVec;
+			cam->lookDirection = glm::vec3(worldCoordinates.x, -worldCoordinates.y, -0.1f);
+			cam->Perspective();
+		}
+
 		prev_xRotate = xRotate;
 		prev_yRotate = yRotate;
 		prev_zRotate = zRotate;
@@ -179,6 +195,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		int val[2];
 		val[0] = io.MousePos.x;
 		val[1] = HEIGHT - io.MousePos.y; // to fix y axis
+		
 		ImGui::Begin("Mouse Window", &showAnotherWindow);
 		ImGui::InputInt2("(x,y)", val, 3);
 		ImGui::Text("Hello from another window!");
