@@ -2,7 +2,8 @@
 #include "utils.h"
 #include <utils.h>
 
-Camera::Camera() : cTransform(glm::mat4(1)), projection(glm::mat4(1)), x(0), y(0), z(0)
+Camera::Camera() : cTransform(glm::mat4(1)), projection(glm::mat4(1)), x(0), y(0), z(10),
+                    fovY(45.0), aspectRatio(1.0), zNear(-1.0f), zFar(-100.0f)
 {
 }
 
@@ -21,6 +22,15 @@ void Camera::translate(float x, float y, float z){
 	this->x += x;
 	this->y += y;
 	this->z += z;
+}
+
+void Camera::rotateY(float theta){
+	glm::mat4x4 rotate = glm::mat4(1.0); // identity matrix
+	rotate[0][0] = glm::cos(glm::radians(theta));
+	rotate[0][2] = glm::sin(glm::radians(theta));
+	rotate[2][0] = -glm::sin(glm::radians(theta));
+	rotate[2][2] = glm::cos(glm::radians(theta));
+	SetTransformation(getTranslationMatrix(x, y , z) * rotate * getTranslationMatrix(-x, -y , -z) * cTransform);
 }
 
 void Camera::Ortho( const float left, const float right,
@@ -48,6 +58,10 @@ glm::mat4x4 Camera::LookAt(const glm::vec3& eye, const glm::vec3& up, const glm:
     return c;
 }
 
+void Camera::Perspective(){
+    Perspective(fovY, aspectRatio, zNear, zFar);
+}
+
 void Camera::Perspective( const float fovy, const float aspect,
 		          const float zNear, const float zFar){
     float top = glm::tan(glm::radians(fovy) / 2.0f) * zNear;
@@ -55,7 +69,7 @@ void Camera::Perspective( const float fovy, const float aspect,
     float right = top * aspect;
     float left = -top * aspect;
     Frustum(left, right, bottom, top,zNear, zFar);
-    projection = projection * LookAt(glm::vec3(x, y, z + 10), glm::vec3(0, 1, 0), glm::vec3(0, 0, -1));
+    projection = projection * LookAt(glm::vec3(x, y, z), glm::vec3(0, 1, 0), glm::vec3(0, 0, -1));
 }
 
 void Camera::Frustum( const float left, const float right,
@@ -66,4 +80,12 @@ void Camera::Frustum( const float left, const float right,
     projection[1][1] = (2 * zNear) / (top - bottom);
     projection[2] = glm::vec4((right+left)/(right-left), (top+bottom)/(top-bottom), -(zFar+zNear)/(zFar-zNear), -1);
     projection[3][2] = (-2 * zFar * zNear) / (zFar - zNear);
+}
+
+void Camera::setPerspectiveParams(float _fovY, float _aspect, float _zNear, float _zFar){
+    fovY = _fovY;
+    aspectRatio = _aspect;
+    zNear = _zNear;
+    zFar = _zFar;
+    Perspective();
 }

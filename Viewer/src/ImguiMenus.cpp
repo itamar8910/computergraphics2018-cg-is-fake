@@ -22,13 +22,22 @@ const glm::vec4& GetClearColor()
 
 void ShowCamPosWindow(Scene* scene){
 	ImGui::Begin("CamPos Window");
-	static float xPos = 0, yPos = 0, zPos = 0;
+	Camera* cam  = scene->cameras[scene->ActiveCamera];
+	static float xPos = cam->x, yPos = cam->y, zPos = cam->z, fovY = cam->fovY, aspect = cam->aspectRatio, zNear = cam->zNear, zFar = cam->zFar;
+	static float xRotate = 0.0f, prev_xRotate = 0.0f;
+	static float yRotate = 0.0f, prev_yRotate = 0.0f;
+	static float zRotate = 0.0f, prev_zRotate = 0.0f;
 	ImGui::Text("CamPos Window");
 	ImGui::SliderFloat("translate X", &xPos, -100.0f, 100.0f);           
 	ImGui::SliderFloat("translate Y", &yPos, -100.0f, 100.0f);           
-	ImGui::SliderFloat("translate Z", &zPos, -100.0f, 100.0f);   
+	ImGui::SliderFloat("translate Z", &zPos, -100.0f, 100.0f); 
+	ImGui::SliderFloat("rotate Y", &yRotate, 0.0f, 360.0f);           
+  
+	ImGui::SliderFloat("FOV Y", &fovY, 5.0f, 180.0f);   
+	ImGui::SliderFloat("aspect ratio", &aspect, 0.1f, 10.0f);   
+	ImGui::SliderFloat("zNear", &zNear, -0.1f, -100.0f);   
+	ImGui::SliderFloat("zFar", &zFar, -0.50f, -200.0f);   
 
-	Camera* cam  = scene->cameras[scene->ActiveCamera];
 	if((int)xPos != (int)cam->x){
 		cam->translate(xPos - cam->x, 0, 0);
 	}
@@ -38,7 +47,22 @@ void ShowCamPosWindow(Scene* scene){
 	if((int)zPos != (int)cam->z){
 		cam->translate(0, 0, zPos - cam->z);
 	}
-
+	if(prev_yRotate != yRotate){
+		cam->rotateY(yRotate - prev_yRotate);
+		prev_yRotate = yRotate;
+	}
+	if(fovY != cam->fovY){
+		cam->setPerspectiveParams(fovY, cam->aspectRatio, cam->zNear, cam->zFar);
+	}
+	if(aspect != cam->aspectRatio){
+		cam->setPerspectiveParams(cam->fovY, aspect, cam->zNear, cam->zFar);
+	}
+	if(zNear != cam->zNear){
+		cam->setPerspectiveParams(cam->fovY, cam->aspectRatio, zNear, cam->zFar);
+	}
+	if(zNear != cam->zNear){
+		cam->setPerspectiveParams(cam->fovY, cam->aspectRatio, cam->zNear, zFar);
+	}
 	ImGui::End();
 }
 

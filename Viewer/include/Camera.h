@@ -10,6 +10,9 @@ public:
 	glm::mat4x4 cTransform;
 	glm::mat4x4 projection;
 	int x, y, z; // current position in the world, used for translation before rotation
+	float fovY;
+	float aspectRatio;
+	float zNear, zFar;
 
 public:
 	Camera();
@@ -37,6 +40,10 @@ public:
 		const float bottom, const float top,
 		const float zNear, const float zFar );
 
+	// perspective with member values
+	void Perspective();
+	void setPerspectiveParams(float _fovY, float _aspect, float _zNear, float _zFar);
+private:
 	// Sets perspective projection matrix.
 	void Perspective( const float fovy, const float aspect,
 		const float zNear, const float zFar);
