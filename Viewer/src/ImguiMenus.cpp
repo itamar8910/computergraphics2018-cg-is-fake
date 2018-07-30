@@ -73,7 +73,6 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 	ImGui::SetNextWindowPos(ImVec2(0, 20), ImGuiCond_Once);
 
 	bool isAnyWindowFocused = false;
-	MeshModel* active = static_cast<MeshModel*>(scene->models[scene->ActiveModel]);
 	Camera* cam  = scene->cameras[scene->ActiveCamera];
 
 	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
@@ -97,6 +96,11 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		ImGui::SliderFloat("rotate Z", &zRotate, 0.0f, 360.0f);               
 		ImGui::SliderFloat("scale", &scale, 0.1f, 5.0f);
 		ImGui::SliderInt("Active Model", &scene->ActiveModel, 0, number_of_models-1);
+		MeshModel* active = static_cast<MeshModel*>(scene->models[scene->ActiveModel]);
+		if(ImGui::Button("LookAt Active")){
+			cam->lookDirection = glm::vec3(active->x, active->y, active->z);
+			cam->Perspective();
+		}
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 
 		ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our windows open/close state
@@ -113,6 +117,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 			xPos = active->x;
 			yPos = active->y;
 			zPos = active->z;
+			cout << "reset activemodel coords" << endl;
 		}
 		if(xPos != active->x){
 			active->translate(xPos - active->x, 0, 0);
