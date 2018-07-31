@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "MeshModel.h"
 #include <iostream>
+#include <algorithm>
 // open file dialog cross platform https://github.com/mlabbe/nativefiledialog
 // #include <nfd.h>
 using namespace std;
@@ -109,6 +110,15 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 			}
 			ImGui::TreePop();
 
+		}
+		if(ImGui::Button("Import model")){
+			char file[1024];
+			// todo: check if zenity works on mac
+			FILE *f = popen("zenity --file-selection --filename=`pwd`/../../Data/obj_examples/", "r");
+			fgets(file, 1024, f);
+			string file_str = file;
+			file_str.erase(std::remove(file_str.begin(), file_str.end(), '\n'), file_str.end());
+			scene->LoadOBJModel(file_str);
 		}
 		ImGui::Checkbox("Vertex Normals", &(scene->models[scene->ActiveModel]->draw_vertex_normals));
 		ImGui::Checkbox("Face Normals", &(scene->models[scene->ActiveModel]->draw_triangle_normals));
