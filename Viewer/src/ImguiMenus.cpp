@@ -89,7 +89,6 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		static float zRotate = 0.0f, prev_zRotate = 0.0f;
 		static float scale = 1.0f, prevScale = 1.0f;
 		static float xPos = 0, yPos = 0, zPos = 0;
-		static bool controlling_a_model = false;
 		// static int counter = 0;
 		static int prevActiveModel = scene->ActiveModel;
 		ImGui::Text("Hello, world!");                           // Display some text (you can use a format string too)
@@ -107,7 +106,6 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 			{
 				if (ImGui::Selectable( model_names[model_i].c_str(), scene->ActiveModel == model_i)){
 					scene->ActiveModel = model_i;
-					controlling_a_model = true;
 				}
 			}
 			ImGui::TreePop();
@@ -122,16 +120,45 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 			file_str.erase(std::remove(file_str.begin(), file_str.end(), '\n'), file_str.end());
 			scene->LoadOBJModel(file_str);
 		}
-		ImGui::Checkbox("Vertex Normals", &(scene->models[scene->ActiveModel]->draw_vertex_normals));
-		ImGui::Checkbox("Face Normals", &(scene->models[scene->ActiveModel]->draw_triangle_normals));
-		MeshModel* active = static_cast<MeshModel*>(scene->models[scene->ActiveModel]);
-		if(ImGui::Button("LookAt Active")){
-			cam->lookDirection = glm::vec3(active->x, active->y, active->z);
-			// camera doesn't move, model moves around camera 
-			// so we also have to apply the inverse camera transform
-			// to know the real coordiantes to look at
-			cam->lookDirection = glm::inverse(cam->cTransform) * glm::vec4(cam->lookDirection, 1);
-			cam->Perspective();
+		MeshModel* active = nullptr;
+		if(scene->ActiveModel != -1){
+			ImGui::Checkbox("Vertex Normals", &(scene->models[scene->ActiveModel]->draw_vertex_normals));
+			ImGui::Checkbox("Face Normals", &(scene->models[scene->ActiveModel]->draw_triangle_normals));
+			active = static_cast<MeshModel*>(scene->models[scene->ActiveModel]);
+			if(ImGui::Button("LookAt Active")){
+				cam->lookDirection = glm::vec3(active->x, active->y, active->z);
+				// camera doesn't move, model moves around camera 
+				// so we also have to apply the inverse camera transform
+				// to know the real coordiantes to look at
+				cam->lookDirection = glm::inverse(cam->cTransform) * glm::vec4(cam->lookDirection, 1);
+				cam->Perspective();
+			}
+
+			if(prevActiveModel != scene->ActiveModel){
+				prevActiveModel = scene->ActiveModel;
+				xPos = active->x;
+				yPos = active->y;
+				zPos = active->z;
+				cout << "reset activemodel coords" << endl;
+			}
+			if(xPos != active->x){
+				active->translate(xPos - active->x, 0, 0);
+			}
+			if(yPos != active->y){
+				active->translate(0, yPos - active->y, 0);
+			}
+			if(zPos != active->z){
+				active->translate(0, 0, zPos - active->z);
+			}
+			if(prev_xRotate != xRotate){
+				active->rotateX(xRotate - prev_xRotate);
+			}
+			if(prev_yRotate != yRotate){
+				active->rotateY(yRotate - prev_yRotate);
+			}
+			if(prev_zRotate != zRotate){
+				active->rotateZ(zRotate - prev_zRotate);
+			}
 		}
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 
@@ -144,36 +171,11 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		
-		if(prevActiveModel != scene->ActiveModel){
-			prevActiveModel = scene->ActiveModel;
-			xPos = active->x;
-			yPos = active->y;
-			zPos = active->z;
-			cout << "reset activemodel coords" << endl;
-		}
-		if(xPos != active->x){
-			active->translate(xPos - active->x, 0, 0);
-		}
-		if(yPos != active->y){
-			active->translate(0, yPos - active->y, 0);
-		}
-		if(zPos != active->z){
-			active->translate(0, 0, zPos - active->z);
-		}
-		if(prev_xRotate != xRotate){
-			active->rotateX(xRotate - prev_xRotate);
-		}
-		if(prev_yRotate != yRotate){
-			active->rotateY(yRotate - prev_yRotate);
-		}
-		if(prev_zRotate != zRotate){
-			active->rotateZ(zRotate - prev_zRotate);
-		}
 		if(!isAnyWindowFocused && io.MouseWheel != 0.0f){ // we don't want to re-scale the model if the user scrolls the gui
 			// scale += io.MouseWheel/MOUSE_WHEEL_INCREMENT;
 			// active->scale(scale);
 			// prevScale = scale;
-			if(controlling_a_model){
+			if(scene->ActiveModel != -1){
 				active->translate(0, 0, -io.MouseWheel*MOUSE_WHEEL_INCREMENT);
 				zPos += -io.MouseWheel*MOUSE_WHEEL_INCREMENT;
 			}else{
@@ -190,7 +192,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		}
 		
 		if(ImGui::IsKeyPressed('A')){
-			if(controlling_a_model){
+			if(scene->ActiveModel != -1){
 				active->translate(-WASD_INCREMENT, 0, 0);
 				xPos -= WASD_INCREMENT;
 			}else{
@@ -199,7 +201,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		}
 		
 		if(ImGui::IsKeyPressed('D')){
-			if(controlling_a_model){
+			if(scene->ActiveModel != -1){
 				active->translate(WASD_INCREMENT, 0, 0);
 				xPos += WASD_INCREMENT;
 			}else{
@@ -208,7 +210,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		}
 		
 		if(ImGui::IsKeyPressed('W')){
-			if(controlling_a_model){
+			if(scene->ActiveModel != -1){
 				active->translate(0, WASD_INCREMENT, 0);
 				yPos += WASD_INCREMENT;
 			}else{
@@ -217,7 +219,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		}
 		
 		if(ImGui::IsKeyPressed('S')){
-			if(controlling_a_model){
+			if(scene->ActiveModel != -1){
 				active->translate(0, -WASD_INCREMENT, 0);
 				yPos -= WASD_INCREMENT;
 			}else{
@@ -248,7 +250,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 			int press_x =(int)io.MousePos.x;
 			float press_y = (int) (scene->renderer->height - io.MousePos.y);
 			int search_pixels = 10;
-			controlling_a_model = false;
+			scene->ActiveModel  = -1;
 			for(int x = press_x-search_pixels; x <= press_x + search_pixels; x++){
 				for(int y = press_y-search_pixels; y <= press_y + search_pixels; y++){
 					if(x < 0 || x > scene->renderer->width) continue;
@@ -256,7 +258,6 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 					int pix_model = scene->renderer->model_i_buffer[(int)x + ((int)y)*scene->renderer->width];
 					if(pix_model != -1){
 						scene->ActiveModel = pix_model;
-						controlling_a_model = true;
 					}
 				}
 			}
