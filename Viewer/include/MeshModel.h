@@ -19,7 +19,7 @@ typedef glm::vec3 point;
 class MeshModel : public Model
 {
 public:
-	//MeshModel() {}
+	string name;
 
 	vector<triangle> triangles;
 	vector<pair<point, point>> vertex_normals;
@@ -34,7 +34,7 @@ public:
 	glm::vec3 centerOfMass;
 
 public:
-	MeshModel(const string& fileName = "");
+	MeshModel(const string& fileName = "", const string& _name = "N/A");
 	~MeshModel();
 	void LoadFile(const string& fileName);
 	void initializeInternals();

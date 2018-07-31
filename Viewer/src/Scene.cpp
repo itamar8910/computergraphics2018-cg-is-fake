@@ -41,3 +41,12 @@ void Scene::DrawDemo()
 	renderer->SetDemoBuffer();
 	renderer->SwapBuffers();
 }
+
+vector<string> Scene::get_models_names(){
+	vector<string> names;
+	for(auto& model : models){
+		MeshModel* meshmodel = dynamic_cast<MeshModel*>(model);
+		names.push_back(meshmodel->name);
+	}
+	return names;
+}

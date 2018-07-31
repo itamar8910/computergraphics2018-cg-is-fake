@@ -76,7 +76,7 @@ glm::vec2 vec2fFromStream(std::istream& issLine)
 }
 
 
-MeshModel::MeshModel(const string& fileName) : worldTransform(glm::mat4(1)), normalTransform(glm::mat4(1)), x(0), y(0), z(0),
+MeshModel::MeshModel(const string& fileName, const string& _name) : name(_name), worldTransform(glm::mat4(1)), normalTransform(glm::mat4(1)), x(0), y(0), z(0),
 											   current_scale(1), centerOfMass(0)
 {
 	if(fileName.length() > 0){
@@ -85,6 +85,11 @@ MeshModel::MeshModel(const string& fileName) : worldTransform(glm::mat4(1)), nor
 	}
 	draw_vertex_normals = false;
 	draw_triangle_normals = false;
+	if(_name == "N/A" && (int)fileName.rfind("/") != -1){
+		string obj_fname = fileName.substr(fileName.rfind("/") + 1);
+		obj_fname = obj_fname.substr(0, obj_fname.find('.'));
+		name = obj_fname; 
+	}
 }
 
 void MeshModel::initializeInternals(){
@@ -193,7 +198,7 @@ void MeshModel::scale(float s){
 	glm::mat4x4 scale = glm::mat4(1.0);
 	scale[3][3] = 1.0 / (s / ((float)current_scale));
 	current_scale = s;
-	glm::vec3 centerOfMass = calcCenterOfMass();
+	// glm::vec3 centerOfMass = calcCenterOfMass();
 	worldTransform = getTranslationMatrix(x , y, z) * scale * getTranslationMatrix(-x, -y , -z ) * worldTransform;
 	// worldTransform = scale * worldTransform;
 	// glm::vec3 newCenterOfMass = centerOfMass * s;

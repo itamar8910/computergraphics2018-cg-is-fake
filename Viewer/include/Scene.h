@@ -37,6 +37,8 @@ public:
 	
 	void DrawLineTest();
 
+	vector<string> get_models_names();
+
 	int ActiveModel;
 	int ActiveLight;
 	int ActiveCamera;

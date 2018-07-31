@@ -29,14 +29,14 @@ void ShowCamPosWindow(Scene* scene){
 	
 	Camera* cam  = scene->cameras[scene->ActiveCamera];
 	static float xPos = cam->x, yPos = cam->y, zPos = cam->z, fovY = cam->fovY, aspect = cam->aspectRatio, zNear = cam->zNear, zFar = cam->zFar;
-	static float xRotate = 0.0f, prev_xRotate = 0.0f;
-	static float yRotate = 0.0f, prev_yRotate = 0.0f;
-	static float zRotate = 0.0f, prev_zRotate = 0.0f;
+	// static float xRotate = 0.0f, prev_xRotate = 0.0f;
+	// static float yRotate = 0.0f, prev_yRotate = 0.0f;
+	// static float zRotate = 0.0f, prev_zRotate = 0.0f;
 	ImGui::Text("CamPos Window");
 	ImGui::SliderFloat("translate X", &xPos, -100.0f, 100.0f);           
 	ImGui::SliderFloat("translate Y", &yPos, -100.0f, 100.0f);           
 	ImGui::SliderFloat("translate Z", &zPos, -100.0f, 100.0f); 
-	ImGui::SliderFloat("rotate Y", &yRotate, 0.0f, 360.0f);           
+	// ImGui::SliderFloat("rotate Y", &yRotate, 0.0f, 360.0f);           
   
 	ImGui::SliderFloat("FOV Y", &fovY, 5.0f, 180.0f);   
 	ImGui::SliderFloat("aspect ratio", &aspect, 0.1f, 10.0f);   
@@ -52,10 +52,10 @@ void ShowCamPosWindow(Scene* scene){
 	if((int)zPos != (int)cam->z){
 		cam->translate(0, 0, zPos - cam->z);
 	}
-	if(prev_yRotate != yRotate){
-		cam->rotateY(yRotate - prev_yRotate);
-		prev_yRotate = yRotate;
-	}
+	// if(prev_yRotate != yRotate){
+	// 	cam->rotateY(yRotate - prev_yRotate);
+	// 	prev_yRotate = yRotate;
+	// }
 	if(fovY != cam->fovY){
 		cam->setPerspectiveParams(fovY, cam->aspectRatio, cam->zNear, cam->zFar);
 	}
@@ -88,7 +88,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		static float zRotate = 0.0f, prev_zRotate = 0.0f;
 		static float scale = 1.0f, prevScale = 1.0f;
 		static float xPos = 0, yPos = 0, zPos = 0;
-		static int counter = 0;
+		// static int counter = 0;
 		static int prevActiveModel = scene->ActiveModel;
 		ImGui::Text("Hello, world!");                           // Display some text (you can use a format string too)
 		ImGui::SliderFloat("translate X", &xPos, -10.0f, 10.0f);           
@@ -99,6 +99,17 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		ImGui::SliderFloat("rotate Z", &zRotate, 0.0f, 360.0f);               
 		ImGui::SliderFloat("scale", &scale, 0.1f, 5.0f);
 		ImGui::SliderInt("Active Model", &scene->ActiveModel, 0, number_of_models-1);
+		if (ImGui::TreeNode("Select active model")){
+			vector<string> model_names = scene->get_models_names();
+			for (int model_i = 0; model_i < (int)model_names.size(); model_i++)
+			{
+				if (ImGui::Selectable( model_names[model_i].c_str(), scene->ActiveModel == model_i)){
+					scene->ActiveModel = model_i;
+				}
+			}
+			ImGui::TreePop();
+
+		}
 		ImGui::Checkbox("Vertex Normals", &(scene->models[scene->ActiveModel]->draw_vertex_normals));
 		ImGui::Checkbox("Face Normals", &(scene->models[scene->ActiveModel]->draw_triangle_normals));
 		MeshModel* active = static_cast<MeshModel*>(scene->models[scene->ActiveModel]);
@@ -230,7 +241,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 
 	// Demonstrate creating a fullscreen menu bar and populating it.
 	{
-		ImGuiWindowFlags flags = ImGuiWindowFlags_NoFocusOnAppearing;
+		// ImGuiWindowFlags flags = ImGuiWindowFlags_NoFocusOnAppearing;
 		if (ImGui::BeginMainMenuBar())
 		{
 			if (ImGui::BeginMenu("File"))

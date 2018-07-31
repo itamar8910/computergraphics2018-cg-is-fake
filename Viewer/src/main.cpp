@@ -62,7 +62,7 @@ int main(int argc, char **argv)
 		if(string(argv[i]) == "pyramid"){
 			scene.addModel(pyramid);
 		}else{
-		scene.LoadOBJModel(argv[i]);
+			scene.LoadOBJModel(argv[i]);
 		}
 	}
 	
