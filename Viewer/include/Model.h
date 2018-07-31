@@ -14,5 +14,5 @@ public:
 	bool draw_triangle_normals;
 protected:
 	virtual ~Model() {}
-	virtual void Draw(Renderer& renderer) = 0;
+	virtual void Draw(Renderer& renderer, const glm::vec3& color = glm::vec3(0, 0, 0)) = 0;
 };

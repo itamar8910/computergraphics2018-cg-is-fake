@@ -39,10 +39,10 @@ void Renderer::SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x
 	this->fullTransform = getViewport() * cProjection * inverse(cTransform) * oTransform;
 }
 
-void Renderer::DrawTriangles(const vector<vector<glm::vec3>> &triangles, const vector<glm::vec3> *normals)
+void Renderer::DrawTriangles(const vector<vector<glm::vec3>> &triangles, const vector<glm::vec3> *normals, const glm::vec3& color)
 {
 	for(const vector<glm::vec3> triangle : triangles){
-		DrawTriangle(triangle);
+		DrawTriangle(triangle, color);
 	}
 }
 
@@ -62,7 +62,7 @@ glm::mat4x4 Renderer::getViewport() {
     return m;
 }
 
-void Renderer::DrawTriangle(const vector<glm::vec3>& triangle) 
+void Renderer::DrawTriangle(const vector<glm::vec3>& triangle, const glm::vec3& color) 
 {
 	float camera_z = 3.0;
 	// glm::mat4x4 projection(1);
@@ -73,9 +73,9 @@ void Renderer::DrawTriangle(const vector<glm::vec3>& triangle)
 	} 
 
 	// draw 3 edges of transformed triangle
-	DrawLineHelper(transformedTriangle[0], transformedTriangle[1]);
-	DrawLineHelper(transformedTriangle[1], transformedTriangle[2]);
-	DrawLineHelper(transformedTriangle[0], transformedTriangle[2]);
+	DrawLineHelper(transformedTriangle[0], transformedTriangle[1], color);
+	DrawLineHelper(transformedTriangle[1], transformedTriangle[2], color);
+	DrawLineHelper(transformedTriangle[0], transformedTriangle[2], color);
 }
 
 

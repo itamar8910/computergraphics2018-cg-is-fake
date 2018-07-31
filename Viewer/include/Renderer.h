@@ -34,7 +34,7 @@ private:
 	void createBuffers(int w, int h);
 	void DrawLineHelper(const glm::vec2 &point1, const glm::vec2 &point2, const glm::vec3 &color= glm::vec3(0.0, 0.0, 0.0));
 
-	void DrawTriangle(const vector<glm::vec3> &triangle);
+	void DrawTriangle(const vector<glm::vec3> &triangle, const glm::vec3& color = glm::vec3(0, 0, 0));
 
 	//##############################
 	//##openGL stuff. Don't touch.##
@@ -55,7 +55,7 @@ public:
 	void Init();
 
 	// Draws wireframe triangles to the color buffer
-	void DrawTriangles(const vector<vector<glm::vec3>> &triangles, const vector<glm::vec3> *normals = NULL);
+	void DrawTriangles(const vector<vector<glm::vec3>> &triangles, const vector<glm::vec3> *normals = NULL, const glm::vec3& color = glm::vec3(0, 0, 0));
 
 	void DrawLine(const glm::vec3 &point1, const glm::vec3 &point2, const glm::vec3 &color = glm::vec3(0.0, 0.0, 0.0));
 

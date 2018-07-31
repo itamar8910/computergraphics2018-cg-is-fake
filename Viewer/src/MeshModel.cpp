@@ -178,7 +178,7 @@ void MeshModel::LoadFile(const string& fileName)
 	}
 }
 
-void MeshModel::Draw(Renderer& renderer)
+void MeshModel::Draw(Renderer& renderer, const glm::vec3& color)
 {
 	// send transformation to renderer
 	renderer.SetObjectMatrices(worldTransform, normalTransform);
@@ -191,7 +191,7 @@ void MeshModel::Draw(Renderer& renderer)
 		}
 	}
 	// send triangles to renderer
-	renderer.DrawTriangles(triangles);
+	renderer.DrawTriangles(triangles, nullptr, color);
 }
 
 void MeshModel::scale(float s){

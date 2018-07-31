@@ -42,7 +42,7 @@ public:
 	/**
 	 * This function sends the renderer all nesessary information to draw the model
 	*/
-	void Draw(Renderer& renderer);
+	void Draw(Renderer& renderer, const glm::vec3& color = glm::vec3(0, 0, 0));
 	void scale(float s);
 	void translate(float x, float y, float z);
 	void rotateX(float theta);
