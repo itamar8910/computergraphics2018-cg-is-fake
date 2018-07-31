@@ -30,12 +30,13 @@ void Scene::Draw()
 	int model_i = 0;
 	for(Model* model : models){
 		glm::vec3 color(0, 0, 0);
-		if(model_i++ == ActiveModel){
+		if(model_i == ActiveModel){
 			color = glm::vec3(0.5, 0 ,0);
 		}
 		// TODO: what if model is not a MeshModel?
 		MeshModel* meshModel = static_cast<MeshModel*>(model);
-		meshModel->Draw(*renderer, color);
+		meshModel->Draw(*renderer, color, model_i);
+		model_i++;
 	}
 
 	renderer->SwapBuffers();

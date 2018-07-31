@@ -8,7 +8,7 @@
 // #include <nfd.h>
 using namespace std;
 
-#define MOUSE_WHEEL_INCREMENT 10.0f
+#define MOUSE_WHEEL_INCREMENT 0.1f
 #define WASD_INCREMENT 0.1f
 #define REVERSE_TRANSFORM_Z 0.1f
 #define CAM_LOOK_MOVE_FACTOR 10
@@ -89,6 +89,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		static float zRotate = 0.0f, prev_zRotate = 0.0f;
 		static float scale = 1.0f, prevScale = 1.0f;
 		static float xPos = 0, yPos = 0, zPos = 0;
+		static bool controlling_a_model = false;
 		// static int counter = 0;
 		static int prevActiveModel = scene->ActiveModel;
 		ImGui::Text("Hello, world!");                           // Display some text (you can use a format string too)
@@ -106,6 +107,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 			{
 				if (ImGui::Selectable( model_names[model_i].c_str(), scene->ActiveModel == model_i)){
 					scene->ActiveModel = model_i;
+					controlling_a_model = true;
 				}
 			}
 			ImGui::TreePop();
@@ -168,9 +170,16 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 			active->rotateZ(zRotate - prev_zRotate);
 		}
 		if(!isAnyWindowFocused && io.MouseWheel != 0.0f){ // we don't want to re-scale the model if the user scrolls the gui
-			scale += io.MouseWheel/MOUSE_WHEEL_INCREMENT;
-			active->scale(scale);
-			prevScale = scale;
+			// scale += io.MouseWheel/MOUSE_WHEEL_INCREMENT;
+			// active->scale(scale);
+			// prevScale = scale;
+			if(controlling_a_model){
+				active->translate(0, 0, -io.MouseWheel*MOUSE_WHEEL_INCREMENT);
+				zPos += -io.MouseWheel*MOUSE_WHEEL_INCREMENT;
+			}else{
+				cam->translate(0, 0, -io.MouseWheel*MOUSE_WHEEL_INCREMENT);
+			}
+			
 		}
 		if(prevScale != scale){
 			if(scale <= 0){
@@ -179,40 +188,78 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 				active->scale(scale);
 			}
 		}
+		
 		if(ImGui::IsKeyPressed('A')){
-			cam->translate(-WASD_INCREMENT, 0, 0);
+			if(controlling_a_model){
+				active->translate(-WASD_INCREMENT, 0, 0);
+				xPos -= WASD_INCREMENT;
+			}else{
+				cam->translate(-WASD_INCREMENT, 0, 0);
+			}
 		}
 		
 		if(ImGui::IsKeyPressed('D')){
-			cam->translate(WASD_INCREMENT, 0, 0);
+			if(controlling_a_model){
+				active->translate(WASD_INCREMENT, 0, 0);
+				xPos += WASD_INCREMENT;
+			}else{
+				cam->translate(WASD_INCREMENT, 0, 0);
+			}
 		}
 		
 		if(ImGui::IsKeyPressed('W')){
-			cam->translate(0, WASD_INCREMENT, 0);
+			if(controlling_a_model){
+				active->translate(0, WASD_INCREMENT, 0);
+				yPos += WASD_INCREMENT;
+			}else{
+				cam->translate(0, WASD_INCREMENT, 0);
+			}
 		}
 		
 		if(ImGui::IsKeyPressed('S')){
-			cam->translate(0, -WASD_INCREMENT, 0);
+			if(controlling_a_model){
+				active->translate(0, -WASD_INCREMENT, 0);
+				yPos -= WASD_INCREMENT;
+			}else{
+				cam->translate(0, -WASD_INCREMENT, 0);
+			}
 		}
 		
-		// move camera's look direction freely with right mouse button
-		static float cam_look_factor_comulative = CAM_LOOK_MOVE_FACTOR;
+		// // move camera's look direction freely with right mouse button
+		// static float cam_look_factor_comulative = CAM_LOOK_MOVE_FACTOR;
+		// if(io.MouseDown[1]){
+		// 	cam_look_factor_comulative += CAM_LOOK_MOVE_COMUL_FACTOR;
+		// 	float x = io.MousePos.x;
+		// 	float y = io.MousePos.y;
+		// 	//we want to reset the transformation of the previously drawn object
+		// 	scene->renderer->SetObjectMatrices(glm::mat4x4(1), glm::mat4x4(1));
+		// 	float centerX = scene->renderer->width/2.0;
+		// 	float centerY = scene->renderer->height/2.0;
+		// 	x += (x - centerX) * cam_look_factor_comulative;
+		// 	y += (y - centerY) * cam_look_factor_comulative;
+		// 	glm::vec4 screenVec = glm::vec4(x, y, REVERSE_TRANSFORM_Z, 1);
+		// 	glm::vec4 worldCoordinates = glm::inverse(scene->renderer->fullTransform) * screenVec;
+		// 	cam->lookDirection = glm::vec3(worldCoordinates.x, -worldCoordinates.y, REVERSE_TRANSFORM_Z);
+		// 	cam->Perspective();
+		// }else{
+		// 	cam_look_factor_comulative = CAM_LOOK_MOVE_FACTOR;
+		// }
 		if(io.MouseDown[1]){
-			cam_look_factor_comulative += CAM_LOOK_MOVE_COMUL_FACTOR;
-			float x = io.MousePos.x;
-			float y = io.MousePos.y;
-			//we want to reset the transformation of the previously drawn object
-			scene->renderer->SetObjectMatrices(glm::mat4x4(1), glm::mat4x4(1));
-			float centerX = scene->renderer->width/2.0;
-			float centerY = scene->renderer->height/2.0;
-			x += (x - centerX) * cam_look_factor_comulative;
-			y += (y - centerY) * cam_look_factor_comulative;
-			glm::vec4 screenVec = glm::vec4(x, y, REVERSE_TRANSFORM_Z, 1);
-			glm::vec4 worldCoordinates = glm::inverse(scene->renderer->fullTransform) * screenVec;
-			cam->lookDirection = glm::vec3(worldCoordinates.x, -worldCoordinates.y, REVERSE_TRANSFORM_Z);
-			cam->Perspective();
-		}else{
-			cam_look_factor_comulative = CAM_LOOK_MOVE_FACTOR;
+			int press_x =(int)io.MousePos.x;
+			float press_y = (int) (scene->renderer->height - io.MousePos.y);
+			int search_pixels = 10;
+			controlling_a_model = false;
+			for(int x = press_x-search_pixels; x <= press_x + search_pixels; x++){
+				for(int y = press_y-search_pixels; y <= press_y + search_pixels; y++){
+					if(x < 0 || x > scene->renderer->width) continue;
+					if(y < 0 || y > scene->renderer->height) continue;
+					int pix_model = scene->renderer->model_i_buffer[(int)x + ((int)y)*scene->renderer->width];
+					if(pix_model != -1){
+						scene->ActiveModel = pix_model;
+						controlling_a_model = true;
+					}
+				}
+			}
 		}
 
 		prev_xRotate = xRotate;

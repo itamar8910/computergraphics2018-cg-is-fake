@@ -39,10 +39,10 @@ void Renderer::SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x
 	this->fullTransform = getViewport() * cProjection * inverse(cTransform) * oTransform;
 }
 
-void Renderer::DrawTriangles(const vector<vector<glm::vec3>> &triangles, const vector<glm::vec3> *normals, const glm::vec3& color)
+void Renderer::DrawTriangles(const vector<vector<glm::vec3>> &triangles, const vector<glm::vec3> *normals, const glm::vec3& color, int model_i)
 {
 	for(const vector<glm::vec3> triangle : triangles){
-		DrawTriangle(triangle, color);
+		DrawTriangle(triangle, color, model_i);
 	}
 }
 
@@ -62,7 +62,7 @@ glm::mat4x4 Renderer::getViewport() {
     return m;
 }
 
-void Renderer::DrawTriangle(const vector<glm::vec3>& triangle, const glm::vec3& color) 
+void Renderer::DrawTriangle(const vector<glm::vec3>& triangle, const glm::vec3& color, int model_i) 
 {
 	float camera_z = 3.0;
 	// glm::mat4x4 projection(1);
@@ -73,9 +73,9 @@ void Renderer::DrawTriangle(const vector<glm::vec3>& triangle, const glm::vec3& 
 	} 
 
 	// draw 3 edges of transformed triangle
-	DrawLineHelper(transformedTriangle[0], transformedTriangle[1], color);
-	DrawLineHelper(transformedTriangle[1], transformedTriangle[2], color);
-	DrawLineHelper(transformedTriangle[0], transformedTriangle[2], color);
+	DrawLineHelper(transformedTriangle[0], transformedTriangle[1], color, model_i);
+	DrawLineHelper(transformedTriangle[1], transformedTriangle[2], color, model_i);
+	DrawLineHelper(transformedTriangle[0], transformedTriangle[2], color, model_i);
 }
 
 
@@ -88,11 +88,11 @@ glm::vec2 Renderer::TransformPoint(const glm::vec3 &originalPoint) const
 		return glm::vec2(transformed.x, transformed.y);
 }
 
-void Renderer::DrawLine(const glm::vec3 &point1, const glm::vec3 &point2, const glm::vec3 &color){
-	DrawLineHelper(TransformPoint(point1), TransformPoint(point2), color);
+void Renderer::DrawLine(const glm::vec3 &point1, const glm::vec3 &point2, const glm::vec3 &color, int model_i){
+	DrawLineHelper(TransformPoint(point1), TransformPoint(point2), color, model_i);
 }
 
-void Renderer::DrawLineHelper(const glm::vec2 &point1, const glm::vec2 &point2, const glm::vec3 &color)
+void Renderer::DrawLineHelper(const glm::vec2 &point1, const glm::vec2 &point2, const glm::vec3 &color, int model_i)
 {
 	// cout << "Drawing line:" << point1.x << "," << point1.y << "," << point2.x << "," << point2.y << endl;
 	int p1 = point1.x, q1 = point1.y, p2 = point2.x, q2 = point2.y;
@@ -120,6 +120,7 @@ void Renderer::DrawLineHelper(const glm::vec2 &point1, const glm::vec2 &point2, 
 			e -= 2 * ABS(progressor_delta) * estimator_sign;
 		}
 		putPixel(is_a_normal ? progressor : estimator, is_a_normal ? estimator : progressor, color);
+		putIModelIndex(is_a_normal ? progressor : estimator, is_a_normal ? estimator : progressor, model_i);
 		progressor += progressor_sign;
 		e += 2 * estimator_delta;
 	}
@@ -135,15 +136,25 @@ void Renderer::putPixel(int i, int j, const glm::vec3& color)
 	colorBuffer[INDEX(width, i, j, 2)] = color.z;
 }
 
+void Renderer::putIModelIndex(int i, int j, int model_i){
+	if (i < 0) return; if (i >= width) return;
+	if (j < 0) return; if (j >= height) return;
+	model_i_buffer[i + j*width] = model_i;
+	// putPixel(10, 10, glm::vec3(0, 1, 0));
+	// cout << "putIModelIndex:" << i << "," << j << "," << model_i << endl;
+}
+
 void Renderer::createBuffers(int w, int h)
 {
 	createOpenGLBuffer(); //Do not remove this line.
 	colorBuffer = new float[3*w*h];
+	model_i_buffer = new int[w*h];
 	for (int i = 0; i < w; i++)
 	{
 		for (int j = 0; j < h; j++)
 		{
 			putPixel(i, j, glm::vec3(0.0f, 0.0f, 0.0f));
+			model_i_buffer[i + j*width] = -1;
 		}
 	}
 }
@@ -278,6 +289,7 @@ void Renderer::ClearColorBuffer(const glm::vec3& color)
 		for (int j = 0; j < height; j++)
 		{
 			putPixel(i, j, color);
+			model_i_buffer[i + j*width] = -1;
 		}
 	}
 }

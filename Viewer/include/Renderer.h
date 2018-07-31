@@ -18,7 +18,7 @@ private:
 	float *colorBuffer;
 	// width*height
 	float *zBuffer;
-	// Screen dimensions
+	
 
 
 	// TODO: make these a smart pointer to avoid copying each time
@@ -30,11 +30,12 @@ private:
 	glm::mat4x4 getViewport();
 	// Draw's a pixel in location p with color color
 	void putPixel(int i, int j, const glm::vec3& color);
+	void putIModelIndex(int i, int j, int model_i);
 	// creates float array of dimension [3,w,h]
 	void createBuffers(int w, int h);
-	void DrawLineHelper(const glm::vec2 &point1, const glm::vec2 &point2, const glm::vec3 &color= glm::vec3(0.0, 0.0, 0.0));
+	void DrawLineHelper(const glm::vec2 &point1, const glm::vec2 &point2, const glm::vec3 &color= glm::vec3(0.0, 0.0, 0.0), int model_i=-1);
 
-	void DrawTriangle(const vector<glm::vec3> &triangle, const glm::vec3& color = glm::vec3(0, 0, 0));
+	void DrawTriangle(const vector<glm::vec3> &triangle, const glm::vec3& color = glm::vec3(0, 0, 0), int model_i=-1);
 
 	//##############################
 	//##openGL stuff. Don't touch.##
@@ -45,6 +46,8 @@ private:
 	void initOpenGLRendering();
 	//##############################
 public:
+	int* model_i_buffer; // for each point, stores model index that's in that point or -1
+
 	glm::mat4x4 fullTransform; // full transform: world coordinates -> screen
 	int width, height;
 	
@@ -55,9 +58,9 @@ public:
 	void Init();
 
 	// Draws wireframe triangles to the color buffer
-	void DrawTriangles(const vector<vector<glm::vec3>> &triangles, const vector<glm::vec3> *normals = NULL, const glm::vec3& color = glm::vec3(0, 0, 0));
+	void DrawTriangles(const vector<vector<glm::vec3>> &triangles, const vector<glm::vec3> *normals = NULL, const glm::vec3& color = glm::vec3(0, 0, 0), int model_i = -1);
 
-	void DrawLine(const glm::vec3 &point1, const glm::vec3 &point2, const glm::vec3 &color = glm::vec3(0.0, 0.0, 0.0));
+	void DrawLine(const glm::vec3 &point1, const glm::vec3 &point2, const glm::vec3 &color = glm::vec3(0.0, 0.0, 0.0), int model_i = -1);
 
 	glm::vec2 TransformPoint(const glm::vec3 &originalPoint) const;
 
