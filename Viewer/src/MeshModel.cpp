@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include "utils.h"
+#include "PrimMeshModel.h"
 
 #define FACE_ELEMENTS 3
 
@@ -199,6 +200,13 @@ void MeshModel::Draw(Renderer& renderer)
 			renderer.DrawLine(pair.first, pair.second, glm::vec3(0, 1, 0));
 		}
 	}
+	if(draw_bbox)
+	{
+		for (const line &a : bbox)
+		{
+			renderer.DrawLine(a.first, a.second);
+		}
+	}
 	// send triangles to renderer
 	renderer.DrawTriangles(triangles);
 }
@@ -253,4 +261,28 @@ void MeshModel::rotateZ(float theta){
 	rotate[1][0] = -glm::sin(glm::radians(theta));
 	rotate[1][1] = glm::cos(glm::radians(theta));
 	worldTransform = getTranslationMatrix(x + centerOfMass.x, y + centerOfMass.y, z + centerOfMass.z) * rotate * getTranslationMatrix(-x - centerOfMass.x, -y - centerOfMass.y, -z - centerOfMass.z) * worldTransform;
+}
+
+const hexahedron MeshModel::CalcBbox() const
+{
+	point min_p, max_p;
+	for (const triangle &tri : triangles)
+	{
+		for (const point &p : tri)
+		{
+
+			for (size_t i = 0; i < 3; i++)
+			{
+				if (max_p[i]< p[i])
+				{
+					max_p[i] = p[i];
+				}
+				if (min_p[i] > p[i])
+				{
+					min_p[i] = p[i];
+				}
+			}
+		}
+	}
+	return PrimMeshModel::CreateCube(min_p, max_p).lines;
 }

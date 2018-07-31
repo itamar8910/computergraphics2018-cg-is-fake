@@ -6,7 +6,11 @@ class PrimMeshModel : public MeshModel{
     public:
         PrimMeshModel(){};
         PrimMeshModel(const vector<vector<glm::vec3> >& _triangles);
+        PrimMeshModel(const vector<line> & _lines);
         static PrimMeshModel CreatePyramid();
+        static PrimMeshModel CreateCube(const point &min_p = point(0, 0, 0), const point &max_p = point(1, 1, 1));
+        void Draw(Renderer &renderer);
+        vector<line> lines;
 };
 
 //creates a pyramid mesh model
@@ -22,4 +26,8 @@ inline PrimMeshModel PrimMeshModel::CreatePyramid(){
         pyramid.triangles = triangles;
         pyramid.initializeInternals();
         return pyramid;
+}
+
+inline PrimMeshModel PrimMeshModel::CreateCube(const point &min_p,const point &max_p)
+{
 }

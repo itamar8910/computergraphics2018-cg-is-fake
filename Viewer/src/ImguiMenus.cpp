@@ -110,8 +110,10 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 			ImGui::TreePop();
 
 		}
-		ImGui::Checkbox("Vertex Normals", &(scene->models[scene->ActiveModel]->draw_vertex_normals));
-		ImGui::Checkbox("Face Normals", &(scene->models[scene->ActiveModel]->draw_triangle_normals));
+		Model *current_model = scene->models[scene->ActiveModel];
+		ImGui::Checkbox("Vertex Normals", &(current_model->draw_vertex_normals));
+		ImGui::Checkbox("Face Normals", &(current_model->draw_triangle_normals));
+		ImGui::Checkbox("Face Normals", &(current_model->draw_bbox));
 		MeshModel* active = static_cast<MeshModel*>(scene->models[scene->ActiveModel]);
 		if(ImGui::Button("LookAt Active")){
 			cam->lookDirection = glm::vec3(active->x, active->y, active->z);
