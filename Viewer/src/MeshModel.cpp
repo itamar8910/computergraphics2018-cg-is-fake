@@ -88,7 +88,6 @@ MeshModel::MeshModel(const string& fileName) : worldTransform(glm::mat4(1)), nor
 void MeshModel::initializeInternals(){
 	scale(ORIGINAL_SCALE);
 	centerOfMass = calcCenterOfMass();
-	draw_vertex_normals = true;
 }
 
 glm::vec3 MeshModel::calcCenterOfMass() const{
@@ -159,6 +158,7 @@ void MeshModel::LoadFile(const string& fileName)
 	for (auto& face : faces) // iterate over faces
 	{
 		vector<glm::vec3> triangle;
+		point tri_normal;
 		for (int i = 0; i < FACE_ELEMENTS; i++) // iterate over face's vertices
 		{
 			// append i'th vetice of current face to list of all vertices

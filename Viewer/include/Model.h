@@ -9,6 +9,9 @@ using namespace std;
  */
 class Model
 {
+public:
+bool draw_vertex_normals;
+bool draw_triangle_normals;
 protected:
 	virtual ~Model() {}
 	virtual void Draw(Renderer& renderer) = 0;

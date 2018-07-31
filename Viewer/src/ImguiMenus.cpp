@@ -80,7 +80,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 
 	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
 	{
-		ImGui::Begin("Test Menu");
+		ImGui::Begin("Main Menu");
 	
 		isAnyWindowFocused |= ImGui::IsWindowFocused(); // set to true if this window is focused
 		static float xRotate = 0.0f, prev_xRotate = 0.0f;
@@ -99,6 +99,8 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		ImGui::SliderFloat("rotate Z", &zRotate, 0.0f, 360.0f);               
 		ImGui::SliderFloat("scale", &scale, 0.1f, 5.0f);
 		ImGui::SliderInt("Active Model", &scene->ActiveModel, 0, number_of_models-1);
+		ImGui::Checkbox("Vertex Normals", &(scene->models[scene->ActiveModel]->draw_vertex_normals));
+		ImGui::Checkbox("Face Normals", &(scene->models[scene->ActiveModel]->draw_triangle_normals));
 		MeshModel* active = static_cast<MeshModel*>(scene->models[scene->ActiveModel]);
 		if(ImGui::Button("LookAt Active")){
 			cam->lookDirection = glm::vec3(active->x, active->y, active->z);
