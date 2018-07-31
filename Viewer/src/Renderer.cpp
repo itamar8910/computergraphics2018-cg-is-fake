@@ -47,8 +47,6 @@ void Renderer::DrawTriangles(const vector<vector<glm::vec3>> &triangles, const v
 }
 
 
-const int _width  = 800;
-const int _height = 800;
 const int _depth  = 255;
 glm::mat4x4 Renderer::getViewport() {
     glm::mat4x4 m(1);
@@ -64,9 +62,6 @@ glm::mat4x4 Renderer::getViewport() {
 
 void Renderer::DrawTriangle(const vector<glm::vec3>& triangle) 
 {
-	float camera_z = 3.0;
-	// glm::mat4x4 projection(1);
-	// projection[2][3] = -1.0f / 3.0;
 	vector<glm::vec2> transformedTriangle;
 	for(const glm::vec3& originalPoint : triangle){
 		transformedTriangle.push_back(TransformPoint(originalPoint));
