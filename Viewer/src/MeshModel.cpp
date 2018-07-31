@@ -165,7 +165,6 @@ void MeshModel::LoadFile(const string& fileName)
 	for (auto& face : faces) // iterate over faces
 	{
 		vector<glm::vec3> triangle;
-		point tri_normal;
 		for (int i = 0; i < FACE_ELEMENTS; i++) // iterate over face's vertices
 		{
 			// append i'th vetice of current face to list of all vertices
@@ -174,6 +173,9 @@ void MeshModel::LoadFile(const string& fileName)
 			triangle.push_back(vertices[face.v[i]-1]);
 			vertex_normals.push_back(pair<point, point>(current_vertex,current_vertex + glm::normalize(normals[face.vn[i] - 1])));
 		}
+		point tri_normal = -glm::cross(triangle[2] - triangle[0], triangle[1] - triangle[0]); // See the book, page 272
+		point face_center = (triangle[0] + triangle[1] + triangle[2]) / (float)3.0;
+		triangle_normals.push_back(pair<point, point>(face_center, face_center + glm::normalize(tri_normal)));
 		triangles.push_back(triangle);
 	}
 }
@@ -188,6 +190,13 @@ void MeshModel::Draw(Renderer& renderer, const glm::vec3& color, int model_i)
 		for (auto &pair : this->vertex_normals)
 		{
 			renderer.DrawLine(pair.first, pair.second, glm::vec3(0, 0, 1));
+		}
+	}
+	if(this->draw_triangle_normals)
+	{
+		for(auto &pair : this->triangle_normals)
+		{
+			renderer.DrawLine(pair.first, pair.second, glm::vec3(0, 1, 0));
 		}
 	}
 	// send triangles to renderer
