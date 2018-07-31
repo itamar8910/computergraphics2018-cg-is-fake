@@ -76,13 +76,15 @@ glm::vec2 vec2fFromStream(std::istream& issLine)
 }
 
 
-MeshModel::MeshModel(const string& fileName) : worldTransform(glm::mat4(1)), normalTransform(glm::mat4(1)), x(0), y(0), z(0), current_scale(1), centerOfMass(0)
+MeshModel::MeshModel(const string& fileName) : worldTransform(glm::mat4(1)), normalTransform(glm::mat4(1)), x(0), y(0), z(0),
+											   current_scale(1), centerOfMass(0)
 {
 	if(fileName.length() > 0){
 		LoadFile(fileName);
 		initializeInternals();
 	}
-	
+	draw_vertex_normals = false;
+	draw_triangle_normals = false;
 }
 
 void MeshModel::initializeInternals(){
