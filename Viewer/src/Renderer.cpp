@@ -39,15 +39,18 @@ void Renderer::SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x
 	this->fullTransform = getViewport() * cProjection * inverse(cTransform) * oTransform;
 }
 
-void Renderer::DrawTriangles(const vector<vector<glm::vec3> >& triangles, const vector<glm::vec3>* normals){
+void Renderer::DrawTriangles(const vector<vector<glm::vec3>> &triangles, const vector<glm::vec3> *normals)
+{
 	for(const vector<glm::vec3> triangle : triangles){
 		DrawTriangle(triangle);
 	}
 }
 
 
+const int _width  = 800;
+const int _height = 800;
+const int _depth  = 255;
 glm::mat4x4 Renderer::getViewport() {
-	int _depth = 255;
     glm::mat4x4 m(1);
     m[3][0] = width/2.f;
     m[3][1] = height/2.f;
@@ -59,26 +62,37 @@ glm::mat4x4 Renderer::getViewport() {
     return m;
 }
 
-void Renderer::DrawTriangle(const vector<glm::vec3>& triangle){
-	
+void Renderer::DrawTriangle(const vector<glm::vec3>& triangle) 
+{
+	float camera_z = 3.0;
+	// glm::mat4x4 projection(1);
+	// projection[2][3] = -1.0f / 3.0;
 	vector<glm::vec2> transformedTriangle;
 	for(const glm::vec3& originalPoint : triangle){
+		transformedTriangle.push_back(TransformPoint(originalPoint));
+	} 
+
+	// draw 3 edges of transformed triangle
+	DrawLineHelper(transformedTriangle[0], transformedTriangle[1]);
+	DrawLineHelper(transformedTriangle[1], transformedTriangle[2]);
+	DrawLineHelper(transformedTriangle[0], transformedTriangle[2]);
+}
+
+
+glm::vec2 Renderer::TransformPoint(const glm::vec3 &originalPoint) const
+{
 		glm::vec4 homogPoint(originalPoint, 1);
 		glm::vec4 transformed;
 		transformed = this->fullTransform * homogPoint;
 		transformed /= transformed.w;
-
-		homogPoint = transformed;
-		transformedTriangle.push_back(glm::vec2(homogPoint.x, homogPoint.y));
-	} 
-
-	// draw 3 edges of transformed triangle
-	DrawLine(transformedTriangle[0], transformedTriangle[1]);
-	DrawLine(transformedTriangle[1], transformedTriangle[2]);
-	DrawLine(transformedTriangle[0], transformedTriangle[2]);
+		return glm::vec2(transformed.x, transformed.y);
 }
 
-void Renderer::DrawLine(const glm::vec2 &point1, const glm::vec2 &point2, const glm::vec3 &color)
+void Renderer::DrawLine(const glm::vec3 &point1, const glm::vec3 &point2, const glm::vec3 &color){
+	DrawLineHelper(TransformPoint(point1), TransformPoint(point2), color);
+}
+
+void Renderer::DrawLineHelper(const glm::vec2 &point1, const glm::vec2 &point2, const glm::vec3 &color)
 {
 	// cout << "Drawing line:" << point1.x << "," << point1.y << "," << point2.x << "," << point2.y << endl;
 	int p1 = point1.x, q1 = point1.y, p2 = point2.x, q2 = point2.y;

@@ -5,4 +5,3 @@ PrimMeshModel::PrimMeshModel(const vector<vector<glm::vec3> >& _triangles) : Mes
     triangles = _triangles;
     initializeInternals();
 }
-

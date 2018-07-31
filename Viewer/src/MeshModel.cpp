@@ -109,6 +109,7 @@ void MeshModel::LoadFile(const string& fileName)
 	ifstream ifile(fileName.c_str());
 	vector<FaceIdx> faces;
 	vector<glm::vec3> vertices;
+	vector<point> normals;
 	// while not end of file
 	while (!ifile.eof())
 	{
@@ -133,17 +134,19 @@ void MeshModel::LoadFile(const string& fileName)
 		}
 		else if (lineType == "vn") // vertex normal
 		{
-			// TODO: implement
+			normals.push_back(vec3fFromStream(issLine));
 		}
 		else if (lineType == "#" || lineType == "")
 		{
 			// comment / empty line
+			continue;
 		}
 		else
 		{
 			cout << "Found unknown line Type \"" << lineType << "\"";
 		}
 	}
+
 	//Vertex_positions is an array of vec3. Every three elements define a triangle in 3D.
 	//If the face part of the obj is
 	//f 1 2 3
@@ -152,15 +155,17 @@ void MeshModel::LoadFile(const string& fileName)
 	//vertexPositions={v1,v2,v3,v1,v3,v4}
 
 	// iterate through all stored faces and create triangles
-	int k=0;
-	for (vector<FaceIdx>::iterator it = faces.begin(); it != faces.end(); ++it) // iterate over faces
+	for (auto& face : faces) // iterate over faces
 	{
 		vector<glm::vec3> triangle;
+		point tri_normal;
 		for (int i = 0; i < FACE_ELEMENTS; i++) // iterate over face's vertices
 		{
 			// append i'th vetice of current face to list of all vertices
 			// obj files are 1-indexed
-			triangle.push_back(vertices[it->v[i]-1]);
+			point current_vertex =vertices[face.v[i]-1];
+			triangle.push_back(vertices[face.v[i]-1]);
+			vertex_normals.push_back(pair<point, point>(current_vertex,current_vertex + glm::normalize(normals[face.vn[i] - 1])));
 		}
 		triangles.push_back(triangle);
 	}
@@ -171,6 +176,13 @@ void MeshModel::Draw(Renderer& renderer)
 	// send transformation to renderer
 	renderer.SetObjectMatrices(worldTransform, normalTransform);
 
+	if (this->draw_vertex_normals)
+	{
+		for (auto &pair : this->vertex_normals)
+		{
+			renderer.DrawLine(pair.first, pair.second, glm::vec3(0, 0, 1));
+		}
+	}
 	// send triangles to renderer
 	renderer.DrawTriangles(triangles);
 }

@@ -31,11 +31,11 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/bin/MeshViewer",
-            "args": [],
+            "args": ["../Data/teapot.obj"],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/build/bin",
+            "cwd": "${workspaceFolder}/build",
             "environment": [],
-            "externalConsole": true,
+            "externalConsole": false,
             "MIMode": "lldb",
             "setupCommands": [
                 {
