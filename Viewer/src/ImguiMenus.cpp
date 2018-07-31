@@ -102,6 +102,10 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		MeshModel* active = static_cast<MeshModel*>(scene->models[scene->ActiveModel]);
 		if(ImGui::Button("LookAt Active")){
 			cam->lookDirection = glm::vec3(active->x, active->y, active->z);
+			// camera doesn't move, model moves around camera 
+			// so we also have to apply the inverse camera transform
+			// to know the real coordiantes to look at
+			cam->lookDirection = glm::inverse(cam->cTransform) * glm::vec4(cam->lookDirection, 1);
 			cam->Perspective();
 		}
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
