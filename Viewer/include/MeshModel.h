@@ -24,6 +24,8 @@ public:
 	vector<triangle> triangles;
 	vector<pair<point, point>> vertex_normals;
 	vector<pair<point, triangle>> triangle_normal;
+	bool draw_vertex_normals;
+	bool draw_triangle_normals;
 
 	// Add more attributes.
 	glm::mat4x4 worldTransform;
