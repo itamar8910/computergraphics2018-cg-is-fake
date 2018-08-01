@@ -23,10 +23,20 @@ void Scene::AddCamera(Camera& c){
 
 void Scene::SpawnPrimitive(const string& primitive_name)
 {
-	PrimMeshModel *new_prim;
+	PrimMeshModel *new_prim = nullptr;
 	if(primitive_name=="pyramid")
 	{
+		static int pyramid_num = 0;
 		new_prim = PrimMeshModel::CreatePyramid();
+		if(pyramid_num== 0)
+		{
+			new_prim->name = "Origin";
+		}
+		else
+		{
+			new_prim->name = "pyramid #" + std::to_string(pyramid_num);
+		}
+		pyramid_num++;
 	}
 	addModel(*new_prim);
 }

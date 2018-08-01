@@ -53,7 +53,7 @@ void ShowCamPosWindow(Scene* scene){
 	int prev_selected_projection = cam->perspective;
 	vector<string> projection_types = {"perspective", "orthographic"};
 	if (ImGui::TreeNode("Select camera projection")){
-		for (int projection_i = 0; projection_i < (int)projection_types.size(); projection_i++)
+		for (int projection_i = 0; projection_i < (int)projection_types.size(); projection_i++) 
 		{
 			if (ImGui::Selectable( projection_types[projection_i].c_str(), cam->perspective == projection_i)){
 				cam->perspective = projection_i;
@@ -163,7 +163,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		ImGui::SliderFloat("scale", &scale, 0.1f, 5.0f);
 		if (ImGui::TreeNode("Select active model")){
 			vector<string> model_names = scene->get_models_names();
-			for (int model_i = 0; model_i < (int)model_names.size(); model_i++)
+			for (int model_i = 1; model_i < (int)model_names.size(); model_i++)// Skip origin model
 			{
 				if (ImGui::Selectable( model_names[model_i].c_str(), scene->ActiveModel == model_i)){
 					scene->ActiveModel = model_i;
