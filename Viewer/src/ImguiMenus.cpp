@@ -30,10 +30,31 @@ void ShowCamPosWindow(Scene* scene){
 	
 	Camera* cam  = scene->cameras[scene->ActiveCamera];
 	static float xPos = cam->x, yPos = cam->y, zPos = cam->z, fovY = cam->fovY, aspect = cam->aspectRatio, zNear = cam->zNear, zFar = cam->zFar;
-	// static float xRotate = 0.0f, prev_xRotate = 0.0f;
-	// static float yRotate = 0.0f, prev_yRotate = 0.0f;
-	// static float zRotate = 0.0f, prev_zRotate = 0.0f;
+
 	ImGui::Text("CamPos Window");
+
+			
+		int prev_selected_projection = cam->perspective;
+		vector<string> projection_types = {"perspective", "orthographic"};
+		if (ImGui::TreeNode("Select camera projection")){
+			for (int projection_i = 0; projection_i < (int)projection_types.size(); projection_i++)
+			{
+				if (ImGui::Selectable( projection_types[projection_i].c_str(), cam->perspective == projection_i)){
+					cam->perspective = projection_i;
+				}
+			}
+			ImGui::TreePop();
+
+		}
+		if(prev_selected_projection != cam->perspective){
+			if(cam->perspective == 0){
+				cam->Perspective();
+			}else{
+				cam->Ortho();
+			}
+			cam->updateLookDirection();
+		}
+
 	ImGui::SliderFloat("translate X", &xPos, -100.0f, 100.0f);           
 	ImGui::SliderFloat("translate Y", &yPos, -100.0f, 100.0f);           
 	ImGui::SliderFloat("translate Z", &zPos, -100.0f, 100.0f); 
@@ -128,7 +149,12 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 				// so we also have to apply the inverse camera transform
 				// to know the real coordiantes to look at
 				cam->lookDirection = glm::inverse(cam->cTransform) * glm::vec4(cam->lookDirection, 1);
-				cam->Perspective();
+				if(cam->perspective == 0){
+					cam->Perspective();
+				}else{
+					cam->Ortho();
+					cam->updateLookDirection();
+				}
 			}
 
 			if(prevActiveModel != scene->ActiveModel){
@@ -168,7 +194,9 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 				cam->lookDirection = glm::inverse(cam->cTransform) * glm::vec4(cam->lookDirection, 1);
 				cam->Perspective();
 			}
-		}
+		} // End "if some model is active" condition
+
+
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 
 		ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our windows open/close state

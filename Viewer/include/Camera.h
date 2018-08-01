@@ -14,7 +14,7 @@ public:
 	float aspectRatio;
 	float zNear, zFar;
 	glm::vec3 lookDirection;
-
+	int perspective; // 0 = projection, 1 = orthographic - TODO: extract to enum
 public:
 	Camera();
 	~Camera();
@@ -43,7 +43,10 @@ public:
 
 	// perspective with member values
 	void Perspective();
+	void Ortho();
 	void setPerspectiveParams(float _fovY, float _aspect, float _zNear, float _zFar);
+
+	void updateLookDirection();
 private:
 	// Sets perspective projection matrix.
 	void Perspective( const float fovy, const float aspect,

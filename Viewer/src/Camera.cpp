@@ -3,7 +3,7 @@
 #include <utils.h>
 
 Camera::Camera() : cTransform(glm::mat4(1)), projection(glm::mat4(1)), x(0), y(0), z(10),
-                    fovY(45.0), aspectRatio(1.0), zNear(-1.0f), zFar(-100.0f), lookDirection(0, 0, -1)
+                    fovY(45.0), aspectRatio(1.0), zNear(-1.0f), zFar(-100.0f), lookDirection(0, 0, -1), perspective(0)
 {
 }
 
@@ -44,6 +44,9 @@ void Camera::Ortho( const float left, const float right,
     projection[3] = glm::vec4(-((right+left) / (right-left)), -((top+bottom) / (top-bottom)), -(zFar+zNear) / (zFar-zNear), 1);
 }
 
+void Camera::Ortho(){
+    Ortho(-1, 1, -1, 1, 1, -1);
+}
 
 glm::mat4x4 Camera::LookAt(const glm::vec3& eye, const glm::vec3& up, const glm::vec3& direction ){
     glm::vec3 n = glm::normalize(direction - eye);
@@ -69,7 +72,7 @@ void Camera::Perspective( const float fovy, const float aspect,
     float right = top * aspect;
     float left = -top * aspect;
     Frustum(left, right, bottom, top,zNear, zFar);
-    projection = projection * LookAt(glm::vec3(x, y, z), glm::vec3(0, 1, 0), lookDirection);
+    updateLookDirection();
 }
 
 void Camera::Frustum( const float left, const float right,
@@ -88,4 +91,8 @@ void Camera::setPerspectiveParams(float _fovY, float _aspect, float _zNear, floa
     zNear = _zNear;
     zFar = _zFar;
     Perspective();
+}
+
+void Camera::updateLookDirection(){
+    projection = projection * LookAt(glm::vec3(x, y, z), glm::vec3(0, 1, 0), lookDirection);
 }
