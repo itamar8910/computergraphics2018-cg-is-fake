@@ -16,8 +16,9 @@ using namespace std;
  */
 typedef vector<glm::vec3> triangle;
 typedef glm::vec3 point;
-typedef pair<point,point> line;
+typedef std::pair<point,point> line;
 typedef vector<line> hexahedron;
+typedef glm::vec3 color;
 
 class MeshModel : public Model
 {
@@ -37,6 +38,7 @@ public:
 
 	glm::vec3 centerOfMass;
 	const hexahedron CalcBbox() const;
+	const vector<line> CalcTriangeNormals() const;
 	
 public:
 	MeshModel(const string& fileName = "", const string& _name = "N/A");

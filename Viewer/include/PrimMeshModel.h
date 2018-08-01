@@ -27,7 +27,3 @@ inline PrimMeshModel PrimMeshModel::CreatePyramid(){
         pyramid.initializeInternals();
         return pyramid;
 }
-
-inline PrimMeshModel PrimMeshModel::CreateCube(const point &min_p,const point &max_p)
-{
-}

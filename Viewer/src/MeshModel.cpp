@@ -86,6 +86,7 @@ MeshModel::MeshModel(const string& fileName, const string& _name) : name(_name),
 	}
 	draw_vertex_normals = false;
 	draw_triangle_normals = false;
+	draw_bbox = false;
 	if(_name == "N/A" && (int)fileName.rfind("/") != -1){
 		string obj_fname = fileName.substr(fileName.rfind("/") + 1);
 		obj_fname = obj_fname.substr(0, obj_fname.find('.'));
@@ -96,6 +97,7 @@ MeshModel::MeshModel(const string& fileName, const string& _name) : name(_name),
 void MeshModel::initializeInternals(){
 	scale(ORIGINAL_SCALE);
 	centerOfMass = calcCenterOfMass();
+	bbox = CalcBbox();
 }
 
 glm::vec3 MeshModel::calcCenterOfMass() const{
