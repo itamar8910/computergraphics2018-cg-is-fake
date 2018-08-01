@@ -32,9 +32,20 @@ void ShowCamPosWindow(Scene* scene){
 	
 	Camera* cam  = scene->cameras[scene->ActiveCamera];
 	static float xPos = cam->x, yPos = cam->y, zPos = cam->z, fovY = cam->fovY, aspect = cam->aspectRatio, zNear = cam->zNear, zFar = cam->zFar;
-
+	static int prevActiveCam = scene->ActiveCamera;
 	ImGui::Text("CamPos Window");
 
+	if(prevActiveCam != scene->ActiveCamera){
+		prevActiveCam = scene->ActiveCamera;
+		xPos = cam->x;
+		yPos = cam->y;
+		zPos = cam->z;
+		fovY = cam->fovY;
+		aspect = cam->aspectRatio;
+		zNear = cam->zNear;
+	 	zFar = cam->zFar;
+		cout << "reset activecam coords" << endl;
+	}
 			
 	int prev_selected_projection = cam->perspective;
 	vector<string> projection_types = {"perspective", "orthographic"};
@@ -66,7 +77,12 @@ void ShowCamPosWindow(Scene* scene){
 	ImGui::SliderFloat("aspect ratio", &aspect, 0.1f, 10.0f);   
 	ImGui::SliderFloat("zNear", &zNear, -0.1f, -100.0f);   
 	ImGui::SliderFloat("zFar", &zFar, -0.50f, -200.0f);   
-
+	if(ImGui::Button("zoom in")){
+		fovY -= 1;
+	}
+	if(ImGui::Button("zoom out")){
+		fovY += 1;
+	}
 	if((int)xPos != (int)cam->x){
 		cam->translate(xPos - cam->x, 0, 0);
 	}
@@ -109,7 +125,6 @@ void ShowCamPosWindow(Scene* scene){
 		ImGui::TreePop();
 
 	}
-
 	ImGui::End();
 }
 
@@ -177,7 +192,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 				}
 
 				// rotate camera model
-				cam->camera_model->worldTransform = cam->camera_model->worldTransform * getTranslationMatrix(cam->x, cam->y, cam->z) * glm::inverse(cam->LookAt(glm::vec3(cam->x, cam->y, cam->z), glm::vec3(0, 1, 0), glm::vec3(cam->lookDirection.x, - cam->lookDirection.y, cam->lookDirection.z))) * getTranslationMatrix(-cam->x, -cam->y, -cam->z);
+				// cam->camera_model->worldTransform = cam->camera_model->worldTransform * getTranslationMatrix(cam->x, cam->y, cam->z) * glm::inverse(cam->LookAt(glm::vec3(cam->x, cam->y, cam->z), glm::vec3(0, 1, 0), glm::vec3(cam->lookDirection.x, - cam->lookDirection.y, cam->lookDirection.z))) * getTranslationMatrix(-cam->x, -cam->y, -cam->z);
 
 			}
 

@@ -15,7 +15,7 @@ void Scene::AddCamera(Camera& c){
 	int cam_i = cameras.size() - 1;
 	MeshModel* camera_model = new MeshModel("../../Data/camera.obj", getCameraName(cam_i));
 	camera_model->rotateY(180.0);
-	// camera_model->translate(0, 0, 20);
+	camera_model->translate(0, 0, 5);
 	camera_models.push_back(camera_model);
 	c.camera_model = camera_model;
 }
@@ -59,9 +59,9 @@ void Scene::Draw()
 			if(cam_model->name == getCameraName(ActiveCamera)){
 				continue; // don't render active camera
 			}
-			// if(sign(cam_model->z) != active_camera_z){ // behind the camera, don't render
-			// 	continue;
-			// }
+			if(cam_model->z > active_camera_z * (-active_camera_look_z_sign)){ // behind the camera, don't render
+				continue;
+			}
 			auto color = glm::vec3(0, 0 ,1);
 			cam_model->Draw(*renderer, color, -1);
 		}
