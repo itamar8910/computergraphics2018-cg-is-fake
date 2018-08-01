@@ -8,3 +8,7 @@ glm::mat4x4 getTranslationMatrix(float x, float y, float z){
 	trans[3][2] = z;
 	return trans;
 }
+
+int m_sign(float x){
+	return (x > 0) ? 1 : -1;
+}
