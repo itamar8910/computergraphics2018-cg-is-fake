@@ -12,6 +12,7 @@ class Model
 public:
 	bool draw_vertex_normals;
 	bool draw_triangle_normals;
+	bool draw_bbox;
 protected:
 	virtual ~Model() {}
 	virtual void Draw(Renderer& renderer, const glm::vec3& color = glm::vec3(0, 0, 0), int model_i = -1) = 0;

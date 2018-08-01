@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include <string>
 #include <vector>
+#include <array>
 #include "Model.h"
 #include <utility>
 
@@ -15,6 +16,9 @@ using namespace std;
  */
 typedef vector<glm::vec3> triangle;
 typedef glm::vec3 point;
+typedef std::pair<point,point> line;
+typedef vector<line> hexahedron;
+typedef glm::vec3 color;
 
 class MeshModel : public Model
 {
@@ -22,8 +26,9 @@ public:
 	string name;
 
 	vector<triangle> triangles;
-	vector<pair<point, point>> vertex_normals;
-	vector<pair<point, point>> triangle_normals;
+	vector<line> vertex_normals;
+	vector<line> triangle_normals;
+	hexahedron bbox;
 
 	// Add more attributes.
 	glm::mat4x4 worldTransform;
@@ -32,7 +37,9 @@ public:
 	float current_scale; // original scale of this model
 
 	glm::vec3 centerOfMass;
-
+	const hexahedron CalcBbox() const;
+	const vector<line> CalcTriangeNormals() const;
+	
 public:
 	MeshModel(const string& fileName = "", const string& _name = "N/A");
 	~MeshModel();

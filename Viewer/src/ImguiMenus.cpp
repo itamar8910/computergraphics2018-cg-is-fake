@@ -122,8 +122,6 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		}
 		MeshModel* active = nullptr;
 		if(scene->ActiveModel != -1){
-			ImGui::Checkbox("Vertex Normals", &(scene->models[scene->ActiveModel]->draw_vertex_normals));
-			ImGui::Checkbox("Face Normals", &(scene->models[scene->ActiveModel]->draw_triangle_normals));
 			active = static_cast<MeshModel*>(scene->models[scene->ActiveModel]);
 			if(ImGui::Button("LookAt Active")){
 				cam->lookDirection = glm::vec3(active->x, active->y, active->z);
@@ -159,6 +157,18 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 			if(prev_zRotate != zRotate){
 				active->rotateZ(zRotate - prev_zRotate);
 			}
+		Model *current_model = scene->models[scene->ActiveModel];
+		ImGui::Checkbox("Vertex Normals", &(current_model->draw_vertex_normals));
+		ImGui::Checkbox("Face Normals", &(current_model->draw_triangle_normals));
+		ImGui::Checkbox("Bounding Box", &(current_model->draw_bbox));
+		MeshModel* active = static_cast<MeshModel*>(scene->models[scene->ActiveModel]);
+		if(ImGui::Button("LookAt Active")){
+			cam->lookDirection = glm::vec3(active->x, active->y, active->z);
+			// camera doesn't move, model moves around camera 
+			// so we also have to apply the inverse camera transform
+			// to know the real coordiantes to look at
+			cam->lookDirection = glm::inverse(cam->cTransform) * glm::vec4(cam->lookDirection, 1);
+			cam->Perspective();
 		}
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 
@@ -339,4 +349,5 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		}
 	}
 
+}
 }
