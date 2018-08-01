@@ -1,6 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
-
+#include "MeshModel.h"
 /*
  * Camera class. This class takes care of all the camera transformations and manipulations.
  */
@@ -15,6 +15,7 @@ public:
 	float zNear, zFar;
 	glm::vec3 lookDirection;
 	int perspective; // 0 = projection, 1 = orthographic - TODO: extract to enum
+	MeshModel* camera_model; // camera model that's linked to this camera's model
 public:
 	Camera();
 	~Camera();

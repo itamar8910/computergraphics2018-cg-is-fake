@@ -1,12 +1,20 @@
 #include "Scene.h"
 #include <string>
 #include <iostream>
-
+#include "MeshModel.h"
 
 using namespace std;
 
+string getCameraName(int cam_i){
+	return "_Camera" + to_string(cam_i);
+}
+
 void Scene::AddCamera(Camera& c){
 	cameras.push_back(&c);
+	int cam_i = cameras.size() - 1;
+	MeshModel* camera_model = new MeshModel("../../Data/camera.obj", getCameraName(cam_i));
+	camera_models.push_back(camera_model);
+	c.camera_model = camera_model;
 }
 
 void Scene::LoadOBJModel(string fileName)
@@ -37,6 +45,13 @@ void Scene::Draw()
 		MeshModel* meshModel = static_cast<MeshModel*>(model);
 		meshModel->Draw(*renderer, color, model_i);
 		model_i++;
+	}
+	for(MeshModel* cam_model : camera_models){
+		if(cam_model->name == getCameraName(ActiveCamera)){
+			continue; // don't render active camera
+		}
+		auto color = glm::vec3(0, 0 ,1);
+		cam_model->Draw(*renderer, color, -1);
 	}
 
 	renderer->SwapBuffers();

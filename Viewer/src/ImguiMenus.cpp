@@ -34,26 +34,26 @@ void ShowCamPosWindow(Scene* scene){
 	ImGui::Text("CamPos Window");
 
 			
-		int prev_selected_projection = cam->perspective;
-		vector<string> projection_types = {"perspective", "orthographic"};
-		if (ImGui::TreeNode("Select camera projection")){
-			for (int projection_i = 0; projection_i < (int)projection_types.size(); projection_i++)
-			{
-				if (ImGui::Selectable( projection_types[projection_i].c_str(), cam->perspective == projection_i)){
-					cam->perspective = projection_i;
-				}
+	int prev_selected_projection = cam->perspective;
+	vector<string> projection_types = {"perspective", "orthographic"};
+	if (ImGui::TreeNode("Select camera projection")){
+		for (int projection_i = 0; projection_i < (int)projection_types.size(); projection_i++)
+		{
+			if (ImGui::Selectable( projection_types[projection_i].c_str(), cam->perspective == projection_i)){
+				cam->perspective = projection_i;
 			}
-			ImGui::TreePop();
+		}
+		ImGui::TreePop();
 
+	}
+	if(prev_selected_projection != cam->perspective){
+		if(cam->perspective == 0){
+			cam->Perspective();
+		}else{
+			cam->Ortho();
 		}
-		if(prev_selected_projection != cam->perspective){
-			if(cam->perspective == 0){
-				cam->Perspective();
-			}else{
-				cam->Ortho();
-			}
-			cam->updateLookDirection();
-		}
+		cam->updateLookDirection();
+	}
 
 	ImGui::SliderFloat("translate X", &xPos, -100.0f, 100.0f);           
 	ImGui::SliderFloat("translate Y", &yPos, -100.0f, 100.0f);           
@@ -90,6 +90,23 @@ void ShowCamPosWindow(Scene* scene){
 	if(zNear != cam->zNear){
 		cam->setPerspectiveParams(cam->fovY, cam->aspectRatio, cam->zNear, zFar);
 	}
+	if(ImGui::Button("Add camera")){
+		Camera* c = new Camera();
+		c->Perspective();
+		scene->AddCamera(*c);
+	}
+
+	if (ImGui::TreeNode("Select active camera")){
+		for (int cam_i = 0; cam_i < (int)scene->cameras.size(); cam_i++)
+		{
+			if (ImGui::Selectable( ("Camera " + to_string(cam_i)).c_str(), scene->ActiveCamera == cam_i)){
+				scene->ActiveCamera = cam_i;
+			}
+		}
+		ImGui::TreePop();
+
+	}
+
 	ImGui::End();
 }
 
@@ -112,7 +129,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		static float xPos = 0, yPos = 0, zPos = 0;
 		// static int counter = 0;
 		static int prevActiveModel = scene->ActiveModel;
-		ImGui::Text("Hello, world!");                           // Display some text (you can use a format string too)
+		
 		ImGui::SliderFloat("translate X", &xPos, -10.0f, 10.0f);           
 		ImGui::SliderFloat("translate Y", &yPos, -10.0f, 10.0f);           
 		ImGui::SliderFloat("translate Z", &zPos, -10.0f, 10.0f);           

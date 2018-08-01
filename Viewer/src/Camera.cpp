@@ -3,7 +3,8 @@
 #include <utils.h>
 
 Camera::Camera() : cTransform(glm::mat4(1)), projection(glm::mat4(1)), x(0), y(0), z(10),
-                    fovY(45.0), aspectRatio(1.0), zNear(-1.0f), zFar(-100.0f), lookDirection(0, 0, -1), perspective(0)
+                    fovY(45.0), aspectRatio(1.0), zNear(-1.0f), zFar(-100.0f),
+                    lookDirection(0, 0, -1), perspective(0), camera_model(nullptr)
 {
 }
 
@@ -22,6 +23,7 @@ void Camera::translate(float x, float y, float z){
 	this->x += x;
 	this->y += y;
 	this->z += z;
+    camera_model->translate(x, y, z);
 }
 
 void Camera::rotateY(float theta){
