@@ -10,11 +10,14 @@
 // #include <nfd.h>
 using namespace std;
 
-#define MOUSE_WHEEL_INCREMENT 0.1f
-#define WASD_INCREMENT 0.1f
+
 #define REVERSE_TRANSFORM_Z 0.1f
 #define CAM_LOOK_MOVE_FACTOR 10
 #define CAM_LOOK_MOVE_COMUL_FACTOR 0.1f // makes camera move faster as you hold
+
+float keyboard_step_size = 0.1f;
+// float MOUSE_WHEEL_INCREMENT = 0.1f;
+// float WASD_INCREMENT  = 0.1f;
 
 bool showDemoWindow = false;
 bool showCamPosWindow = false;
@@ -147,7 +150,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		static float xPos = 0, yPos = 0, zPos = 0;
 		// static int counter = 0;
 		static int prevActiveModel = scene->ActiveModel;
-		
+		ImGui::SliderFloat("keyboard step size", &keyboard_step_size, 0.05f, 5.0f); 
 		ImGui::SliderFloat("translate X", &xPos, -10.0f, 10.0f);           
 		ImGui::SliderFloat("translate Y", &yPos, -10.0f, 10.0f);           
 		ImGui::SliderFloat("translate Z", &zPos, -10.0f, 10.0f);           
@@ -252,10 +255,10 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 			// active->scale(scale);
 			// prevScale = scale;
 			if(scene->ActiveModel != -1){
-				active->translate(0, 0, -io.MouseWheel*MOUSE_WHEEL_INCREMENT);
-				zPos += -io.MouseWheel*MOUSE_WHEEL_INCREMENT;
+				active->translate(0, 0, -io.MouseWheel*keyboard_step_size);
+				zPos += -io.MouseWheel*keyboard_step_size;
 			}else{
-				cam->translate(0, 0, -io.MouseWheel*MOUSE_WHEEL_INCREMENT);
+				cam->translate(0, 0, -io.MouseWheel*keyboard_step_size);
 			}
 			
 		}
@@ -269,37 +272,37 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		
 		if(ImGui::IsKeyPressed('A')){
 			if(scene->ActiveModel != -1){
-				active->translate(-WASD_INCREMENT, 0, 0);
-				xPos -= WASD_INCREMENT;
+				active->translate(-keyboard_step_size, 0, 0);
+				xPos -= keyboard_step_size;
 			}else{
-				cam->translate(-WASD_INCREMENT, 0, 0);
+				cam->translate(-keyboard_step_size, 0, 0);
 			}
 		}
 		
 		if(ImGui::IsKeyPressed('D')){
 			if(scene->ActiveModel != -1){
-				active->translate(WASD_INCREMENT, 0, 0);
-				xPos += WASD_INCREMENT;
+				active->translate(keyboard_step_size, 0, 0);
+				xPos += keyboard_step_size;
 			}else{
-				cam->translate(WASD_INCREMENT, 0, 0);
+				cam->translate(keyboard_step_size, 0, 0);
 			}
 		}
 		
 		if(ImGui::IsKeyPressed('W')){
 			if(scene->ActiveModel != -1){
-				active->translate(0, WASD_INCREMENT, 0);
-				yPos += WASD_INCREMENT;
+				active->translate(0, keyboard_step_size, 0);
+				yPos += keyboard_step_size;
 			}else{
-				cam->translate(0, WASD_INCREMENT, 0);
+				cam->translate(0, keyboard_step_size, 0);
 			}
 		}
 		
 		if(ImGui::IsKeyPressed('S')){
 			if(scene->ActiveModel != -1){
-				active->translate(0, -WASD_INCREMENT, 0);
-				yPos -= WASD_INCREMENT;
+				active->translate(0, -keyboard_step_size, 0);
+				yPos -= keyboard_step_size;
 			}else{
-				cam->translate(0, -WASD_INCREMENT, 0);
+				cam->translate(0, -keyboard_step_size, 0);
 			}
 		}
 		
