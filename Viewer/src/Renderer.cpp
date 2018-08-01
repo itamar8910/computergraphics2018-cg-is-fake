@@ -50,12 +50,16 @@ void Renderer::DrawTriangles(const vector<vector<glm::vec3>> &triangles, const v
 const int _depth  = 255;
 glm::mat4x4 Renderer::getViewport() {
     glm::mat4x4 m(1);
-    m[3][0] = width/2.f;
-    m[3][1] = height/2.f;
+	// int _width = width;
+	// int _height = height;
+	int _width = min(width, height);
+	int _height = min(width, height);
+    m[3][0] = _width/2.f;
+    m[3][1] = _height/2.f;
     m[3][2] = _depth/2.f;
 
-    m[0][0] = width/2.f;
-    m[1][1] = height/2.f;
+    m[0][0] = _width/2.f;
+    m[1][1] = _height/2.f;
     m[2][2] = _depth/2.f;
     return m;
 }
