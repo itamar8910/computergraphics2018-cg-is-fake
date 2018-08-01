@@ -156,19 +156,18 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 			if(prev_zRotate != zRotate){
 				active->rotateZ(zRotate - prev_zRotate);
 			}
-		Model *current_model = scene->models[scene->ActiveModel];
-		ImGui::Checkbox("Vertex Normals", &(current_model->draw_vertex_normals));
-		ImGui::Checkbox("Face Normals", &(current_model->draw_triangle_normals));
-		ImGui::Checkbox("Bounding Box", &(current_model->draw_bbox));
-		ImGui::SliderFloat("Normal scale", &(current_model->normal_length), 0.1, 0.5);
-		MeshModel* active = static_cast<MeshModel*>(scene->models[scene->ActiveModel]);
-		if(ImGui::Button("LookAt Active")){
-			cam->lookDirection = glm::vec3(active->x, active->y, active->z);
-			// camera doesn't move, model moves around camera 
-			// so we also have to apply the inverse camera transform
-			// to know the real coordiantes to look at
-			cam->lookDirection = glm::inverse(cam->cTransform) * glm::vec4(cam->lookDirection, 1);
-			cam->Perspective();
+			ImGui::Checkbox("Vertex Normals", &(active->draw_vertex_normals));
+			ImGui::Checkbox("Face Normals", &(active->draw_triangle_normals));
+			ImGui::Checkbox("Bounding Box", &(active->draw_bbox));
+			ImGui::SliderFloat("Normal scale", &(active->normal_length), 0.1, 0.5);
+			if(ImGui::Button("LookAt Active")){
+				cam->lookDirection = glm::vec3(active->x, active->y, active->z);
+				// camera doesn't move, model moves around camera 
+				// so we also have to apply the inverse camera transform
+				// to know the real coordiantes to look at
+				cam->lookDirection = glm::inverse(cam->cTransform) * glm::vec4(cam->lookDirection, 1);
+				cam->Perspective();
+			}
 		}
 		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 
@@ -277,8 +276,8 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		prev_yRotate = yRotate;
 		prev_zRotate = zRotate;
 		prevScale = scale;
-		ImGui::End();
 	}
+	ImGui::End();
 
 	// 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
 	if (showAnotherWindow)
@@ -349,5 +348,4 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		}
 	}
 
-}
 }
