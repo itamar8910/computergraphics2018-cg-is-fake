@@ -4,6 +4,8 @@
 #include "MeshModel.h"
 #include <iostream>
 #include <algorithm>
+#include "utils.h"
+
 // open file dialog cross platform https://github.com/mlabbe/nativefiledialog
 // #include <nfd.h>
 using namespace std;
@@ -172,6 +174,10 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 					cam->Ortho();
 					cam->updateLookDirection();
 				}
+
+				// rotate camera model
+				cam->camera_model->worldTransform = cam->camera_model->worldTransform * getTranslationMatrix(cam->x, cam->y, cam->z) * glm::inverse(cam->LookAt(glm::vec3(cam->x, cam->y, cam->z), glm::vec3(0, 1, 0), glm::vec3(cam->lookDirection.x, - cam->lookDirection.y, cam->lookDirection.z))) * getTranslationMatrix(-cam->x, -cam->y, -cam->z);
+
 			}
 
 			if(prevActiveModel != scene->ActiveModel){
