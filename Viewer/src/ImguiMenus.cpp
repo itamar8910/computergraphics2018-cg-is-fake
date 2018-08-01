@@ -172,6 +172,10 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 			ImGui::TreePop();
 
 		}
+		if(ImGui::Button("Spawn pyramid"))
+		{
+			scene->SpawnPrimitive("pyramid");
+		}
 		if(ImGui::Button("Import model")){
 			char file[1024];
 			// todo: check if zenity works on mac

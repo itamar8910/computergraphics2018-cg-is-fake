@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include "MeshModel.h"
+#include "PrimMeshModel.h"
 #include "utils.h"
 
 using namespace std;
@@ -18,6 +19,16 @@ void Scene::AddCamera(Camera& c){
 	camera_model->translate(0, 0, 5);
 	camera_models.push_back(camera_model);
 	c.camera_model = camera_model;
+}
+
+void Scene::SpawnPrimitive(const string& primitive_name)
+{
+	PrimMeshModel *new_prim;
+	if(primitive_name=="pyramid")
+	{
+		new_prim = PrimMeshModel::CreatePyramid();
+	}
+	addModel(*new_prim);
 }
 
 void Scene::LoadOBJModel(string fileName)

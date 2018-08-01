@@ -55,15 +55,13 @@ int main(int argc, char **argv)
 		scene.LoadOBJModel(TEAPOT_MODEL);
 	}
 	
-	MeshModel pyramid = PrimMeshModel::CreatePyramid();
-	
+
+	scene.SpawnPrimitive();
+
+
 	for (size_t i = 1; i < argc; i++)
 	{
-		if(string(argv[i]) == "pyramid"){
-			scene.addModel(pyramid);
-		}else{
-			scene.LoadOBJModel(argv[i]);
-		}
+		scene.LoadOBJModel(argv[i]);
 	}
 	
 

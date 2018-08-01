@@ -24,6 +24,7 @@ public:
 	Scene() : render_cameras(true) {};
 	Scene(Renderer *renderer) : renderer(renderer), render_cameras(true) {};
 
+	void SpawnPrimitive(const string &primitive_name = "pyramid");
 	void AddCamera(Camera& c);
 
 	// Loads an obj file into the scene.
