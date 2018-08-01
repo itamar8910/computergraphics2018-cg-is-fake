@@ -98,6 +98,7 @@ void MeshModel::initializeInternals(){
 	scale(ORIGINAL_SCALE);
 	centerOfMass = calcCenterOfMass();
 	bbox = CalcBbox();
+	triangle_normals = CalcTriangeNormals();
 }
 
 glm::vec3 MeshModel::calcCenterOfMass() const{
@@ -174,11 +175,8 @@ void MeshModel::LoadFile(const string& fileName)
 			// obj files are 1-indexed
 			point current_vertex =vertices[face.v[i]-1];
 			triangle.push_back(vertices[face.v[i]-1]);
-			vertex_normals.push_back(pair<point, point>(current_vertex,current_vertex + glm::normalize(normals[face.vn[i] - 1])));
+			vertex_normals.push_back(pair<point, point>(current_vertex,current_vertex + normal_length*glm::normalize(normals[face.vn[i] - 1])));
 		}
-		point tri_normal = -glm::cross(triangle[2] - triangle[0], triangle[1] - triangle[0]); // See the book, page 272
-		point face_center = (triangle[0] + triangle[1] + triangle[2]) / (float)3.0;
-		triangle_normals.push_back(pair<point, point>(face_center, face_center + glm::normalize(tri_normal)));
 		triangles.push_back(triangle);
 	}
 }
@@ -192,14 +190,14 @@ void MeshModel::Draw(Renderer& renderer)
 	{
 		for (auto &pair : this->vertex_normals)
 		{
-			renderer.DrawLine(pair.first, pair.second, glm::vec3(0, 0, 1));
+			renderer.DrawLine(pair.first, pair.first + normal_length * pair.second, glm::vec3(0, 0, 1));
 		}
 	}
 	if(this->draw_triangle_normals)
 	{
 		for(auto &pair : this->triangle_normals)
 		{
-			renderer.DrawLine(pair.first, pair.second, glm::vec3(0, 1, 0));
+			renderer.DrawLine(pair.first, pair.first + normal_length * pair.second, glm::vec3(0, 1, 0));
 		}
 	}
 	if(draw_bbox)
@@ -211,6 +209,18 @@ void MeshModel::Draw(Renderer& renderer)
 	}
 	// send triangles to renderer
 	renderer.DrawTriangles(triangles);
+}
+
+const vector<line> MeshModel::CalcTriangeNormals() const
+{
+	vector<line> triangle_normals;
+	for (const auto &triangle : triangles)
+	{
+		point tri_normal = -glm::cross(triangle[2] - triangle[0], triangle[1] - triangle[0]); // See the book, page 272
+		point face_center = (triangle[0] + triangle[1] + triangle[2]) / (float)3.0;
+		triangle_normals.push_back(pair<point, point>(face_center, glm::normalize(tri_normal)));
+	}
+	return triangle_normals;
 }
 
 void MeshModel::scale(float s){
@@ -263,28 +273,4 @@ void MeshModel::rotateZ(float theta){
 	rotate[1][0] = -glm::sin(glm::radians(theta));
 	rotate[1][1] = glm::cos(glm::radians(theta));
 	worldTransform = getTranslationMatrix(x + centerOfMass.x, y + centerOfMass.y, z + centerOfMass.z) * rotate * getTranslationMatrix(-x - centerOfMass.x, -y - centerOfMass.y, -z - centerOfMass.z) * worldTransform;
-}
-
-const hexahedron MeshModel::CalcBbox() const
-{
-	point min_p, max_p;
-	for (const triangle &tri : triangles)
-	{
-		for (const point &p : tri)
-		{
-
-			for (size_t i = 0; i < 3; i++)
-			{
-				if (max_p[i]< p[i])
-				{
-					max_p[i] = p[i];
-				}
-				if (min_p[i] > p[i])
-				{
-					min_p[i] = p[i];
-				}
-			}
-		}
-	}
-	return PrimMeshModel::CreateCube(min_p, max_p).lines;
 }

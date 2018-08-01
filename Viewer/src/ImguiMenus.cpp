@@ -98,7 +98,6 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		ImGui::SliderFloat("rotate Y", &yRotate, 0.0f, 360.0f);           
 		ImGui::SliderFloat("rotate Z", &zRotate, 0.0f, 360.0f);               
 		ImGui::SliderFloat("scale", &scale, 0.1f, 5.0f);
-		ImGui::SliderInt("Active Model", &scene->ActiveModel, 0, number_of_models-1);
 		if (ImGui::TreeNode("Select active model")){
 			vector<string> model_names = scene->get_models_names();
 			for (int model_i = 0; model_i < (int)model_names.size(); model_i++)
@@ -114,6 +113,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		ImGui::Checkbox("Vertex Normals", &(current_model->draw_vertex_normals));
 		ImGui::Checkbox("Face Normals", &(current_model->draw_triangle_normals));
 		ImGui::Checkbox("Bounding Box", &(current_model->draw_bbox));
+		ImGui::SliderFloat("Normal scale", &(current_model->normal_length), 0.1, 0.5);
 		MeshModel* active = static_cast<MeshModel*>(scene->models[scene->ActiveModel]);
 		if(ImGui::Button("LookAt Active")){
 			cam->lookDirection = glm::vec3(active->x, active->y, active->z);

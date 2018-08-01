@@ -13,7 +13,9 @@ public:
 	bool draw_vertex_normals;
 	bool draw_triangle_normals;
 	bool draw_bbox;
-protected:
+	float normal_length = 1;
+
+  protected:
 	virtual ~Model() {}
 	virtual void Draw(Renderer& renderer) = 0;
 };
