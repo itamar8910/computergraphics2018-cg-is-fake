@@ -92,6 +92,7 @@ void ShowCamPosWindow(Scene* scene){
 	if(zNear != cam->zNear){
 		cam->setPerspectiveParams(cam->fovY, cam->aspectRatio, cam->zNear, zFar);
 	}
+	ImGui::Checkbox("Render Cameras", &(scene->render_cameras));
 	if(ImGui::Button("Add camera")){
 		Camera* c = new Camera();
 		c->Perspective();

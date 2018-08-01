@@ -18,10 +18,11 @@ public:
 	vector<Light*> lights;
 	vector<Camera*> cameras;
 	Renderer *renderer;
+	bool render_cameras;
 
 public:
-	Scene() {};
-	Scene(Renderer *renderer) : renderer(renderer) {};
+	Scene() : render_cameras(true) {};
+	Scene(Renderer *renderer) : renderer(renderer), render_cameras(true) {};
 
 	void AddCamera(Camera& c);
 

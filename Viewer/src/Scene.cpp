@@ -54,15 +54,17 @@ void Scene::Draw()
 		meshModel->Draw(*renderer, color, model_i);
 		model_i++;
 	}
-	for(MeshModel* cam_model : camera_models){
-		if(cam_model->name == getCameraName(ActiveCamera)){
-			continue; // don't render active camera
+	if(render_cameras){
+		for(MeshModel* cam_model : camera_models){
+			if(cam_model->name == getCameraName(ActiveCamera)){
+				continue; // don't render active camera
+			}
+			// if(sign(cam_model->z) != active_camera_z){ // behind the camera, don't render
+			// 	continue;
+			// }
+			auto color = glm::vec3(0, 0 ,1);
+			cam_model->Draw(*renderer, color, -1);
 		}
-		// if(sign(cam_model->z) != active_camera_z){ // behind the camera, don't render
-		// 	continue;
-		// }
-		auto color = glm::vec3(0, 0 ,1);
-		cam_model->Draw(*renderer, color, -1);
 	}
 
 	renderer->SwapBuffers();
