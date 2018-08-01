@@ -6,11 +6,11 @@ class PrimMeshModel : public MeshModel{
     public:
         PrimMeshModel(){};
         PrimMeshModel(const vector<vector<glm::vec3> >& _triangles);
-        PrimMeshModel(const vector<line> & _lines);
+        PrimMeshModel(const vector<line_t> & _lines);
         static PrimMeshModel CreatePyramid();
-        static PrimMeshModel CreateCube(const point &min_p = point(0, 0, 0), const point &max_p = point(1, 1, 1));
+        static PrimMeshModel CreateCube(const point_t &min_p = point_t(0, 0, 0), const point_t &max_p = point_t(1, 1, 1));
         void Draw(Renderer &renderer);
-        vector<line> lines;
+        vector<line_t> lines;
 };
 
 //creates a pyramid mesh model

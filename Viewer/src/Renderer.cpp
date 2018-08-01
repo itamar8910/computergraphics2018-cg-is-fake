@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "Defenitions.h"
 #include "InitShader.h"
 #include <imgui/imgui.h>
 #include <iostream>

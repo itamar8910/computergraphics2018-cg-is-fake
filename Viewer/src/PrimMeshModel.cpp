@@ -6,7 +6,7 @@ PrimMeshModel::PrimMeshModel(const vector<vector<glm::vec3>> &_triangles) : Mesh
     triangles = _triangles;
 }
 
-PrimMeshModel::PrimMeshModel(const vector<line> &_lines) : lines(_lines)
+PrimMeshModel::PrimMeshModel(const vector<line_t> &_lines) : lines(_lines)
 {
 }
 
@@ -29,14 +29,14 @@ int hamming_dist(int a, int b)
 {
     return turned_on_bits(a ^ b);
 }
-inline PrimMeshModel PrimMeshModel::CreateCube(const point &min_p, const point &max_p)
+inline PrimMeshModel PrimMeshModel::CreateCube(const point_t &min_p, const point_t &max_p)
 {
-    vector<point> vertices;
-    vector<line> lines;
-    point both_points[] = {min_p, max_p};
+    vector<point_t> vertices;
+    vector<line_t> lines;
+    point_t both_points[] = {min_p, max_p};
     for (int i = 0; i < 8; i++)
     {
-        point current_vertex;
+        point_t current_vertex;
         for (int j = 0; j < 3; j++)
         {
             current_vertex[j] = both_points[i_bit(i, j)][j];
@@ -50,7 +50,7 @@ inline PrimMeshModel PrimMeshModel::CreateCube(const point &min_p, const point &
         {
             if (hamming_dist(i, j) == 1)
             {
-                lines.push_back(line(vertices[i], vertices[j]));
+                lines.push_back(line_t(vertices[i], vertices[j]));
             }
         }
     }
@@ -59,19 +59,19 @@ inline PrimMeshModel PrimMeshModel::CreateCube(const point &min_p, const point &
 
 void PrimMeshModel::Draw(Renderer &renderer)
 {
-    for (const line &l : lines)
+    for (const auto &l : lines)
     {
         renderer.DrawLine(l.first, l.second);
     }
     renderer.DrawTriangles(triangles);
 }
 
-const hexahedron MeshModel::CalcBbox() const
+const hexahedron_t MeshModel::CalcBbox() const
 {
-	point min_p, max_p;
-	for (const triangle &tri : triangles)
+	point_t min_p, max_p;
+	for (const auto &tri : triangles)
 	{
-		for (const point &p : tri)
+		for (const point_t &p : tri)
 		{
 
 			for (size_t i = 0; i < 3; i++)

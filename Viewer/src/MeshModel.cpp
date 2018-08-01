@@ -120,7 +120,7 @@ void MeshModel::LoadFile(const string& fileName)
 	ifstream ifile(fileName.c_str());
 	vector<FaceIdx> faces;
 	vector<glm::vec3> vertices;
-	vector<point> normals;
+	vector<point_t> normals;
 	// while not end of file
 	while (!ifile.eof())
 	{
@@ -173,9 +173,9 @@ void MeshModel::LoadFile(const string& fileName)
 		{
 			// append i'th vetice of current face to list of all vertices
 			// obj files are 1-indexed
-			point current_vertex =vertices[face.v[i]-1];
+			point_t current_vertex =vertices[face.v[i]-1];
 			triangle.push_back(vertices[face.v[i]-1]);
-			vertex_normals.push_back(pair<point, point>(current_vertex,current_vertex + normal_length*glm::normalize(normals[face.vn[i] - 1])));
+			vertex_normals.push_back(line_t(current_vertex,current_vertex + normal_length*glm::normalize(normals[face.vn[i] - 1])));
 		}
 		triangles.push_back(triangle);
 	}
@@ -202,7 +202,7 @@ void MeshModel::Draw(Renderer& renderer)
 	}
 	if(draw_bbox)
 	{
-		for (const line &a : bbox)
+		for (const auto &a : bbox)
 		{
 			renderer.DrawLine(a.first, a.second);
 		}
@@ -211,14 +211,14 @@ void MeshModel::Draw(Renderer& renderer)
 	renderer.DrawTriangles(triangles);
 }
 
-const vector<line> MeshModel::CalcTriangeNormals() const
+const vector<line_t> MeshModel::CalcTriangeNormals() const
 {
-	vector<line> triangle_normals;
+	vector<line_t> triangle_normals;
 	for (const auto &triangle : triangles)
 	{
-		point tri_normal = -glm::cross(triangle[2] - triangle[0], triangle[1] - triangle[0]); // See the book, page 272
-		point face_center = (triangle[0] + triangle[1] + triangle[2]) / (float)3.0;
-		triangle_normals.push_back(pair<point, point>(face_center, glm::normalize(tri_normal)));
+		point_t tri_normal = -glm::cross(triangle[2] - triangle[0], triangle[1] - triangle[0]); // See the book, page 272
+		point_t face_center = (triangle[0] + triangle[1] + triangle[2]) / (float)3.0;
+		triangle_normals.push_back(line_t(face_center, glm::normalize(tri_normal)));
 	}
 	return triangle_normals;
 }

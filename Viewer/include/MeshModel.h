@@ -4,6 +4,7 @@
 #include <vector>
 #include <array>
 #include "Model.h"
+#include "Defenitions.h"
 #include <utility>
 
 #define ORIGINAL_SCALE 1
@@ -14,21 +15,16 @@ using namespace std;
  * MeshModel class. Mesh model object represents a triangle mesh (loaded fron an obj file).
  * 
  */
-typedef vector<glm::vec3> triangle;
-typedef glm::vec3 point;
-typedef std::pair<point,point> line;
-typedef vector<line> hexahedron;
-typedef glm::vec3 color;
 
 class MeshModel : public Model
 {
 public:
 	string name;
 
-	vector<triangle> triangles;
-	vector<line> vertex_normals;
-	vector<line> triangle_normals;
-	hexahedron bbox;
+	vector<triangle_t> triangles;
+	vector<line_t> vertex_normals;
+	vector<line_t> triangle_normals;
+	hexahedron_t bbox;
 
 	// Add more attributes.
 	glm::mat4x4 worldTransform;
@@ -37,8 +33,8 @@ public:
 	float current_scale; // original scale of this model
 
 	glm::vec3 centerOfMass;
-	const hexahedron CalcBbox() const;
-	const vector<line> CalcTriangeNormals() const;
+	const hexahedron_t CalcBbox() const;
+	const vector<line_t> CalcTriangeNormals() const;
 	
 public:
 	MeshModel(const string& fileName = "", const string& _name = "N/A");
