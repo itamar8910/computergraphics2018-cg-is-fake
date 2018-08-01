@@ -52,9 +52,8 @@ public:
 	void Draw(Renderer& renderer, const glm::vec3& color = glm::vec3(0, 0, 0), int model_i = -1);
 	void scale(float s);
 	void translate(float x, float y, float z);
-	void rotateX(float theta);
-	void rotateY(float theta);
-	void rotateZ(float theta);
+	void rotateX(float theta, bool model_frame=true);
+	void rotateY(float theta, bool model_frame=true);
+	void rotateZ(float theta, bool model_frame=true);
 	glm::vec3 calcCenterOfMass() const;
-
 };

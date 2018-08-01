@@ -244,8 +244,12 @@ void MeshModel::translate(float x, float y, float z){
 	this->z += z;
 }
 
-void MeshModel::rotateX(float theta){
-	centerOfMass = calcCenterOfMass();
+void MeshModel::rotateX(float theta, bool model_frame)
+{
+	if (model_frame)
+		centerOfMass = calcCenterOfMass();
+	else
+		centerOfMass = glm::vec3(1);
 	// cout << "com:" << centerOfMass.x << "," << centerOfMass.y << "," << centerOfMass.z << endl;
 	glm::mat4x4 rotate = glm::mat4(1.0); // identity matrix
 	rotate[1][1] = glm::cos(glm::radians(theta));
@@ -255,8 +259,12 @@ void MeshModel::rotateX(float theta){
 	worldTransform = getTranslationMatrix(x + centerOfMass.x, y + centerOfMass.y, z + centerOfMass.z) * rotate * getTranslationMatrix(-x - centerOfMass.x, -y - centerOfMass.y, -z - centerOfMass.z) * worldTransform;
 }
 
-void MeshModel::rotateY(float theta){
-	centerOfMass = calcCenterOfMass();
+void MeshModel::rotateY(float theta,bool model_frame)
+{
+	if (model_frame)
+		centerOfMass = calcCenterOfMass();
+	else
+		centerOfMass = glm::vec3(1);
 	glm::mat4x4 rotate = glm::mat4(1.0); // identity matrix
 	rotate[0][0] = glm::cos(glm::radians(theta));
 	rotate[0][2] = glm::sin(glm::radians(theta));
@@ -265,8 +273,11 @@ void MeshModel::rotateY(float theta){
 	worldTransform = getTranslationMatrix(x + centerOfMass.x, y + centerOfMass.y, z + centerOfMass.z) * rotate * getTranslationMatrix(-x - centerOfMass.x, -y - centerOfMass.y, -z - centerOfMass.z) * worldTransform;
 }
 
-void MeshModel::rotateZ(float theta){
-	centerOfMass = calcCenterOfMass();
+void MeshModel::rotateZ(float theta,bool model_frame){
+	if(model_frame)
+		centerOfMass = calcCenterOfMass();
+	else
+		centerOfMass = glm::vec3(1);
 	glm::mat4x4 rotate = glm::mat4(1.0); // identity matrix
 	rotate[0][0] = glm::cos(glm::radians(theta));
 	rotate[0][1] = glm::sin(glm::radians(theta));

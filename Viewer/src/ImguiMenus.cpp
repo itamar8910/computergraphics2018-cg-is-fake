@@ -148,9 +148,12 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		static float zRotate = 0.0f, prev_zRotate = 0.0f;
 		static float scale = 1.0f, prevScale = 1.0f;
 		static float xPos = 0, yPos = 0, zPos = 0;
+		static bool ModelFrame = true;
 		// static int counter = 0;
 		static int prevActiveModel = scene->ActiveModel;
 		ImGui::SliderFloat("keyboard step size", &keyboard_step_size, 0.05f, 5.0f); 
+		
+		ImGui::Checkbox("Rotate around model frame",&ModelFrame);
 		ImGui::SliderFloat("translate X", &xPos, -10.0f, 10.0f);           
 		ImGui::SliderFloat("translate Y", &yPos, -10.0f, 10.0f);           
 		ImGui::SliderFloat("translate Z", &zPos, -10.0f, 10.0f);           
@@ -216,13 +219,13 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 				active->translate(0, 0, zPos - active->z);
 			}
 			if(prev_xRotate != xRotate){
-				active->rotateX(xRotate - prev_xRotate);
+				active->rotateX(xRotate - prev_xRotate, ModelFrame);
 			}
 			if(prev_yRotate != yRotate){
-				active->rotateY(yRotate - prev_yRotate);
+				active->rotateY(yRotate - prev_yRotate, ModelFrame);
 			}
 			if(prev_zRotate != zRotate){
-				active->rotateZ(zRotate - prev_zRotate);
+				active->rotateZ(zRotate - prev_zRotate, ModelFrame);
 			}
 			ImGui::Checkbox("Vertex Normals", &(active->draw_vertex_normals));
 			ImGui::Checkbox("Face Normals", &(active->draw_triangle_normals));
