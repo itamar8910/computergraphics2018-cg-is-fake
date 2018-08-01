@@ -300,4 +300,5 @@ void Renderer::Viewport(int w, int h)
 	delete[] colorBuffer;
 	colorBuffer = new float[3 * h*w];
 	createOpenGLBuffer();
+	createBuffers(w, h);
 }
