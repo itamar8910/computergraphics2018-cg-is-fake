@@ -4,12 +4,13 @@
 
 class PrimMeshModel : public MeshModel{
     public:
-        PrimMeshModel(){};
-        PrimMeshModel(const vector<vector<glm::vec3> >& _triangles);
-        PrimMeshModel(const vector<line> & _lines);
-        static PrimMeshModel *CreatePyramid();
-        static PrimMeshModel CreateCube(const point &min_p = point(0, 0, 0), const point &max_p = point(1, 1, 1));
-        vector<line> lines;
+      PrimMeshModel(){};
+      PrimMeshModel(const string &name) { this->name = name; };
+      PrimMeshModel(const vector<vector<glm::vec3>> &_triangles);
+      PrimMeshModel(const vector<line> &_lines);
+      static PrimMeshModel *CreatePyramid();
+      static PrimMeshModel CreateCube(const point &min_p = point(0, 0, 0), const point &max_p = point(1, 1, 1));
+      vector<line> lines;
 };
 
 //creates a pyramid mesh model
@@ -21,7 +22,7 @@ inline PrimMeshModel *PrimMeshModel::CreatePyramid()
         vector<glm::vec3> face3 = {glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.5, 0.5, 1)};
         vector<glm::vec3> face4 = {glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.5, 0.5, 1)};
         vector<vector<glm::vec3> > triangles = {face1, face2, face3, face4};
-        PrimMeshModel *pyramid = new PrimMeshModel(); // for some reason getting a link error when trying to call 
+        PrimMeshModel *pyramid = new PrimMeshModel("pyramid"); // for some reason getting a link error when trying to call 
                                                  //PrimMeshModel(const vector<vector<glm::vec3> >& _triangles) constructor
         pyramid->triangles = triangles;
         pyramid->initializeInternals();
