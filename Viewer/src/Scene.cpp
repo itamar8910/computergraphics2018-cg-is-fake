@@ -83,12 +83,6 @@ void Scene::Draw()
 	renderer->SwapBuffers();
 }
 
-void Scene::DrawDemo()
-{
-	renderer->SetDemoBuffer();
-	renderer->SwapBuffers();
-}
-
 vector<string> Scene::get_models_names(){
 	vector<string> names;
 	for(auto& model : models){

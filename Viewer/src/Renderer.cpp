@@ -93,6 +93,7 @@ float Sign(const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3)
 
 bool IsPointInTri(const glm::vec3 &p, const vector<glm::vec3> &triangle)
 {
+	const glm::vec3 &v1 = triangle[0], &v2 = triangle[1], &v3 = triangle[2];
 	return Sign(p, v1, v2) >= 0.0 && Sign(p, v2, v3) >= 0.0 && Sign(p, v3, v1) >= 0.0;
 }
 
@@ -102,11 +103,12 @@ void Renderer::scanFill(const vector<glm::vec3>& triangle, const glm::vec3& colo
 	float xmax = max(max(triangle[0].x, triangle[1].x), triangle[2].x);
 	float ymin = min(min(triangle[0].y, triangle[1].y), triangle[2].y);
 	float ymax = max(max(triangle[0].y, triangle[1].y), triangle[2].y);
+	float z = triangle[0].z;
 	for(int row = ymin; row <= ymax; row++){
 		for(int col = xmin; col <= xmax; col++){
-			if (IsPointInTri(glm::vec3(col, row, 0), triangle[0], triangle[1], triangle[2]))
+			if (IsPointInTri(glm::vec3(col, row, 0), triangle))
 			{
-				putPixel(col, row, color);
+				putPixel(col, row, z, color);
 			}
 		}
 	}
@@ -158,9 +160,8 @@ void Renderer::DrawLineHelper(const glm::vec3 &point1, const glm::vec3 &point2,
 		int x = is_a_normal ? progressor : estimator;
 		int y = is_a_normal ? estimator : progressor;
 		if(lineZ >  getZBufferVal(x, y)){
-			putPixel(x, y, color);
+			putPixel(x, y, lineZ, color);
 			putIModelIndex(x, y, model_i);
-			putZBufferval(x, y, lineZ);	
 		}
 		progressor += progressor_sign;
 		e += 2 * estimator_delta;
@@ -168,13 +169,19 @@ void Renderer::DrawLineHelper(const glm::vec3 &point1, const glm::vec3 &point2,
 	// cout << "Drew line:[" << point1.x << "," << point1.y << "],[" << point2.x << "," << point2.y << "]" << endl;
 }
 
-void Renderer::putPixel(int i, int j, const glm::vec3& color)
+void Renderer::putPixel(int i, int j, float z, const glm::vec3 &color)
 {
-	if (i < 0) return; if (i >= width) return;
-	if (j < 0) return; if (j >= height) return;
+	if (z >= getZBufferVal(i, j))
+	{
+		putZBufferval(i, j, z);
+		if (i < 0 || i >= width || j < 0 || j >= width)
+{
+			return;
+		}
 	colorBuffer[INDEX(width, i, j, 0)] = color.x;
 	colorBuffer[INDEX(width, i, j, 1)] = color.y;
 	colorBuffer[INDEX(width, i, j, 2)] = color.z;
+}
 }
 
 glm::vec3 Renderer::getPixel(int i, int j) const{
@@ -193,7 +200,6 @@ void Renderer::putIModelIndex(int i, int j, int model_i){
 	if (i < 0) return; if (i >= width) return;
 	if (j < 0) return; if (j >= height) return;
 	model_i_buffer[i + j*width] = model_i;
-	// putPixel(10, 10, glm::vec3(0, 1, 0));
 	// cout << "putIModelIndex:" << i << "," << j << "," << model_i << endl;
 }
 
@@ -219,43 +225,11 @@ void Renderer::createBuffers(int w, int h)
 	{
 		for (int j = 0; j < h; j++)
 		{
-			putPixel(i, j, glm::vec3(0.0f, 0.0f, 0.0f));
-			putZBufferval(i, j, numeric_limits<float>::min());
+			putPixel(i, j, numeric_limits<float>::min(), glm::vec3(0.0f, 0.0f, 0.0f));
 			model_i_buffer[i + j*width] = -1;
 		}
 	}
 }
-
-void Renderer::SetDemoBuffer()
-{
-	int r = 5;
-	// Wide red vertical line
-	glm::vec4 red = glm::vec4(1, 0, 0, 1);
-	for (int i = 0; i<height; i++)
-	{
-		for (int r0 = 0; r0 < r; r0++)
-		{
-			putPixel((width / 2) + r0, i, red);
-			putPixel((width / 2) - r0, i, red);
-		}
-	}
-	// Wide magenta horizontal line
-	glm::vec4 magenta = glm::vec4(1, 0, 1, 1);
-	for (int i = 0; i<width; i++)
-	{
-		for (int r0 = 0; r0 < r; r0++)
-		{
-			putPixel(i, (height / 2) + r0, magenta);
-			putPixel(i, (height / 2) - r0, magenta);
-		}
-
-	}
-}
-
-
-
-
-
 
 //##############################
 //##OpenGL stuff. Don't touch.##
@@ -356,9 +330,9 @@ void Renderer::ClearColorBuffer(const glm::vec3& color)
 	{
 		for (int j = 0; j < height; j++)
 		{
-			putPixel(i, j, color);
-			model_i_buffer[i + j*width] = -1;
 			putZBufferval(i, j, numeric_limits<float>::min());
+			putPixel(i, j, numeric_limits<float>::min(), color);
+			model_i_buffer[i + j*width] = -1;
 		}
 	}
 }

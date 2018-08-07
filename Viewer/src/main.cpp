@@ -56,9 +56,6 @@ int main(int argc, char **argv)
 	// }
 	
 
-	scene.SpawnPrimitive();
-
-
 	for (size_t i = 1; i < argc; i++)
 	{
 		scene.LoadOBJModel(argv[i]);

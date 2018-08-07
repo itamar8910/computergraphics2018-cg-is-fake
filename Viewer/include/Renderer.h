@@ -29,7 +29,7 @@ private:
 
 	glm::mat4x4 getViewport();
 	// Draw's a pixel in location p with color color
-	void putPixel(int i, int j, const glm::vec3& color);
+	void putPixel(int i, int j, float z, const glm::vec3 &color);
 	glm::vec3 getPixel(int i, int j) const;
 	void putIModelIndex(int i, int j, int model_i);
 	void putZBufferval(int i, int j, int z);
