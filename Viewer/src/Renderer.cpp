@@ -85,41 +85,28 @@ float getXOfLine(glm::vec3 point1, glm::vec3 point2, float y){
 	return point1.x + ((delta) * (y - point1.y));
 }
 
+//Solution from https://www.gamedev.net/forums/topic/295943-is-this-a-better-point-in-triangle-test-2d/?do=findComment&comment=2873961
+float Sign(const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3)
+{
+  return (v1.x - v3.x) * (v2.y - v3.y) - (v2.x - v3.x) * (v1.y - v3.y);
+}
+
+bool IsPointInTri(const glm::vec3 &p, const vector<glm::vec3> &triangle)
+{
+	return Sign(p, v1, v2) >= 0.0 && Sign(p, v2, v3) >= 0.0 && Sign(p, v3, v1) >= 0.0;
+}
+
+
 void Renderer::scanFill(const vector<glm::vec3>& triangle, const glm::vec3& color){
 	float xmin = min(min(triangle[0].x, triangle[1].x), triangle[2].x);
 	float xmax = max(max(triangle[0].x, triangle[1].x), triangle[2].x);
 	float ymin = min(min(triangle[0].y, triangle[1].y), triangle[2].y);
 	float ymax = max(max(triangle[0].y, triangle[1].y), triangle[2].y);
-	// DrawLineHelper(glm::vec3(xmin, ymin, 0), glm::vec3(xmax, ymin, 0));
-	// DrawLineHelper(glm::vec3(xmin, ymax, 0), glm::vec3(xmax, ymax, 0));
-	// DrawLineHelper(glm::vec3(xmin, ymin, 0), glm::vec3(xmin, ymax, 0));
-	// DrawLineHelper(glm::vec3(xmax, ymin, 0), glm::vec3(xmax, ymax, 0));
-	
 	for(int row = ymin; row <= ymax; row++){
-		bool drawing = false;
-		int intersect1 = getXOfLine(triangle[0], triangle[1], row);
-		int intersect2 = getXOfLine(triangle[0], triangle[2], row);
-		int intersect3 = getXOfLine(triangle[1], triangle[2], row);
-		vector<int> intersects;
-		for(auto& intersect : {intersect1, intersect2, intersect3}){
-			if(intersect > xmin && intersect < xmax){
-				intersects.push_back(intersect);
-			}
-		}
-		if(intersects.size() < 2){
-			continue;
-		}
-		int xminInside = min(intersects[0], intersects[1]);
-		int xmaxInside = max(intersects[0], intersects[1]);
-		
-
-		for(int col = xminInside; col <= xmaxInside; col++){
-			if(col == intersect1 || col == intersect2 || col == intersect3){
-				drawing = !drawing;
-			}
-			if(drawing){
+		for(int col = xmin; col <= xmax; col++){
+			if (IsPointInTri(glm::vec3(col, row, 0), triangle[0], triangle[1], triangle[2]))
+			{
 				putPixel(col, row, color);
-				//TODO: zbuffer
 			}
 		}
 	}
