@@ -1,4 +1,5 @@
 # Computer Graphics 203.3710, Summer 2018
+<!-- assignment 1 submitted on 2/8/18 -->
 ## Students Team data
 
 Name: Itamar Shenhar  

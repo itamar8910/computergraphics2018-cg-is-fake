@@ -53,7 +53,7 @@ void ShowCamPosWindow(Scene* scene){
 	int prev_selected_projection = cam->perspective;
 	vector<string> projection_types = {"perspective", "orthographic"};
 	if (ImGui::TreeNode("Select camera projection")){
-		for (int projection_i = 0; projection_i < (int)projection_types.size(); projection_i++) 
+		for (int projection_i = 0; projection_i < (int)projection_types.size(); projection_i++)
 		{
 			if (ImGui::Selectable( projection_types[projection_i].c_str(), cam->perspective == projection_i)){
 				cam->perspective = projection_i;
@@ -152,7 +152,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		// static int counter = 0;
 		static int prevActiveModel = scene->ActiveModel;
 		ImGui::SliderFloat("keyboard step size", &keyboard_step_size, 0.05f, 5.0f); 
-		
+		ImGui::Checkbox("Camera Window", &showCamPosWindow);      // Edit bools storing our windows open/close state
 		ImGui::Checkbox("Rotate around model frame",&ModelFrame);
 		ImGui::SliderFloat("translate X", &xPos, -10.0f, 10.0f);           
 		ImGui::SliderFloat("translate Y", &yPos, -10.0f, 10.0f);           
@@ -163,7 +163,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		ImGui::SliderFloat("scale", &scale, 0.1f, 5.0f);
 		if (ImGui::TreeNode("Select active model")){
 			vector<string> model_names = scene->get_models_names();
-			for (int model_i = 1; model_i < (int)model_names.size(); model_i++)// Skip origin model
+			for (int model_i = 0; model_i < (int)model_names.size(); model_i++)
 			{
 				if (ImGui::Selectable( model_names[model_i].c_str(), scene->ActiveModel == model_i)){
 					scene->ActiveModel = model_i;
@@ -235,27 +235,27 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 			ImGui::Checkbox("Face Normals", &(active->draw_triangle_normals));
 			ImGui::Checkbox("Bounding Box", &(active->draw_bbox));
 			ImGui::SliderFloat("Normal scale", &(active->normal_length), 0.1, 0.5);
-			if(ImGui::Button("LookAt Active")){
-				cam->lookDirection = glm::vec3(active->x, active->y, active->z);
-				// camera doesn't move, model moves around camera 
-				// so we also have to apply the inverse camera transform
-				// to know the real coordiantes to look at
-				cam->lookDirection = glm::inverse(cam->cTransform) * glm::vec4(cam->lookDirection, 1);
-				cam->Perspective();
-			}
+			// if(ImGui::Button("LookAt Active")){
+			// 	cam->lookDirection = glm::vec3(active->x, active->y, active->z);
+			// 	// camera doesn't move, model moves around camera 
+			// 	// so we also have to apply the inverse camera transform
+			// 	// to know the real coordiantes to look at
+			// 	cam->lookDirection = glm::inverse(cam->cTransform) * glm::vec4(cam->lookDirection, 1);
+			// 	cam->Perspective();
+			// }
 		} // End "if some model is active" condition
 
 
-		ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
+		// ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 
-		ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our windows open/close state
-		ImGui::Checkbox("CamPos Window", &showCamPosWindow);      // Edit bools storing our windows open/close state
-		ImGui::Checkbox("Mouse Window", &showAnotherWindow);
+		// ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our windows open/close state
+		
+		// ImGui::Checkbox("Mouse Window", &showAnotherWindow);
 
 
 		ImGui::SameLine();
 
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		// ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		
 		if(!isAnyWindowFocused && io.MouseWheel != 0.0f){ // we don't want to re-scale the model if the user scrolls the gui
 			// scale += io.MouseWheel/MOUSE_WHEEL_INCREMENT;

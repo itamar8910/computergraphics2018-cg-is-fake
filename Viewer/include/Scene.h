@@ -21,7 +21,7 @@ public:
 	bool render_cameras;
 
 public:
-	Scene() : render_cameras(true) ,ActiveModel(1){};
+	Scene() : render_cameras(true) {};
 	Scene(Renderer *renderer) : renderer(renderer), render_cameras(true) {};
 
 	void SpawnPrimitive(const string &primitive_name = "pyramid");
