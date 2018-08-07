@@ -217,8 +217,8 @@ void Renderer::putZBufferval(int i, int j, int z){
 }
 
 float Renderer::getZBufferVal(int i, int j){
-	if (i < 0) numeric_limits<float>::max(); if (i >= width) numeric_limits<float>::max();
-	if (j < 0) numeric_limits<float>::max(); if (j >= height) numeric_limits<float>::max();
+	if (i < 0) return numeric_limits<float>::max(); if (i >= width) return numeric_limits<float>::max();
+	if (j < 0) return numeric_limits<float>::max(); if (j >= height) return numeric_limits<float>::max();
 	return zBuffer[i + j * width];
 }
 
