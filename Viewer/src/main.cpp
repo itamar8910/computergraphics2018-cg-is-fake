@@ -50,13 +50,13 @@ int main(int argc, char **argv)
 	Renderer renderer = Renderer(w, h);
 	Scene scene = Scene(&renderer);
 	setup_scene(scene);
-	if (argc < 2)
-	{
-		scene.LoadOBJModel(TEAPOT_MODEL);
-	}
+	// if (argc < 2)
+	// {
+	// 	scene.LoadOBJModel(TEAPOT_MODEL);
+	// }
 	
 
-	// scene.SpawnPrimitive();
+	scene.SpawnPrimitive();
 
 
 	for (size_t i = 1; i < argc; i++)

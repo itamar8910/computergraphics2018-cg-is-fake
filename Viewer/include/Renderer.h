@@ -19,7 +19,7 @@ private:
 	// width*height
 	float *zBuffer;
 	
-
+	glm::vec3 clearColor;
 
 	// TODO: make these a smart pointer to avoid copying each time
 	glm::mat4x4 cTransform; // camera transform
@@ -30,10 +30,14 @@ private:
 	glm::mat4x4 getViewport();
 	// Draw's a pixel in location p with color color
 	void putPixel(int i, int j, const glm::vec3& color);
+	glm::vec3 getPixel(int i, int j) const;
 	void putIModelIndex(int i, int j, int model_i);
+	void putZBufferval(int i, int j, int z);
+	float getZBufferVal(int i, int j);
 	// creates float array of dimension [3,w,h]
 	void createBuffers(int w, int h);
-	void DrawLineHelper(const glm::vec2 &point1, const glm::vec2 &point2, const glm::vec3 &color= glm::vec3(0.0, 0.0, 0.0), int model_i=-1);
+	void DrawLineHelper(const glm::vec3 &point1, const glm::vec3 &point2
+						, const glm::vec3 &color= glm::vec3(0.0, 0.0, 0.0), int model_i=-1);
 
 	void DrawTriangle(const vector<glm::vec3> &triangle, const glm::vec3& color = glm::vec3(0, 0, 0), int model_i=-1);
 
@@ -61,8 +65,8 @@ public:
 	void DrawTriangles(const vector<vector<glm::vec3>> &triangles, const vector<glm::vec3> *normals = NULL, const glm::vec3& color = glm::vec3(0, 0, 0), int model_i = -1);
 
 	void DrawLine(const glm::vec3 &point1, const glm::vec3 &point2, const glm::vec3 &color = glm::vec3(0.0, 0.0, 0.0), int model_i = -1);
-
-	glm::vec2 TransformPoint(const glm::vec3 &originalPoint) const;
+	void scanFill(const vector<glm::vec3>& triangle, const glm::vec3& color);
+	glm::vec3 TransformPoint(const glm::vec3 &originalPoint) const;
 
 	// Sets the camera transformations with relation to world coordinates
 	void SetCameraTransform(const glm::mat4x4& cTransform);

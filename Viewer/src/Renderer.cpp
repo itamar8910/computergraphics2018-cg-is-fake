@@ -66,7 +66,7 @@ glm::mat4x4 Renderer::getViewport() {
 
 void Renderer::DrawTriangle(const vector<glm::vec3>& triangle, const glm::vec3& color, int model_i) 
 {
-	vector<glm::vec2> transformedTriangle;
+	vector<glm::vec3> transformedTriangle;
 	for(const glm::vec3& originalPoint : triangle){
 		transformedTriangle.push_back(TransformPoint(originalPoint));
 	} 
@@ -75,23 +75,71 @@ void Renderer::DrawTriangle(const vector<glm::vec3>& triangle, const glm::vec3& 
 	DrawLineHelper(transformedTriangle[0], transformedTriangle[1], color, model_i);
 	DrawLineHelper(transformedTriangle[1], transformedTriangle[2], color, model_i);
 	DrawLineHelper(transformedTriangle[0], transformedTriangle[2], color, model_i);
+
+	scanFill(transformedTriangle, glm::vec3(0, 0, 1));
+
 }
 
+float getXOfLine(glm::vec3 point1, glm::vec3 point2, float y){
+	float delta = (point2.x - point1.x) / (point2.y - point1.y);
+	return point1.x + ((delta) * (y - point1.y));
+}
 
-glm::vec2 Renderer::TransformPoint(const glm::vec3 &originalPoint) const
+void Renderer::scanFill(const vector<glm::vec3>& triangle, const glm::vec3& color){
+	float xmin = min(min(triangle[0].x, triangle[1].x), triangle[2].x);
+	float xmax = max(max(triangle[0].x, triangle[1].x), triangle[2].x);
+	float ymin = min(min(triangle[0].y, triangle[1].y), triangle[2].y);
+	float ymax = max(max(triangle[0].y, triangle[1].y), triangle[2].y);
+	// DrawLineHelper(glm::vec3(xmin, ymin, 0), glm::vec3(xmax, ymin, 0));
+	// DrawLineHelper(glm::vec3(xmin, ymax, 0), glm::vec3(xmax, ymax, 0));
+	// DrawLineHelper(glm::vec3(xmin, ymin, 0), glm::vec3(xmin, ymax, 0));
+	// DrawLineHelper(glm::vec3(xmax, ymin, 0), glm::vec3(xmax, ymax, 0));
+	
+	for(int row = ymin; row <= ymax; row++){
+		bool drawing = false;
+		int intersect1 = getXOfLine(triangle[0], triangle[1], row);
+		int intersect2 = getXOfLine(triangle[0], triangle[2], row);
+		int intersect3 = getXOfLine(triangle[1], triangle[2], row);
+		vector<int> intersects;
+		for(auto& intersect : {intersect1, intersect2, intersect3}){
+			if(intersect > xmin && intersect < xmax){
+				intersects.push_back(intersect);
+			}
+		}
+		if(intersects.size() < 2){
+			continue;
+		}
+		int xminInside = min(intersects[0], intersects[1]);
+		int xmaxInside = max(intersects[0], intersects[1]);
+		
+
+		for(int col = xminInside; col <= xmaxInside; col++){
+			if(col == intersect1 || col == intersect2 || col == intersect3){
+				drawing = !drawing;
+			}
+			if(drawing){
+				putPixel(col, row, color);
+				//TODO: zbuffer
+			}
+		}
+	}
+}
+
+glm::vec3 Renderer::TransformPoint(const glm::vec3 &originalPoint) const
 {
 		glm::vec4 homogPoint(originalPoint, 1);
 		glm::vec4 transformed;
 		transformed = this->fullTransform * homogPoint;
 		transformed /= transformed.w;
-		return glm::vec2(transformed.x, transformed.y);
+		return glm::vec3(transformed);
 }
 
 void Renderer::DrawLine(const glm::vec3 &point1, const glm::vec3 &point2, const glm::vec3 &color, int model_i){
 	DrawLineHelper(TransformPoint(point1), TransformPoint(point2), color, model_i);
 }
 
-void Renderer::DrawLineHelper(const glm::vec2 &point1, const glm::vec2 &point2, const glm::vec3 &color, int model_i)
+void Renderer::DrawLineHelper(const glm::vec3 &point1, const glm::vec3 &point2, 
+						 	  const glm::vec3 &color, int model_i)
 {
 	// cout << "Drawing line:" << point1.x << "," << point1.y << "," << point2.x << "," << point2.y << endl;
 	int p1 = point1.x, q1 = point1.y, p2 = point2.x, q2 = point2.y;
@@ -100,6 +148,8 @@ void Renderer::DrawLineHelper(const glm::vec2 &point1, const glm::vec2 &point2, 
 	bool is_a_normal = ABS(dp) > ABS(dq);
 	int x = p1, y = q1;
 
+	float lineZ = (point1.z + point2.z) / 2.0;
+	// cout << lineZ << endl;
 	int progressor = is_a_normal ? x : y; // this is x in the normal case
 	int estimator = is_a_normal ? y : x;  // this is y in the normal case
 
@@ -118,8 +168,13 @@ void Renderer::DrawLineHelper(const glm::vec2 &point1, const glm::vec2 &point2, 
 			estimator += estimator_sign;
 			e -= 2 * ABS(progressor_delta) * estimator_sign;
 		}
-		putPixel(is_a_normal ? progressor : estimator, is_a_normal ? estimator : progressor, color);
-		putIModelIndex(is_a_normal ? progressor : estimator, is_a_normal ? estimator : progressor, model_i);
+		int x = is_a_normal ? progressor : estimator;
+		int y = is_a_normal ? estimator : progressor;
+		if(lineZ >  getZBufferVal(x, y)){
+			putPixel(x, y, color);
+			putIModelIndex(x, y, model_i);
+			putZBufferval(x, y, lineZ);	
+		}
 		progressor += progressor_sign;
 		e += 2 * estimator_delta;
 	}
@@ -135,6 +190,18 @@ void Renderer::putPixel(int i, int j, const glm::vec3& color)
 	colorBuffer[INDEX(width, i, j, 2)] = color.z;
 }
 
+glm::vec3 Renderer::getPixel(int i, int j) const{
+	glm::vec3 color(0, 0, 0);
+	if (i < 0) return color;
+	if (i >= width) return color;
+	if (j < 0) return color;
+	if (j >= height) return color;
+	color.x = colorBuffer[INDEX(width, i, j, 0)];
+	color.y = colorBuffer[INDEX(width, i, j, 1)];
+	color.z = colorBuffer[INDEX(width, i, j, 2)];
+	return color;
+}
+
 void Renderer::putIModelIndex(int i, int j, int model_i){
 	if (i < 0) return; if (i >= width) return;
 	if (j < 0) return; if (j >= height) return;
@@ -143,16 +210,30 @@ void Renderer::putIModelIndex(int i, int j, int model_i){
 	// cout << "putIModelIndex:" << i << "," << j << "," << model_i << endl;
 }
 
+void Renderer::putZBufferval(int i, int j, int z){
+	if (i < 0) return; if (i >= width) return;
+	if (j < 0) return; if (j >= height) return;
+	zBuffer[i + j * width] = z;
+}
+
+float Renderer::getZBufferVal(int i, int j){
+	if (i < 0) numeric_limits<float>::max(); if (i >= width) numeric_limits<float>::max();
+	if (j < 0) numeric_limits<float>::max(); if (j >= height) numeric_limits<float>::max();
+	return zBuffer[i + j * width];
+}
+
 void Renderer::createBuffers(int w, int h)
 {
 	createOpenGLBuffer(); //Do not remove this line.
 	colorBuffer = new float[3*w*h];
+	zBuffer = new float[w*h];
 	model_i_buffer = new int[w*h];
 	for (int i = 0; i < w; i++)
 	{
 		for (int j = 0; j < h; j++)
 		{
 			putPixel(i, j, glm::vec3(0.0f, 0.0f, 0.0f));
+			putZBufferval(i, j, numeric_limits<float>::min());
 			model_i_buffer[i + j*width] = -1;
 		}
 	}
@@ -283,12 +364,14 @@ void Renderer::SwapBuffers()
 
 void Renderer::ClearColorBuffer(const glm::vec3& color)
 {
+	clearColor = color;
 	for (int i = 0; i < width; i++)
 	{
 		for (int j = 0; j < height; j++)
 		{
 			putPixel(i, j, color);
 			model_i_buffer[i + j*width] = -1;
+			putZBufferval(i, j, numeric_limits<float>::min());
 		}
 	}
 }
