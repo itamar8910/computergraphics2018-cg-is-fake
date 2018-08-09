@@ -2,7 +2,7 @@
 #include "InitShader.h"
 #include <imgui/imgui.h>
 #include <iostream>
-
+#include <algorithm>
 using namespace std;
 
 #define ABS(x) (x > 0 ? x : -x)
@@ -97,6 +97,14 @@ bool IsPointInTri(const glm::vec3 &p, const vector<glm::vec3> &triangle)
 	return Sign(p, v1, v2) >= 0.0 && Sign(p, v2, v3) >= 0.0 && Sign(p, v3, v1) >= 0.0;
 }
 
+float get_x_intersection(glm::vec2 p1, glm::vec2 p2, float y){
+	float a = (p2.y - p1.y) / (p2.x - p1.x);
+	float b = p1.y;
+	return ((y - b)/a) + p1.x;
+}
+pair<glm::vec2, glm::vec2> sortByX(glm::vec2 p1, glm::vec2 p2){
+	return (p1.x < p2.x) ? make_pair(p1, p2) : make_pair(p2, p1);
+}
 
 void Renderer::scanFill(const vector<glm::vec3>& triangle, const glm::vec3& color){
 	float xmin = min(min(triangle[0].x, triangle[1].x), triangle[2].x);
@@ -104,13 +112,40 @@ void Renderer::scanFill(const vector<glm::vec3>& triangle, const glm::vec3& colo
 	float ymin = min(min(triangle[0].y, triangle[1].y), triangle[2].y);
 	float ymax = max(max(triangle[0].y, triangle[1].y), triangle[2].y);
 	float z = triangle[0].z;
-	for(int row = ymin; row <= ymax; row++){
-		for(int col = xmin; col <= xmax; col++){
-			if (IsPointInTri(glm::vec3(col, row, 0), triangle))
-			{
-				putPixel(col, row, z, color);
+	vector<pair<glm::vec2, glm::vec2> > _lines = {
+			sortByX(triangle[0], triangle[1]),
+			sortByX(triangle[0], triangle[2]),
+			sortByX(triangle[1], triangle[2]),
+	};
+	vector<pair<glm::vec2, glm::vec2> > lines;
+	for(auto line : _lines){
+		if(line.first.y != line.second.y){
+			lines.push_back(line);
+		}
+	}
+	for(int y = ymin; y <= ymax; y++){
+		vector<float> intersectionsX;
+		for(auto line : lines){
+			float x_val = get_x_intersection(line.first, line.second, y);
+			if(x_val >= xmin && x_val <= xmax && find(intersectionsX.begin(), intersectionsX.end(), x_val) == intersectionsX.end()){
+				intersectionsX.push_back(x_val);
 			}
 		}
+		if(intersectionsX.size() != 2){
+			continue;
+		}
+		int startX = (intersectionsX[0] < intersectionsX[1]) ? intersectionsX[0] : intersectionsX[1];
+		int endX = (intersectionsX[0] < intersectionsX[1]) ? intersectionsX[1] : intersectionsX[0];
+		for(int x = startX; x <= endX; x++){
+			putPixel(x, y, z, color);
+		}
+
+		// for(int col = xmin; col <= xmax; col++){
+		// 	if (IsPointInTri(glm::vec3(col, row, 0), triangle))
+		// 	{
+		// 		putPixel(col, row, z, color);
+		// 	}
+		// }
 	}
 }
 
