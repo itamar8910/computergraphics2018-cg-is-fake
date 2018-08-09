@@ -72,11 +72,11 @@ void Renderer::DrawTriangle(const vector<glm::vec3>& triangle, const glm::vec3& 
 	} 
 
 	// draw 3 edges of transformed triangle
-	DrawLineHelper(transformedTriangle[0], transformedTriangle[1], color, model_i);
-	DrawLineHelper(transformedTriangle[1], transformedTriangle[2], color, model_i);
-	DrawLineHelper(transformedTriangle[0], transformedTriangle[2], color, model_i);
+	// DrawLineHelper(transformedTriangle[0], transformedTriangle[1], color, model_i);
+	// DrawLineHelper(transformedTriangle[1], transformedTriangle[2], color, model_i);
+	// DrawLineHelper(transformedTriangle[0], transformedTriangle[2], color, model_i);
 
-	scanFill(transformedTriangle, glm::vec3(0, 0, 1));
+	scanFill(transformedTriangle, color);
 
 }
 
@@ -169,19 +169,19 @@ void Renderer::DrawLineHelper(const glm::vec3 &point1, const glm::vec3 &point2,
 	// cout << "Drew line:[" << point1.x << "," << point1.y << "],[" << point2.x << "," << point2.y << "]" << endl;
 }
 
-void Renderer::putPixel(int i, int j, float z, const glm::vec3 &color)
+void Renderer::putPixel(int i, int j, float z, const glm::vec3 &color,bool clear)
 {
-	if (z >= getZBufferVal(i, j))
+	if (clear || z >= getZBufferVal(i, j))
 	{
 		putZBufferval(i, j, z);
 		if (i < 0 || i >= width || j < 0 || j >= width)
-{
+		{
 			return;
 		}
-	colorBuffer[INDEX(width, i, j, 0)] = color.x;
-	colorBuffer[INDEX(width, i, j, 1)] = color.y;
-	colorBuffer[INDEX(width, i, j, 2)] = color.z;
-}
+		colorBuffer[INDEX(width, i, j, 0)] = color.x;
+		colorBuffer[INDEX(width, i, j, 1)] = color.y;
+		colorBuffer[INDEX(width, i, j, 2)] = color.z;
+	}
 }
 
 glm::vec3 Renderer::getPixel(int i, int j) const{
@@ -225,7 +225,7 @@ void Renderer::createBuffers(int w, int h)
 	{
 		for (int j = 0; j < h; j++)
 		{
-			putPixel(i, j, numeric_limits<float>::min(), glm::vec3(0.0f, 0.0f, 0.0f));
+			putPixel(i, j, numeric_limits<float>::min(), glm::vec3(0.0f, 0.0f, 0.0f), true);
 			model_i_buffer[i + j*width] = -1;
 		}
 	}
@@ -330,8 +330,7 @@ void Renderer::ClearColorBuffer(const glm::vec3& color)
 	{
 		for (int j = 0; j < height; j++)
 		{
-			putZBufferval(i, j, numeric_limits<float>::min());
-			putPixel(i, j, numeric_limits<float>::min(), color);
+			putPixel(i, j, numeric_limits<float>::min(), color, true);
 			model_i_buffer[i + j*width] = -1;
 		}
 	}
