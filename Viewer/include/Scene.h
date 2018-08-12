@@ -19,6 +19,7 @@ public:
 	vector<Camera*> cameras;
 	Renderer *renderer;
 	bool render_cameras;
+	glm::vec3 ambient_light_color;
 
 public:
 	Scene() : render_cameras(true) {};
@@ -31,6 +32,8 @@ public:
 	void LoadOBJModel(string fileName);
 
 	void addModel(MeshModel& model);
+
+	void addLight(Light& light);
 	
 	// Draws the current scene.
 	void Draw();

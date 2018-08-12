@@ -39,6 +39,18 @@ void Renderer::SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x
 	this->fullTransform = getViewport() * cProjection * inverse(cTransform) * oTransform;
 }
 
+void Renderer::setObjectColors(glm::vec3 _emissive, glm::vec3 _diffusive, glm::vec3 _specular){
+	model_emissive_color = _emissive;
+	model_diffusive_color = _diffusive;
+	model_specular_color = _specular;
+}
+
+void Renderer::setLights(glm::vec3 _ambient_color_light, vector<Light*>& _lights){
+	ambient_color_light = _ambient_color_light;
+	lights = _lights;
+
+}
+
 void Renderer::DrawTriangles(const vector<vector<glm::vec3>> &triangles, const vector<vector<glm::vec3>> &normals, const glm::vec3& color, int model_i)
 {
 	for(int triangle_i = 0; triangle_i < (int)triangles.size(); triangle_i++){
@@ -102,12 +114,16 @@ bool IsPointInTri(const glm::vec3 &p, const vector<glm::vec3> &triangle)
 }
 
 
-void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec3>& normals, const glm::vec3& color, int model_i){
+void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec3>& normals, const glm::vec3& _color, int model_i){
 	float xmin = min(min(triangle[0].x, triangle[1].x), triangle[2].x);
 	float xmax = max(max(triangle[0].x, triangle[1].x), triangle[2].x);
 	float ymin = min(min(triangle[0].y, triangle[1].y), triangle[2].y);
 	float ymax = max(max(triangle[0].y, triangle[1].y), triangle[2].y);
 	float z = triangle[0].z;
+	// flat shading
+	glm::vec3 location = glm::vec3((xmin+xmax)/2.0, (ymin+ymax)/2.0, z);
+	glm::vec3 face_normal = (normals[0] + normals[1] + normals[2])*(1.0f / 3.0f);
+	glm::vec3 color = calc_color_shade(location, face_normal);
 	for(int row = ymin; row <= ymax; row++){
 		for(int col = xmin; col <= xmax; col++){
 			if (IsPointInTri(glm::vec3(col, row, 0), triangle))
@@ -234,6 +250,13 @@ void Renderer::createBuffers(int w, int h)
 			model_i_buffer[i + j*width] = -1;
 		}
 	}
+}
+
+glm::vec3 Renderer::calc_color_shade(const glm::vec3& location, const glm::vec3& normal) const{
+	glm::vec3 total_color(0, 0, 0);
+	total_color += ambient_color_light * model_emissive_color;
+	// TODO: loop over lights & calc diffusive & specular
+	return total_color;
 }
 
 //##############################

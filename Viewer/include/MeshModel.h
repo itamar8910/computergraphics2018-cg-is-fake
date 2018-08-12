@@ -36,8 +36,11 @@ public:
 	glm::mat4x4 normalTransform; 
 	float x, y, z; // current position in the world, used for translation before rotation
 	float current_scale; // original scale of this model
-
 	glm::vec3 centerOfMass;
+	color emissive_color;
+	color diffusive_color;
+	color specular_color;
+
 	const hexahedron CalcBbox() const;
 	const vector<line> CalcTriangeNormals() const;
 	

@@ -253,9 +253,9 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		// ImGui::Checkbox("Mouse Window", &showAnotherWindow);
 
 
-		ImGui::SameLine();
+		
 
-		// ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		
 		if(!isAnyWindowFocused && io.MouseWheel != 0.0f){ // we don't want to re-scale the model if the user scrolls the gui
 			// scale += io.MouseWheel/MOUSE_WHEEL_INCREMENT;

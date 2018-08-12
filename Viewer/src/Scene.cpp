@@ -49,7 +49,7 @@ void Scene::Draw()
 	Camera& activeCamera = *cameras[ActiveCamera];
 	renderer->SetProjection(activeCamera.projection);
 	renderer->SetCameraTransform(activeCamera.cTransform);
-
+	renderer->setLights(ambient_light_color, lights);
 	// Tell all models to draw themselves
 	int model_i = 0;
 	float active_camera_look_z_sign = m_sign(cameras[ActiveCamera]->lookDirection.z);
@@ -90,4 +90,8 @@ vector<string> Scene::get_models_names(){
 		names.push_back(meshmodel->name);
 	}
 	return names;
+}
+
+void Scene::addLight(Light& light){
+	lights.push_back(&light);
 }

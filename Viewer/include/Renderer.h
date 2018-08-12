@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
 #include <imgui/imgui.h>
-
+#include "Light.h"
 using namespace std;
 
 /*
@@ -26,6 +26,12 @@ private:
 	glm::mat4x4 cProjection; // camera projection
 	glm::mat4x4 oTransform; // object transform
 	glm::mat4x4 nTransform; // normals transform
+	vector<Light*> lights;
+	glm::vec3 ambient_color_light;
+
+	glm::vec3 model_emissive_color;
+	glm::vec3 model_diffusive_color;
+	glm::vec3 model_specular_color;
 
 	glm::mat4x4 getViewport();
 	// Draw's a pixel in location p with color color
@@ -77,6 +83,10 @@ public:
 	// Sets the transformations for model and normals. The object transformations 
 	// decide the spacial relations of the object with respect to the world.
 	void SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x4& nTransform);
+	void setObjectColors(glm::vec3 _emissive, glm::vec3 _diffusive, glm::vec3 _specular);
+	void setLights(glm::vec3 ambient_color_light, vector<Light*>& lights);
+
+	glm::vec3 calc_color_shade(const glm::vec3& location, const glm::vec3& normal) const;
 
 	// Swaps between the back buffer and front buffer, as explained in class.
 	// https://en.wikipedia.org/wiki/Multiple_buffering#Double_buffering_in_computer_graphics

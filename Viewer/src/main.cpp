@@ -36,8 +36,13 @@ void setup_scene(Scene& scene){
 	Camera* c = new Camera();
 	c->Perspective();
 	scene.AddCamera(*c);
+	Light* l = new Light(glm::vec3(0.5, 0.5, 0.5), glm::vec3(5, 5, 20));
+	scene.addLight(*l);
+	scene.ambient_light_color = glm::vec3(0.2, 0.2, 0.2);
 	scene.ActiveCamera = 0;
+	scene.ActiveLight = 0;
 }
+
 #define TEAPOT_MODEL "../../Data/obj_examples/teapot.obj"
 int main(int argc, char **argv)
 {
@@ -50,13 +55,13 @@ int main(int argc, char **argv)
 	Renderer renderer = Renderer(w, h);
 	Scene scene = Scene(&renderer);
 	setup_scene(scene);
-	// if (argc < 2)
-	// {
-	// 	scene.LoadOBJModel(TEAPOT_MODEL);
-	// }
+	if (argc < 2)
+	{
+		scene.LoadOBJModel(TEAPOT_MODEL);
+	}
 	
 
-	for (size_t i = 1; i < argc; i++)
+	for (int i = 1; i < argc; i++)
 	{
 		scene.LoadOBJModel(argv[i]);
 	}
