@@ -2,6 +2,7 @@
 #include "InitShader.h"
 #include <imgui/imgui.h>
 #include <iostream>
+#include "utils.h"
 
 using namespace std;
 
@@ -121,19 +122,42 @@ void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec
 	float ymin = min(min(triangle[0].y, triangle[1].y), triangle[2].y);
 	float ymax = max(max(triangle[0].y, triangle[1].y), triangle[2].y);
 	float z = triangle[0].z;
-	// flat shading
-	glm::vec3 location = (triangleWorld[0] + triangleWorld[1] + triangleWorld[2])*(1.0f/3.0f);
-	glm::vec3 face_normal = (normalsWorld[0] + normalsWorld[1] + normalsWorld[2])*(1.0f / 3.0f);
-	glm::vec3 color = calc_color_shade(location, face_normal);
-	for(int row = ymin; row <= ymax; row++){
-		for(int col = xmin; col <= xmax; col++){
-			if (IsPointInTri(glm::vec3(col, row, 0), triangle))
-			{
-				putPixel(col, row, z, color);
-				putIModelIndex(col, row, model_i);
+	bool flat_shading = false; // TODO: extract to enum
+	bool gouraud_shading = true;
+	if(flat_shading){
+		// flat shading
+		glm::vec3 location = (triangleWorld[0] + triangleWorld[1] + triangleWorld[2])*(1.0f/3.0f);
+		glm::vec3 face_normal = (normalsWorld[0] + normalsWorld[1] + normalsWorld[2])*(1.0f / 3.0f);
+		glm::vec3 color = calc_color_shade(location, face_normal);
+		for(int row = ymin; row <= ymax; row++){
+			for(int col = xmin; col <= xmax; col++){
+				if (IsPointInTri(glm::vec3(col, row, 0), triangle))
+				{
+					putPixel(col, row, z, color);
+					putIModelIndex(col, row, model_i);
+				}
 			}
 		}
 	}
+	else if(gouraud_shading){
+		vector<glm::vec2> twoDTriangle;
+		vector<glm::vec3> vertex_illumin;
+		for(int i = 0; i <= 3; i++){
+			twoDTriangle.push_back(glm::vec2(triangle[i].x, triangle[i].y));
+			vertex_illumin.push_back(calc_color_shade(triangleWorld[i], normalsWorld[i]));
+		}
+		for(int row = ymin; row <= ymax; row++){
+			for(int col = xmin; col <= xmax; col++){
+				if (IsPointInTri(glm::vec3(col, row, 0), triangle))
+				{
+					glm::vec3 color = interpolateInsideTriangle(twoDTriangle, vertex_illumin, glm::vec2(col, row));
+					putPixel(col, row, z, color);
+					putIModelIndex(col, row, model_i);
+				}
+			}
+		}
+	}
+	
 }
 
 glm::vec3 Renderer::TransformPoint(const glm::vec3 &originalPoint) const
