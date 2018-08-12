@@ -25,8 +25,9 @@ Renderer::~Renderer()
 	delete[] colorBuffer;
 }
 
-void Renderer::SetCameraTransform(const glm::mat4x4& cTransform){
+void Renderer::SetCameraTransform(const glm::vec3& camLocation, const glm::mat4x4& cTransform){
 	this->cTransform = cTransform;
+	this->camLocation = camLocation;
 }
 
 void Renderer::SetProjection(const glm::mat4x4& projection){
@@ -261,17 +262,25 @@ void Renderer::createBuffers(int w, int h)
 }
 
 glm::vec3 Renderer::calc_color_shade(const glm::vec3& location, const glm::vec3& normal) const{
+	int specular_exponent = 1; // TODO: extract to member of Renderer
 	glm::vec3 total_color(0, 0, 0);
 	total_color += ambient_color_light * model_emissive_color;
 	glm::vec3 transformedLocation = ApplyObjectTransform(location);
 	glm::vec3 transformedNormal = ApplyObjectTransform(normal);
 
-	// TODO: loop over lights & calc diffusive & specular
+	// loop over lights & calc diffusive & specular
 	for(auto* light : lights){
 		glm::vec3 L = light->location - transformedLocation;
+		// calc diffusive
 		float cos_theta = glm::dot(L, transformedNormal) / (glm::length(L) * glm::length(transformedNormal));
-		glm::vec3 illumination_color = light->color * model_diffusive_color * cos_theta;
-		total_color += illumination_color;
+		glm::vec3 diffusive_illumination_color = light->color * model_diffusive_color * cos_theta;
+		total_color += diffusive_illumination_color;
+		// calc specular
+		glm::vec3 R = 2.0f * transformedNormal * glm::dot(L, transformedNormal) - L; // reflection of light
+		glm::vec3 V = camLocation - transformedLocation;
+		glm::vec3 specular_illumination_color = light->color * model_specular_color * ((float)glm::pow(glm::dot(R, V), specular_exponent));
+		total_color += specular_illumination_color;
+		// TODO: clamping
 	}
 	return total_color;
 }

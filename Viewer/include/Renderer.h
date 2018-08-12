@@ -28,6 +28,7 @@ private:
 	glm::mat4x4 nTransform; // normals transform
 	vector<Light*> lights;
 	glm::vec3 ambient_color_light;
+	glm::vec3 camLocation;
 
 	glm::vec3 model_emissive_color;
 	glm::vec3 model_diffusive_color;
@@ -75,7 +76,7 @@ public:
 	glm::vec3 TransformPoint(const glm::vec3 &originalPoint) const;
 	glm::vec3 ApplyObjectTransform(const glm::vec3 &originalPoint) const;
 	// Sets the camera transformations with relation to world coordinates
-	void SetCameraTransform(const glm::mat4x4& cTransform);
+	void SetCameraTransform(const glm::vec3& camLocation, const glm::mat4x4& cTransform);
 
 	// Sets the camera projection (perspective, orthographic etc...)
 	void SetProjection(const glm::mat4x4& projection);

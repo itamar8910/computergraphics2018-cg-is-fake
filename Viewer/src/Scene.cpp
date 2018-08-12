@@ -48,7 +48,7 @@ void Scene::Draw()
 	// Send the renderer the current camera transform and the projection
 	Camera& activeCamera = *cameras[ActiveCamera];
 	renderer->SetProjection(activeCamera.projection);
-	renderer->SetCameraTransform(activeCamera.cTransform);
+	renderer->SetCameraTransform(glm::vec3(activeCamera.x, activeCamera.y, activeCamera.z), activeCamera.cTransform);
 	renderer->setLights(ambient_light_color, lights);
 	// Tell all models to draw themselves
 	int model_i = 0;
