@@ -36,7 +36,7 @@ void setup_scene(Scene& scene){
 	Camera* c = new Camera();
 	c->Perspective();
 	scene.AddCamera(*c);
-	Light* l = new Light(glm::vec3(0.5, 0.5, 0.5), glm::vec3(5, 5, 20));
+	Light* l = new Light(glm::vec3(0.5, 0.5, 0.5), glm::vec3(5, 5, 10));
 	scene.addLight(*l);
 	scene.ambient_light_color = glm::vec3(0.2, 0.2, 0.2);
 	scene.ActiveCamera = 0;

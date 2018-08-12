@@ -79,20 +79,20 @@ glm::mat4x4 Renderer::getViewport() {
 void Renderer::DrawTriangle(const vector<glm::vec3>& triangle, const vector<glm::vec3> &normals, const glm::vec3& color, int model_i) 
 {
 	vector<glm::vec3> transformedTriangle;
-	vector<glm::vec3> transformedNormals;
+	// vector<glm::vec3> transformedNormals;
 	for(const glm::vec3& originalPoint : triangle){
 		transformedTriangle.push_back(TransformPoint(originalPoint));
 	} 
-	for(const glm::vec3 originalNormal : normals){
-		transformedNormals.push_back(TransformPoint(originalNormal));
-	}
+	// for(const glm::vec3 originalNormal : normals){
+	// 	transformedNormals.push_back(TransformPoint(originalNormal));
+	// }
 
 	// draw 3 edges of transformed triangle
 	// DrawLineHelper(transformedTriangle[0], transformedTriangle[1], color, model_i);
 	// DrawLineHelper(transformedTriangle[1], transformedTriangle[2], color, model_i);
 	// DrawLineHelper(transformedTriangle[0], transformedTriangle[2], color, model_i);
 
-	scanFill(transformedTriangle, transformedNormals, color, model_i);
+	scanFill(transformedTriangle, triangle, normals, color, model_i);
 
 }
 
@@ -114,15 +114,15 @@ bool IsPointInTri(const glm::vec3 &p, const vector<glm::vec3> &triangle)
 }
 
 
-void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec3>& normals, const glm::vec3& _color, int model_i){
+void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec3>& triangleWorld, const vector<glm::vec3>& normalsWorld, const glm::vec3& _color, int model_i){
 	float xmin = min(min(triangle[0].x, triangle[1].x), triangle[2].x);
 	float xmax = max(max(triangle[0].x, triangle[1].x), triangle[2].x);
 	float ymin = min(min(triangle[0].y, triangle[1].y), triangle[2].y);
 	float ymax = max(max(triangle[0].y, triangle[1].y), triangle[2].y);
 	float z = triangle[0].z;
 	// flat shading
-	glm::vec3 location = glm::vec3((xmin+xmax)/2.0, (ymin+ymax)/2.0, z);
-	glm::vec3 face_normal = (normals[0] + normals[1] + normals[2])*(1.0f / 3.0f);
+	glm::vec3 location = (triangleWorld[0] + triangleWorld[1] + triangleWorld[2])*(1.0f/3.0f);
+	glm::vec3 face_normal = (normalsWorld[0] + normalsWorld[1] + normalsWorld[2])*(1.0f / 3.0f);
 	glm::vec3 color = calc_color_shade(location, face_normal);
 	for(int row = ymin; row <= ymax; row++){
 		for(int col = xmin; col <= xmax; col++){
@@ -142,6 +142,14 @@ glm::vec3 Renderer::TransformPoint(const glm::vec3 &originalPoint) const
 		transformed = this->fullTransform * homogPoint;
 		transformed /= transformed.w;
 		return glm::vec3(transformed);
+}
+
+glm::vec3 Renderer::ApplyObjectTransform(const glm::vec3 &originalPoint) const{
+	glm::vec4 homogPoint(originalPoint, 1);
+	glm::vec4 transformed;
+	transformed = oTransform * homogPoint;
+	transformed /= transformed.w;
+	return glm::vec3(transformed);
 }
 
 void Renderer::DrawLine(const glm::vec3 &point1, const glm::vec3 &point2, const glm::vec3 &color, int model_i){
@@ -255,7 +263,16 @@ void Renderer::createBuffers(int w, int h)
 glm::vec3 Renderer::calc_color_shade(const glm::vec3& location, const glm::vec3& normal) const{
 	glm::vec3 total_color(0, 0, 0);
 	total_color += ambient_color_light * model_emissive_color;
+	glm::vec3 transformedLocation = ApplyObjectTransform(location);
+	glm::vec3 transformedNormal = ApplyObjectTransform(normal);
+
 	// TODO: loop over lights & calc diffusive & specular
+	for(auto* light : lights){
+		glm::vec3 L = light->location - transformedLocation;
+		float cos_theta = glm::dot(L, transformedNormal) / (glm::length(L) * glm::length(transformedNormal));
+		glm::vec3 illumination_color = light->color * model_diffusive_color * cos_theta;
+		total_color += illumination_color;
+	}
 	return total_color;
 }
 

@@ -71,9 +71,9 @@ public:
 	void DrawTriangles(const vector<vector<glm::vec3>> &triangles, const vector<vector<glm::vec3>> & normals, const glm::vec3& color = glm::vec3(0, 0, 0), int model_i = -1);
 
 	void DrawLine(const glm::vec3 &point1, const glm::vec3 &point2, const glm::vec3 &color = glm::vec3(0.0, 0.0, 0.0), int model_i = -1);
-	void scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec3>& normals, const glm::vec3& color, int model_i=-1);
+	void scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec3>& triangleWorld, const vector<glm::vec3>& normals, const glm::vec3& color, int model_i=-1);
 	glm::vec3 TransformPoint(const glm::vec3 &originalPoint) const;
-
+	glm::vec3 ApplyObjectTransform(const glm::vec3 &originalPoint) const;
 	// Sets the camera transformations with relation to world coordinates
 	void SetCameraTransform(const glm::mat4x4& cTransform);
 
