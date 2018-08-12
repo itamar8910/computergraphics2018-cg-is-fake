@@ -169,15 +169,18 @@ void MeshModel::LoadFile(const string& fileName)
 	for (auto& face : faces) // iterate over faces
 	{
 		vector<glm::vec3> triangle;
+		vector<glm::vec3> triangle_normals;
 		for (int i = 0; i < FACE_ELEMENTS; i++) // iterate over face's vertices
 		{
 			// append i'th vetice of current face to list of all vertices
 			// obj files are 1-indexed
-			point current_vertex =vertices[face.v[i]-1];
+			point current_vertex = vertices[face.v[i]-1];
 			triangle.push_back(vertices[face.v[i]-1]);
+			triangle_normals.push_back(normals[face.vn[i] - 1]);
 			vertex_normals.push_back(pair<point, point>(current_vertex,current_vertex + normal_length*glm::normalize(normals[face.vn[i] - 1])));
 		}
 		triangles.push_back(triangle);
+		vertex_noramls_by_triangles.push_back(triangle_normals);
 	}
 }
 
@@ -208,7 +211,7 @@ void MeshModel::Draw(Renderer& renderer, const glm::vec3& color, int model_i)
 		}
 	}
 	// send triangles to renderer
-	renderer.DrawTriangles(triangles, nullptr, color, model_i);
+	renderer.DrawTriangles(triangles, vertex_noramls_by_triangles, color, model_i);
 }
 
 const vector<line> MeshModel::CalcTriangeNormals() const

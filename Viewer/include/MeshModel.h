@@ -26,6 +26,7 @@ public:
 	string name;
 
 	vector<triangle> triangles;
+	vector<vector<glm::vec3> > vertex_noramls_by_triangles;
 	vector<line> vertex_normals;
 	vector<line> triangle_normals;
 	hexahedron bbox;

@@ -39,10 +39,10 @@ void Renderer::SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x
 	this->fullTransform = getViewport() * cProjection * inverse(cTransform) * oTransform;
 }
 
-void Renderer::DrawTriangles(const vector<vector<glm::vec3>> &triangles, const vector<glm::vec3> *normals, const glm::vec3& color, int model_i)
+void Renderer::DrawTriangles(const vector<vector<glm::vec3>> &triangles, const vector<vector<glm::vec3>> &normals, const glm::vec3& color, int model_i)
 {
-	for(const vector<glm::vec3> triangle : triangles){
-		DrawTriangle(triangle, color, model_i);
+	for(int triangle_i = 0; triangle_i < (int)triangles.size(); triangle_i++){
+		DrawTriangle(triangles[triangle_i], normals[triangle_i], color, model_i);
 	}
 }
 
@@ -64,19 +64,23 @@ glm::mat4x4 Renderer::getViewport() {
     return m;
 }
 
-void Renderer::DrawTriangle(const vector<glm::vec3>& triangle, const glm::vec3& color, int model_i) 
+void Renderer::DrawTriangle(const vector<glm::vec3>& triangle, const vector<glm::vec3> &normals, const glm::vec3& color, int model_i) 
 {
 	vector<glm::vec3> transformedTriangle;
+	vector<glm::vec3> transformedNormals;
 	for(const glm::vec3& originalPoint : triangle){
 		transformedTriangle.push_back(TransformPoint(originalPoint));
 	} 
+	for(const glm::vec3 originalNormal : normals){
+		transformedNormals.push_back(TransformPoint(originalNormal));
+	}
 
 	// draw 3 edges of transformed triangle
 	// DrawLineHelper(transformedTriangle[0], transformedTriangle[1], color, model_i);
 	// DrawLineHelper(transformedTriangle[1], transformedTriangle[2], color, model_i);
 	// DrawLineHelper(transformedTriangle[0], transformedTriangle[2], color, model_i);
 
-	scanFill(transformedTriangle, color);
+	scanFill(transformedTriangle, transformedNormals, color, model_i);
 
 }
 
@@ -98,7 +102,7 @@ bool IsPointInTri(const glm::vec3 &p, const vector<glm::vec3> &triangle)
 }
 
 
-void Renderer::scanFill(const vector<glm::vec3>& triangle, const glm::vec3& color){
+void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec3>& normals, const glm::vec3& color, int model_i){
 	float xmin = min(min(triangle[0].x, triangle[1].x), triangle[2].x);
 	float xmax = max(max(triangle[0].x, triangle[1].x), triangle[2].x);
 	float ymin = min(min(triangle[0].y, triangle[1].y), triangle[2].y);
@@ -109,6 +113,7 @@ void Renderer::scanFill(const vector<glm::vec3>& triangle, const glm::vec3& colo
 			if (IsPointInTri(glm::vec3(col, row, 0), triangle))
 			{
 				putPixel(col, row, z, color);
+				putIModelIndex(col, row, model_i);
 			}
 		}
 	}
