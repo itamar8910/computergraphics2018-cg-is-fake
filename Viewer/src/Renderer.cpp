@@ -121,10 +121,14 @@ void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec
 	float xmax = max(max(triangle[0].x, triangle[1].x), triangle[2].x);
 	float ymin = min(min(triangle[0].y, triangle[1].y), triangle[2].y);
 	float ymax = max(max(triangle[0].y, triangle[1].y), triangle[2].y);
-	float z = triangle[0].z; // TODO: interpolate z value (templtae the interpolation inside triangle function)
+	// float z = triangle[0].z; // TODO: interpolate z value (templtae the interpolation inside triangle function)
+	vector<glm::vec2> twoDTriangle;
+	for(int i = 0; i <= 3; i++){
+		twoDTriangle.push_back(glm::vec2(triangle[i].x, triangle[i].y));
+	}
 	bool flat_shading = false; // TODO: extract to enum
-	bool gouraud_shading = false;
-	bool phong_shading = true;
+	bool gouraud_shading = true;
+	bool phong_shading = false;
 	if(flat_shading){
 		// flat shading
 		glm::vec3 location = (triangleWorld[0] + triangleWorld[1] + triangleWorld[2])*(1.0f/3.0f);
@@ -134,6 +138,7 @@ void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec
 			for(int col = xmin; col <= xmax; col++){
 				if (IsPointInTri(glm::vec3(col, row, 0), triangle))
 				{
+					float z = interpolateInsideTriangle<float>(twoDTriangle, {triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
 					putPixel(col, row, z, color);
 					putIModelIndex(col, row, model_i);
 				}
@@ -141,10 +146,8 @@ void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec
 		}
 	}
 	else if(gouraud_shading){
-		vector<glm::vec2> twoDTriangle;
 		vector<glm::vec3> vertex_illumin;
 		for(int i = 0; i <= 3; i++){
-			twoDTriangle.push_back(glm::vec2(triangle[i].x, triangle[i].y));
 			vertex_illumin.push_back(calc_color_shade(triangleWorld[i], normalsWorld[i]));
 		}
 		for(int row = ymin; row <= ymax; row++){
@@ -152,6 +155,7 @@ void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec
 				if (IsPointInTri(glm::vec3(col, row, 0), triangle))
 				{
 					glm::vec3 color = interpolateInsideTriangle<glm::vec3>(twoDTriangle, vertex_illumin, glm::vec2(col, row));
+					float z = interpolateInsideTriangle<float>(twoDTriangle, {triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
 					putPixel(col, row, z, color);
 					putIModelIndex(col, row, model_i);
 				}
@@ -159,10 +163,7 @@ void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec
 		}
 	}
 	else if(phong_shading){
-		vector<glm::vec2> twoDTriangle;
-		for(int i = 0; i <= 3; i++){
-			twoDTriangle.push_back(glm::vec2(triangle[i].x, triangle[i].y));
-		}
+		
 		for(int row = ymin; row <= ymax; row++){
 			for(int col = xmin; col <= xmax; col++){
 				if (IsPointInTri(glm::vec3(col, row, 0), triangle))
@@ -172,6 +173,7 @@ void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec
 					float yInWord = interpolateInsideTriangle<float>(twoDTriangle, {triangleWorld[0].y, triangleWorld[1].y, triangleWorld[2].y}, glm::vec2(col, row));
 					float zInWord = interpolateInsideTriangle<float>(twoDTriangle, {triangleWorld[0].z, triangleWorld[1].z, triangleWorld[2].z}, glm::vec2(col, row));
 					glm::vec3 color = calc_color_shade(glm::vec3(xInWord, yInWord, zInWord), pointNormal);
+					float z = interpolateInsideTriangle<float>(twoDTriangle, {triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
 					putPixel(col, row, z, color);
 					putIModelIndex(col, row, model_i);
 				}
