@@ -13,12 +13,14 @@ Renderer::Renderer() : width(1280), height(720)
 {
 	initOpenGLRendering();
 	createBuffers(1280,720);
+	current_shading = Shading::Flat;
 }
 
 Renderer::Renderer(int w, int h) : width(w), height(h)
 {
 	initOpenGLRendering();
 	createBuffers(w,h);
+	current_shading = Shading::Flat;
 }
 
 Renderer::~Renderer()
@@ -126,10 +128,8 @@ void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec
 	for(int i = 0; i <= 3; i++){
 		twoDTriangle.push_back(glm::vec2(triangle[i].x, triangle[i].y));
 	}
-	bool flat_shading = false; // TODO: extract to enum
-	bool gouraud_shading = true;
-	bool phong_shading = false;
-	if(flat_shading){
+	
+	if(current_shading == Shading::Flat){
 		// flat shading
 		glm::vec3 location = (triangleWorld[0] + triangleWorld[1] + triangleWorld[2])*(1.0f/3.0f);
 		glm::vec3 face_normal = (normalsWorld[0] + normalsWorld[1] + normalsWorld[2])*(1.0f / 3.0f);
@@ -145,7 +145,7 @@ void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec
 			}
 		}
 	}
-	else if(gouraud_shading){
+	else if(current_shading == Shading::Gouraud){
 		vector<glm::vec3> vertex_illumin;
 		for(int i = 0; i <= 3; i++){
 			vertex_illumin.push_back(calc_color_shade(triangleWorld[i], normalsWorld[i]));
@@ -162,7 +162,7 @@ void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec
 			}
 		}
 	}
-	else if(phong_shading){
+	else if(current_shading == Shading::Phong){
 		
 		for(int row = ymin; row <= ymax; row++){
 			for(int col = xmin; col <= xmax; col++){

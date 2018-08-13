@@ -21,6 +21,7 @@ float keyboard_step_size = 0.1f;
 
 bool showDemoWindow = false;
 bool showCamPosWindow = false;
+bool showShadingWindow = false;
 bool showAnotherWindow = false;
 bool showFile = false;
 glm::vec4 clearColor = glm::vec4(0.4f, 0.55f, 0.60f, 1.00f);
@@ -131,6 +132,22 @@ void ShowCamPosWindow(Scene* scene){
 	ImGui::End();
 }
 
+void ShowShadingWindow(Scene* scene){
+	ImGui::Begin("Shading Window");
+	if (ImGui::TreeNode("Select shading type")){
+			vector<string> shading_names = {"Flat", "Gouraud", "Phong"};
+			for (int i = 0; i < (int)shading_names.size(); i++)
+			{
+				if (ImGui::Selectable( shading_names[i].c_str(), static_cast<int>(scene->renderer->current_shading) == i)){
+					scene->renderer->current_shading = static_cast<Shading>(i);
+				}
+			}
+			ImGui::TreePop();
+
+		}
+	ImGui::End();
+}
+
 void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 {
 	ImGui::SetNextWindowPos(ImVec2(0, 20), ImGuiCond_Once);
@@ -153,6 +170,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		static int prevActiveModel = scene->ActiveModel;
 		ImGui::SliderFloat("keyboard step size", &keyboard_step_size, 0.05f, 5.0f); 
 		ImGui::Checkbox("Camera Window", &showCamPosWindow);      // Edit bools storing our windows open/close state
+		ImGui::Checkbox("Shading Window", &showShadingWindow);      // Edit bools storing our windows open/close state
 		ImGui::Checkbox("Rotate around model frame",&ModelFrame);
 		ImGui::SliderFloat("translate X", &xPos, -10.0f, 10.0f);           
 		ImGui::SliderFloat("translate Y", &yPos, -10.0f, 10.0f);           
@@ -382,6 +400,11 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 	if(showCamPosWindow){
 		ShowCamPosWindow(scene);
 	}
+
+	if(showShadingWindow){
+		ShowShadingWindow(scene);
+	}
+
 
 	// Demonstrate creating a fullscreen menu bar and populating it.
 	{

@@ -7,6 +7,8 @@
 #include "Light.h"
 using namespace std;
 
+enum  class Shading {Flat, Gouraud, Phong};
+
 /*
  * Renderer class. This class takes care of all the rendering operations needed for rendering a full scene to the screen.
  * It contains all the data structures we learned in class plus your own data structures.
@@ -33,6 +35,7 @@ private:
 	glm::vec3 model_emissive_color;
 	glm::vec3 model_diffusive_color;
 	glm::vec3 model_specular_color;
+
 
 	glm::mat4x4 getViewport();
 	// Draw's a pixel in location p with color color
@@ -61,7 +64,8 @@ public:
 
 	glm::mat4x4 fullTransform; // full transform: world coordinates -> screen
 	int width, height;
-	
+	Shading current_shading;
+
 	Renderer();
 	Renderer(int w, int h);
 	~Renderer();
