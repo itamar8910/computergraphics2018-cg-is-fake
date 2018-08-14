@@ -25,7 +25,7 @@ public:
 	vector<line3d_t> vertex_normals;
 	vector<line3d_t> triangle_normals;
 	vector<vector<glm::vec3> > vertex_noramls_by_triangles;
-	hexahedron bbox;
+	hexahedron_t bbox;
 
 	// Add more attributes.
 	glm::mat4x4 worldTransform;
@@ -37,7 +37,7 @@ public:
 	color_t diffusive_color;
 	color_t specular_color;
 
-	const hexahedron CalcBbox() const;
+	const hexahedron_t CalcBbox() const;
 	const vector<line3d_t> CalcTriangeNormals() const;
 	
 public:

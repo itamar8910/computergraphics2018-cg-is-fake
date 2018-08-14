@@ -107,11 +107,9 @@ void MeshModel::initializeInternals(){
 glm::vec3 MeshModel::calcCenterOfMass() const{
 	glm::vec3 pointsSum(0);
 	for(const auto& triangle : triangles){
-		for(const auto& point  : triangle){
-			pointsSum += point;
-		}
+			pointsSum += triangle.center;
 	}
-	return (pointsSum * (float)(1.0 / (triangles.size() * 3.0))) * (float)current_scale;
+	return pointsSum * (1.0f / triangles.size()) * current_scale;
 }
 
 MeshModel::~MeshModel()

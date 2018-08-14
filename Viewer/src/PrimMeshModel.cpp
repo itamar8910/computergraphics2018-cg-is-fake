@@ -59,12 +59,12 @@ inline PrimMeshModel PrimMeshModel::CreateCube(const point3d_t &min_p, const poi
 
 
 
-const hexahedron MeshModel::CalcBbox() const
+const hexahedron_t MeshModel::CalcBbox() const
 {
 	point3d_t min_p, max_p;
 	for (const auto &tri : triangles)
 	{
-		for (const auto &p : tri)
+		for (const auto &p : tri.vertices)
 		{
 
 			for (size_t i = 0; i < 3; i++)

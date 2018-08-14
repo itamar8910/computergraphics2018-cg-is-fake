@@ -17,11 +17,11 @@ class PrimMeshModel : public MeshModel{
 //Note: got link error when trying to implement in .cpp
 inline PrimMeshModel *PrimMeshModel::CreatePyramid()
 {
-        vector<glm::vec3> face1 = {glm::vec3(0, 0, 0), glm::vec3(1, 0, 0), glm::vec3(0, 1, 0)};
-        vector<glm::vec3> face2 = {glm::vec3(0, 0, 0), glm::vec3(1, 0, 0), glm::vec3(0.5, 0.5, 1)};
-        vector<glm::vec3> face3 = {glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.5, 0.5, 1)};
-        vector<glm::vec3> face4 = {glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.5, 0.5, 1)};
-        vector<vector<glm::vec3> > triangles = {face1, face2, face3, face4};
+        triangle3d_t face1 = {glm::vec3(0, 0, 0), glm::vec3(1, 0, 0), glm::vec3(0, 1, 0)};
+        triangle3d_t face2 = {glm::vec3(0, 0, 0), glm::vec3(1, 0, 0), glm::vec3(0.5, 0.5, 1)};
+        triangle3d_t face3 = {glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.5, 0.5, 1)};
+        triangle3d_t face4 = {glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.5, 0.5, 1)};
+        vector<triangle3d_t> triangles = {face1, face2, face3, face4};
         PrimMeshModel *pyramid = new PrimMeshModel("pyramid"); // for some reason getting a link error when trying to call 
                                                  //PrimMeshModel(const vector<vector<glm::vec3> >& _triangles) constructor
         pyramid->triangles = triangles;

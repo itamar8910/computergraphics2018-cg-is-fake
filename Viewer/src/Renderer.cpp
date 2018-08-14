@@ -55,7 +55,7 @@ void Renderer::setLights(glm::vec3 _ambient_color_light, vector<Light*>& _lights
 
 }
 
-void Renderer::DrawTriangles(const vector<vector<glm::vec3>> &triangles, const vector<vector<glm::vec3>> &normals, const glm::vec3& color, int model_i)
+void Renderer::DrawTriangles(const vector<triangle3d_t> &triangles, const vector<vector<glm::vec3>> &normals, const glm::vec3& color, int model_i)
 {
 	for(int triangle_i = 0; triangle_i < (int)triangles.size(); triangle_i++){
 		DrawTriangle(triangles[triangle_i], normals[triangle_i], color, model_i);
@@ -80,13 +80,14 @@ glm::mat4x4 Renderer::getViewport() {
     return m;
 }
 
-void Renderer::DrawTriangle(const vector<glm::vec3>& triangle, const vector<glm::vec3> &normals, const glm::vec3& color, int model_i) 
+void Renderer::DrawTriangle(const triangle3d_t& triangle, const vector<glm::vec3> &normals, const glm::vec3& color, int model_i) 
 {
-	vector<glm::vec3> transformedTriangle;
+	vector<glm::vec3> transformedTriangle_v;
 	// vector<glm::vec3> transformedNormals;
-	for(const glm::vec3& originalPoint : triangle){
-		transformedTriangle.push_back(TransformPoint(originalPoint));
-	} 
+	for(const glm::vec3& originalPoint : triangle.vertices){
+		transformedTriangle_v.push_back(TransformPoint(originalPoint));
+	}
+	triangle3d_t transformedTriangle = triangle3d_t(transformedTriangle_v);
 	// for(const glm::vec3 originalNormal : normals){
 	// 	transformedNormals.push_back(TransformPoint(originalNormal));
 	// }
@@ -102,20 +103,8 @@ float getXOfLine(glm::vec3 point1, glm::vec3 point2, float y){
 	return point1.x + ((delta) * (y - point1.y));
 }
 
-//Solution from https://www.gamedev.net/forums/topic/295943-is-this-a-better-point-in-triangle-test-2d/?do=findComment&comment=2873961
-float Sign(const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3)
+void Renderer::scanFill(const triangle3d_t &triangle, const vector<glm::vec3> &triangleWorld, const vector<glm::vec3> &normalsWorld, const glm::vec3 &_color, int model_i)
 {
-  return (v1.x - v3.x) * (v2.y - v3.y) - (v2.x - v3.x) * (v1.y - v3.y);
-}
-
-bool IsPointInTri(const glm::vec3 &p, const vector<glm::vec3> &triangle)
-{
-	const glm::vec3 &v1 = triangle[0], &v2 = triangle[1], &v3 = triangle[2];
-	return Sign(p, v1, v2) >= 0.0 && Sign(p, v2, v3) >= 0.0 && Sign(p, v3, v1) >= 0.0;
-}
-
-
-void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec3>& triangleWorld, const vector<glm::vec3>& normalsWorld, const glm::vec3& _color, int model_i){
 	float xmin = min(min(triangle[0].x, triangle[1].x), triangle[2].x);
 	float xmax = max(max(triangle[0].x, triangle[1].x), triangle[2].x);
 	float ymin = min(min(triangle[0].y, triangle[1].y), triangle[2].y);
@@ -138,7 +127,7 @@ void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec
 		{
 			for (int col = xmin; col <= xmax; col++)
 			{
-				if (IsPointInTri(glm::vec3(col, row, 0), triangle))
+				if (triangle.IsPointInTri(glm::vec3(col, row, 0)))
 				{
 					float z = interpolateInsideTriangle<float>(twoDTriangle, {triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
 					putPixel(col, row, z, color);
@@ -159,7 +148,7 @@ void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec
 		{
 			for (int col = xmin; col <= xmax; col++)
 			{
-				if (IsPointInTri(glm::vec3(col, row, 0), triangle))
+				if (triangle.IsPointInTri(glm::vec3(col, row, 0)))
 				{
 					glm::vec3 color = interpolateInsideTriangle<glm::vec3>(twoDTriangle, vertex_illumin, glm::vec2(col, row));
 					float z = interpolateInsideTriangle<float>(twoDTriangle, {triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
@@ -176,7 +165,7 @@ void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec
 		{
 			for (int col = xmin; col <= xmax; col++)
 			{
-				if (IsPointInTri(glm::vec3(col, row, 0), triangle))
+				if (triangle.IsPointInTri(glm::vec3(col, row, 0)))
 				{
 					glm::vec3 pointNormal = interpolateInsideTriangle<glm::vec3>(twoDTriangle, normalsWorld, glm::vec2(col, row));
 					float xInWord = interpolateInsideTriangle<float>(twoDTriangle, {triangleWorld[0].x, triangleWorld[1].x, triangleWorld[2].x}, glm::vec2(col, row));
