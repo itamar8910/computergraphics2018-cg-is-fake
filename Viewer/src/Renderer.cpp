@@ -248,8 +248,6 @@ void Renderer::DrawLineHelper(const glm::vec3 &point1, const glm::vec3 &point2,
 
 void Renderer::putPixel(int i, int j, float z, const glm::vec3 &color,bool clear)
 {
-	if(j%2 != 0)
-		return;
 	if (clear || z >= getZBufferVal(i, j))
 	{
 		putZBufferval(i, j, z);
