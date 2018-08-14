@@ -6,9 +6,9 @@
 class Light
 {
 public:
-  Light(point3d_t location, intensity_t intensity);
+  Light(color_t _color, point3d_t location);
   ~Light();
-  intensity_t intensity;
+  color_t color;
   point3d_t location;
   virtual color_t applyOn(const color_t &color, const glm::vec3 normal) = 0;
 };

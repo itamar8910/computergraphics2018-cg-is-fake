@@ -78,7 +78,10 @@ glm::vec2 vec2fFromStream(std::istream& issLine)
 
 
 MeshModel::MeshModel(const string& fileName, const string& _name) : name(_name), worldTransform(glm::mat4(1)), normalTransform(glm::mat4(1)), x(0), y(0), z(0),
-											   current_scale(1), centerOfMass(0)
+											   current_scale(1), centerOfMass(0),
+											   emissive_color(1, 0, 0),
+											   diffusive_color(0.5, 0.5, 0.5),
+											   specular_color(0.005, 0.005, 0.005)
 {
 	if(fileName.length() > 0){
 		LoadFile(fileName);
@@ -169,6 +172,7 @@ void MeshModel::LoadFile(const string& fileName)
 	for (auto& face : faces) // iterate over faces
 	{
 		vector<glm::vec3> triangle;
+		vector<glm::vec3> triangle_normals;
 		for (int i = 0; i < FACE_ELEMENTS; i++) // iterate over face's vertices
 		{
 			// append i'th vetice of current face to list of all vertices
@@ -176,8 +180,10 @@ void MeshModel::LoadFile(const string& fileName)
 			point3d_t current_vertex =vertices[face.v[i]-1];
 			triangle.push_back(vertices[face.v[i]-1]);
 			vertex_normals.push_back(pair<point3d_t, point3d_t>(current_vertex,current_vertex + normal_length*glm::normalize(normals[face.vn[i] - 1])));
+			triangle_normals.push_back(normals[face.vn[i] - 1]);
 		}
 		triangles.push_back(triangle);
+		vertex_noramls_by_triangles.push_back(triangle_normals);
 	}
 }
 
@@ -185,7 +191,7 @@ void MeshModel::Draw(Renderer& renderer, const glm::vec3& color, int model_i)
 {
 	// send transformation to renderer
 	renderer.SetObjectMatrices(worldTransform, normalTransform);
-
+	renderer.setObjectColors(emissive_color, diffusive_color, specular_color);
 	if (this->draw_vertex_normals)
 	{
 		for (auto &pair : this->vertex_normals)
@@ -208,7 +214,7 @@ void MeshModel::Draw(Renderer& renderer, const glm::vec3& color, int model_i)
 		}
 	}
 	// send triangles to renderer
-	renderer.DrawTriangles(triangles, nullptr, color, model_i);
+	renderer.DrawTriangles(triangles, vertex_noramls_by_triangles, color, model_i);
 }
 
 const vector<line3d_t> MeshModel::CalcTriangeNormals() const

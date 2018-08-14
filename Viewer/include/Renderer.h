@@ -4,8 +4,10 @@
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
 #include <imgui/imgui.h>
-
+#include "Light.h"
 using namespace std;
+
+enum  class Shading {Flat, Gouraud, Phong};
 
 /*
  * Renderer class. This class takes care of all the rendering operations needed for rendering a full scene to the screen.
@@ -26,6 +28,14 @@ private:
 	glm::mat4x4 cProjection; // camera projection
 	glm::mat4x4 oTransform; // object transform
 	glm::mat4x4 nTransform; // normals transform
+	vector<Light*> lights;
+	glm::vec3 ambient_color_light;
+	glm::vec3 camLocation;
+
+	glm::vec3 model_emissive_color;
+	glm::vec3 model_diffusive_color;
+	glm::vec3 model_specular_color;
+
 
 	glm::mat4x4 getViewport();
 	// Draw's a pixel in location p with color color
@@ -39,7 +49,7 @@ private:
 	void DrawLineHelper(const glm::vec3 &point1, const glm::vec3 &point2
 						, const glm::vec3 &color= glm::vec3(0.0, 0.0, 0.0), int model_i=-1);
 
-	void DrawTriangle(const vector<glm::vec3> &triangle, const glm::vec3& color = glm::vec3(0, 0, 0), int model_i=-1);
+	void DrawTriangle(const vector<glm::vec3> &triangle, const vector<glm::vec3> &noramls, const glm::vec3& color = glm::vec3(0, 0, 0), int model_i=-1);
 
 	//##############################
 	//##openGL stuff. Don't touch.##
@@ -54,7 +64,8 @@ public:
 
 	glm::mat4x4 fullTransform; // full transform: world coordinates -> screen
 	int width, height;
-	
+	Shading current_shading;
+
 	Renderer();
 	Renderer(int w, int h);
 	~Renderer();
@@ -62,14 +73,14 @@ public:
 	void Init();
 
 	// Draws wireframe triangles to the color buffer
-	void DrawTriangles(const vector<vector<glm::vec3>> &triangles, const vector<glm::vec3> *normals = NULL, const glm::vec3& color = glm::vec3(0, 0, 0), int model_i = -1);
+	void DrawTriangles(const vector<vector<glm::vec3>> &triangles, const vector<vector<glm::vec3>> & normals, const glm::vec3& color = glm::vec3(0, 0, 0), int model_i = -1);
 
 	void DrawLine(const glm::vec3 &point1, const glm::vec3 &point2, const glm::vec3 &color = glm::vec3(0.0, 0.0, 0.0), int model_i = -1);
-	void scanFill(const vector<glm::vec3>& triangle, const glm::vec3& color);
+	void scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec3>& triangleWorld, const vector<glm::vec3>& normals, const glm::vec3& color, int model_i=-1);
 	glm::vec3 TransformPoint(const glm::vec3 &originalPoint) const;
-
+	glm::vec3 ApplyObjectTransform(const glm::vec3 &originalPoint) const;
 	// Sets the camera transformations with relation to world coordinates
-	void SetCameraTransform(const glm::mat4x4& cTransform);
+	void SetCameraTransform(const glm::vec3& camLocation, const glm::mat4x4& cTransform);
 
 	// Sets the camera projection (perspective, orthographic etc...)
 	void SetProjection(const glm::mat4x4& projection);
@@ -77,6 +88,10 @@ public:
 	// Sets the transformations for model and normals. The object transformations 
 	// decide the spacial relations of the object with respect to the world.
 	void SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x4& nTransform);
+	void setObjectColors(glm::vec3 _emissive, glm::vec3 _diffusive, glm::vec3 _specular);
+	void setLights(glm::vec3 ambient_color_light, vector<Light*>& lights);
+
+	glm::vec3 calc_color_shade(const glm::vec3& location, const glm::vec3& normal) const;
 
 	// Swaps between the back buffer and front buffer, as explained in class.
 	// https://en.wikipedia.org/wiki/Multiple_buffering#Double_buffering_in_computer_graphics

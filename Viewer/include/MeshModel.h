@@ -24,6 +24,7 @@ public:
 	vector<triangle3d_t> triangles;
 	vector<line3d_t> vertex_normals;
 	vector<line3d_t> triangle_normals;
+	vector<vector<glm::vec3> > vertex_noramls_by_triangles;
 	hexahedron bbox;
 
 	// Add more attributes.
@@ -31,8 +32,11 @@ public:
 	glm::mat4x4 normalTransform; 
 	float x, y, z; // current position in the world, used for translation before rotation
 	float current_scale; // original scale of this model
-
 	glm::vec3 centerOfMass;
+	color_t emissive_color;
+	color_t diffusive_color;
+	color_t specular_color;
+
 	const hexahedron CalcBbox() const;
 	const vector<line3d_t> CalcTriangeNormals() const;
 	
