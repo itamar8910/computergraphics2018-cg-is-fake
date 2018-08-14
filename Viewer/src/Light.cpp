@@ -13,12 +13,12 @@ Light::Light(color_t _color, glm::vec3 _location) : color(_color), location(_loc
 // {
 // }
 
-color_t AmbientLight::applyOn(const color_t &color, const glm::vec3 normal)
-{
-	return color * intensity;
-}
+// color_t AmbientLight::applyOn(const color_t &color, const glm::vec3 normal)
+// {
+// 	return color * this->color;
+// }
 
-color_t DiffuseLight::applyOn(const color_t &color, const glm::vec3 normal)
-{
-	return color * intensity;
-}
+// color_t DiffuseLight::applyOn(const color_t &color, const glm::vec3 normal)
+// {
+// 	return color * this->color;
+// }

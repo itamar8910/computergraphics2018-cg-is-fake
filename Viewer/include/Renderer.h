@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <imgui/imgui.h>
 #include "Light.h"
+
 using namespace std;
 
 enum  class Shading {Flat, Gouraud, Phong};

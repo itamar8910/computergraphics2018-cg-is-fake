@@ -92,9 +92,6 @@ void Renderer::DrawTriangle(const vector<glm::vec3>& triangle, const vector<glm:
 	// }
 
 	// draw 3 edges of transformed triangle
-	// DrawLineHelper(transformedTriangle[0], transformedTriangle[1], color, model_i);
-	// DrawLineHelper(transformedTriangle[1], transformedTriangle[2], color, model_i);
-	// DrawLineHelper(transformedTriangle[0], transformedTriangle[2], color, model_i);
 
 	scanFill(transformedTriangle, triangle, normals, color, model_i);
 
@@ -129,13 +126,18 @@ void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec
 		twoDTriangle.push_back(glm::vec2(triangle[i].x, triangle[i].y));
 	}
 	
-	if(current_shading == Shading::Flat){
+	switch(current_shading)
+	{
+	case Shading::Flat:
+	{
 		// flat shading
-		glm::vec3 location = (triangleWorld[0] + triangleWorld[1] + triangleWorld[2])*(1.0f/3.0f);
-		glm::vec3 face_normal = (normalsWorld[0] + normalsWorld[1] + normalsWorld[2])*(1.0f / 3.0f);
+		glm::vec3 location = (triangleWorld[0] + triangleWorld[1] + triangleWorld[2]) * (1.0f / 3.0f);
+		glm::vec3 face_normal = (normalsWorld[0] + normalsWorld[1] + normalsWorld[2]) * (1.0f / 3.0f);
 		glm::vec3 color = calc_color_shade(location, face_normal);
-		for(int row = ymin; row <= ymax; row++){
-			for(int col = xmin; col <= xmax; col++){
+		for (int row = ymin; row <= ymax; row++)
+		{
+			for (int col = xmin; col <= xmax; col++)
+			{
 				if (IsPointInTri(glm::vec3(col, row, 0), triangle))
 				{
 					float z = interpolateInsideTriangle<float>(twoDTriangle, {triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
@@ -144,14 +146,19 @@ void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec
 				}
 			}
 		}
+		break;
 	}
-	else if(current_shading == Shading::Gouraud){
+	case Shading::Gouraud:
+	{
 		vector<glm::vec3> vertex_illumin;
-		for(int i = 0; i <= 3; i++){
+		for (int i = 0; i <= 3; i++)
+		{
 			vertex_illumin.push_back(calc_color_shade(triangleWorld[i], normalsWorld[i]));
 		}
-		for(int row = ymin; row <= ymax; row++){
-			for(int col = xmin; col <= xmax; col++){
+		for (int row = ymin; row <= ymax; row++)
+		{
+			for (int col = xmin; col <= xmax; col++)
+			{
 				if (IsPointInTri(glm::vec3(col, row, 0), triangle))
 				{
 					glm::vec3 color = interpolateInsideTriangle<glm::vec3>(twoDTriangle, vertex_illumin, glm::vec2(col, row));
@@ -161,11 +168,14 @@ void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec
 				}
 			}
 		}
+		break;
 	}
-	else if(current_shading == Shading::Phong){
-		
-		for(int row = ymin; row <= ymax; row++){
-			for(int col = xmin; col <= xmax; col++){
+	case Shading::Phong:
+	{
+		for (int row = ymin; row <= ymax; row++)
+		{
+			for (int col = xmin; col <= xmax; col++)
+			{
 				if (IsPointInTri(glm::vec3(col, row, 0), triangle))
 				{
 					glm::vec3 pointNormal = interpolateInsideTriangle<glm::vec3>(twoDTriangle, normalsWorld, glm::vec2(col, row));
@@ -179,6 +189,8 @@ void Renderer::scanFill(const vector<glm::vec3>& triangle, const vector<glm::vec
 				}
 			}
 		}
+		break;
+	}
 	}
 }
 
@@ -247,6 +259,8 @@ void Renderer::DrawLineHelper(const glm::vec3 &point1, const glm::vec3 &point2,
 
 void Renderer::putPixel(int i, int j, float z, const glm::vec3 &color,bool clear)
 {
+	if(j%2 != 0)
+		return;
 	if (clear || z >= getZBufferVal(i, j))
 	{
 		putZBufferval(i, j, z);
@@ -328,6 +342,7 @@ glm::vec3 Renderer::calc_color_shade(const glm::vec3& location, const glm::vec3&
 		total_color += specular_illumination_color;
 		// TODO: clamping
 	}
+	
 	return total_color;
 }
 
