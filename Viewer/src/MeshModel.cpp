@@ -175,13 +175,11 @@ void MeshModel::LoadFile(const string& fileName)
 		{
 			// append i'th vetice of current face to list of all vertices
 			// obj files are 1-indexed
-			point3d_t current_vertex =vertices[face.v[i]-1];
 			triangle.push_back(vertices[face.v[i]-1]);
-			vertex_normals.push_back(pair<point3d_t, point3d_t>(current_vertex,current_vertex + normal_length*glm::normalize(normals[face.vn[i] - 1])));
 			triangle_normals.push_back(normals[face.vn[i] - 1]);
 		}
 		triangles.push_back(triangle);
-		vertex_noramls_by_triangles.push_back(triangle_normals);
+		triangles.back().vert_normals = triangle_normals;
 	}
 }
 
@@ -199,9 +197,9 @@ void MeshModel::Draw(Renderer& renderer, const glm::vec3& color, int model_i)
 	}
 	if(this->draw_triangle_normals)
 	{
-		for(auto &pair : this->triangle_normals)
+		for(auto &tri : this->triangles)
 		{
-			renderer.DrawLine(pair.first, pair.first + normal_length * pair.second, glm::vec3(0, 1, 0));
+			renderer.DrawLine(tri.center, tri.center + normal_length * tri.face_normal, glm::vec3(0, 1, 0));
 		}
 	}
 	if(draw_bbox)
@@ -212,7 +210,7 @@ void MeshModel::Draw(Renderer& renderer, const glm::vec3& color, int model_i)
 		}
 	}
 	// send triangles to renderer
-	renderer.DrawTriangles(triangles, vertex_noramls_by_triangles, color, model_i);
+	renderer.DrawTriangles(triangles, color, model_i);
 }
 
 const vector<line3d_t> MeshModel::CalcTriangeNormals() const

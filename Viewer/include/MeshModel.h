@@ -24,7 +24,6 @@ public:
 	vector<triangle3d_t> triangles;
 	vector<line3d_t> vertex_normals;
 	vector<line3d_t> triangle_normals;
-	vector<vector<glm::vec3> > vertex_noramls_by_triangles;
 	hexahedron_t bbox;
 
 	// Add more attributes.

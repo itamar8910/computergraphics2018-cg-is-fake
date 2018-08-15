@@ -52,7 +52,7 @@ private:
 	void DrawLineHelper(const glm::vec3 &point1, const glm::vec3 &point2
 						, const glm::vec3 &color= glm::vec3(0.0, 0.0, 0.0), int model_i=-1);
 
-	void DrawTriangle(const triangle3d_t &triangle, const vector<glm::vec3> &noramls, const glm::vec3& color = glm::vec3(0, 0, 0), int model_i=-1);
+	void DrawTriangle(const triangle3d_t &triangle, const glm::vec3& color = glm::vec3(0, 0, 0), int model_i=-1);
 
 	//##############################
 	//##openGL stuff. Don't touch.##
@@ -76,10 +76,10 @@ public:
 	void Init();
 
 	// Draws wireframe triangles to the color buffer
-	void DrawTriangles(const vector<triangle3d_t> &triangles, const vector<vector<glm::vec3>> & normals, const glm::vec3& color = glm::vec3(0, 0, 0), int model_i = -1);
+	void DrawTriangles(const vector<triangle3d_t> &triangles, const glm::vec3& color = glm::vec3(0, 0, 0), int model_i = -1);
 
 	void DrawLine(const glm::vec3 &point1, const glm::vec3 &point2, const glm::vec3 &color = glm::vec3(0.0, 0.0, 0.0), int model_i = -1);
-	void scanFill(const triangle3d_t &triangle, const vector<glm::vec3> &triangleWorld, const vector<glm::vec3> &normals, const glm::vec3 &color, int model_i = -1);
+	void scanFill(const triangle3d_t &triangle, const triangle3d_t &triangleWorld, const glm::vec3 &color, int model_i = -1);
 	glm::vec3 TransformPoint(const glm::vec3 &originalPoint) const;
 	glm::vec3 ApplyObjectTransform(const glm::vec3 &originalPoint) const;
 	// Sets the camera transformations with relation to world coordinates

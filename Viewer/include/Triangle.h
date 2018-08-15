@@ -5,20 +5,34 @@
 #include <vector>
 class Triangle
 {
-  private:
-
 public:
+  class iterator
+  {
+    friend class Triangle;
+  private:
+    glm::vec2 loc;
+    iterator(const Triangle &tri, glm::vec2 loc) : loc(loc), tri(tri) {}
+    const Triangle &tri;
+  public:
+    const glm::vec2 &operator*() const { return loc; }
+    bool operator!=(const iterator &other) const; 
+    iterator operator++();
+  };
+  iterator begin() const { return iterator(*this, glm::vec2(xmin, ymin)); }
+  iterator end() const { return iterator(*this, glm::vec2(xmax, ymax)); }
+  float xmin, xmax, ymin, ymax;
   std::vector<point3d_t> vertices;
   std::vector<point3d_t> vert_normals;
   point3d_t center;
   point3d_t face_normal;
   color_t color;
+
   Triangle();
   Triangle(point3d_t a, point3d_t b, point3d_t c, color_t color = glm::vec3(0, 0, 0));
   Triangle(const std::vector<point3d_t> &vertices);
-  Triangle operator*(const glm::mat4x4 &transformation) const;//(Unused) To apply transformations
+  Triangle operator*(const glm::mat4x4 &transformation) const; //(Unused) To apply transformations
   Triangle applyLight(const Light &light) const;
-  const point3d_t& operator[](int i) const; // For behaviour like a vertices vector
+  const point3d_t &operator[](int i) const; // For behaviour like a vertices vector
   bool IsPointInTri(const point3d_t &p) const;
   template <class T>
   T interpolateInsideTriangle(std::vector<T> triangleValues, glm::vec2 point) const;

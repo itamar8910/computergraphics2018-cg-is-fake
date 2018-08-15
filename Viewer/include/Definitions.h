@@ -1,11 +1,11 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <vector>
-typedef float intensity_t;
-typedef glm::vec3 color_t;
+using intensity_t = float;
+using color_t = glm::vec3;
 class Triangle;
-typedef Triangle triangle3d_t;
-typedef glm::vec3 point3d_t;
-typedef std::pair<point3d_t,point3d_t> line3d_t;
-typedef std::vector<line3d_t> hexahedron_t;
-typedef glm::vec4 hom_point_t;
+using triangle3d_t = Triangle;
+using point3d_t = glm::vec3;
+using line3d_t = std::pair<point3d_t,point3d_t>;
+using hexahedron_t = std::vector<line3d_t>;
+using hom_point_t = glm::vec4;

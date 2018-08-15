@@ -55,10 +55,10 @@ void Renderer::setLights(glm::vec3 _ambient_color_light, vector<Light*>& _lights
 
 }
 
-void Renderer::DrawTriangles(const vector<triangle3d_t> &triangles, const vector<vector<glm::vec3>> &normals, const glm::vec3& color, int model_i)
+void Renderer::DrawTriangles(const vector<triangle3d_t> &triangles, const glm::vec3 &color, int model_i)
 {
 	for(int triangle_i = 0; triangle_i < (int)triangles.size(); triangle_i++){
-		DrawTriangle(triangles[triangle_i], normals[triangle_i], color, model_i);
+		DrawTriangle(triangles[triangle_i], color, model_i);
 	}
 }
 
@@ -80,7 +80,7 @@ glm::mat4x4 Renderer::getViewport() {
     return m;
 }
 
-void Renderer::DrawTriangle(const triangle3d_t& triangle, const vector<glm::vec3> &normals, const glm::vec3& color, int model_i) 
+void Renderer::DrawTriangle(const triangle3d_t &triangle, const glm::vec3 &color, int model_i)
 {
 	vector<glm::vec3> transformedTriangle_v;
 	// vector<glm::vec3> transformedNormals;
@@ -94,8 +94,7 @@ void Renderer::DrawTriangle(const triangle3d_t& triangle, const vector<glm::vec3
 
 	// draw 3 edges of transformed triangle
 
-	scanFill(transformedTriangle, triangle, normals, color, model_i);
-
+	scanFill(transformedTriangle, triangle, color, model_i);
 }
 
 float getXOfLine(glm::vec3 point1, glm::vec3 point2, float y){
@@ -103,33 +102,26 @@ float getXOfLine(glm::vec3 point1, glm::vec3 point2, float y){
 	return point1.x + ((delta) * (y - point1.y));
 }
 
-void Renderer::scanFill(const triangle3d_t &triangle, const vector<glm::vec3> &triangleWorld, const vector<glm::vec3> &normalsWorld, const glm::vec3 &_color, int model_i)
+void Renderer::scanFill(const triangle3d_t &triangle, const triangle3d_t &triangleWorld, const glm::vec3 &_color, int model_i)
 {
 	float xmin = min(min(triangle[0].x, triangle[1].x), triangle[2].x);
 	float xmax = max(max(triangle[0].x, triangle[1].x), triangle[2].x);
 	float ymin = min(min(triangle[0].y, triangle[1].y), triangle[2].y);
 	float ymax = max(max(triangle[0].y, triangle[1].y), triangle[2].y);
 	// float z = triangle[0].z; // TODO: interpolate z value (templtae the interpolation inside triangle function)
-	vector<glm::vec2> twoDTriangle;
-	for(int i = 0; i <= 3; i++){
-		twoDTriangle.push_back(glm::vec2(triangle[i].x, triangle[i].y));
-	}
-	
 	switch(current_shading)
 	{
 	case Shading::Flat:
 	{
 		// flat shading
-		glm::vec3 location = (triangleWorld[0] + triangleWorld[1] + triangleWorld[2]) * (1.0f / 3.0f);
-		glm::vec3 face_normal = (normalsWorld[0] + normalsWorld[1] + normalsWorld[2]) * (1.0f / 3.0f);
-		glm::vec3 color = calc_color_shade(location, face_normal);
+		glm::vec3 color = calc_color_shade(triangleWorld.center, triangleWorld.face_normal);
 		for (int row = ymin; row <= ymax; row++)
 		{
 			for (int col = xmin; col <= xmax; col++)
 			{
 				if (triangle.IsPointInTri(glm::vec3(col, row, 0)))
 				{
-					float z = interpolateInsideTriangle<float>(twoDTriangle, {triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
+					float z = triangle.interpolateInsideTriangle<float>({triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
 					putPixel(col, row, z, color);
 					putIModelIndex(col, row, model_i);
 				}
@@ -142,7 +134,7 @@ void Renderer::scanFill(const triangle3d_t &triangle, const vector<glm::vec3> &t
 		vector<glm::vec3> vertex_illumin;
 		for (int i = 0; i <= 3; i++)
 		{
-			vertex_illumin.push_back(calc_color_shade(triangleWorld[i], normalsWorld[i]));
+			vertex_illumin.push_back(calc_color_shade(triangleWorld[i], triangleWorld.vert_normals[i]));
 		}
 		for (int row = ymin; row <= ymax; row++)
 		{
@@ -150,8 +142,8 @@ void Renderer::scanFill(const triangle3d_t &triangle, const vector<glm::vec3> &t
 			{
 				if (triangle.IsPointInTri(glm::vec3(col, row, 0)))
 				{
-					glm::vec3 color = interpolateInsideTriangle<glm::vec3>(twoDTriangle, vertex_illumin, glm::vec2(col, row));
-					float z = interpolateInsideTriangle<float>(twoDTriangle, {triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
+					glm::vec3 color = triangle.interpolateInsideTriangle<glm::vec3>(vertex_illumin, glm::vec2(col, row));
+					float z = triangle.interpolateInsideTriangle<float>({triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
 					putPixel(col, row, z, color);
 					putIModelIndex(col, row, model_i);
 				}
@@ -167,12 +159,12 @@ void Renderer::scanFill(const triangle3d_t &triangle, const vector<glm::vec3> &t
 			{
 				if (triangle.IsPointInTri(glm::vec3(col, row, 0)))
 				{
-					glm::vec3 pointNormal = interpolateInsideTriangle<glm::vec3>(twoDTriangle, normalsWorld, glm::vec2(col, row));
-					float xInWord = interpolateInsideTriangle<float>(twoDTriangle, {triangleWorld[0].x, triangleWorld[1].x, triangleWorld[2].x}, glm::vec2(col, row));
-					float yInWord = interpolateInsideTriangle<float>(twoDTriangle, {triangleWorld[0].y, triangleWorld[1].y, triangleWorld[2].y}, glm::vec2(col, row));
-					float zInWord = interpolateInsideTriangle<float>(twoDTriangle, {triangleWorld[0].z, triangleWorld[1].z, triangleWorld[2].z}, glm::vec2(col, row));
+					glm::vec3 pointNormal = triangle.interpolateInsideTriangle<glm::vec3>(triangleWorld.vert_normals, glm::vec2(col, row));
+					float xInWord = triangle.interpolateInsideTriangle<float>({triangleWorld[0].x, triangleWorld[1].x, triangleWorld[2].x}, glm::vec2(col, row));
+					float yInWord = triangle.interpolateInsideTriangle<float>({triangleWorld[0].y, triangleWorld[1].y, triangleWorld[2].y}, glm::vec2(col, row));
+					float zInWord = triangle.interpolateInsideTriangle<float>({triangleWorld[0].z, triangleWorld[1].z, triangleWorld[2].z}, glm::vec2(col, row));
 					glm::vec3 color = calc_color_shade(glm::vec3(xInWord, yInWord, zInWord), pointNormal);
-					float z = interpolateInsideTriangle<float>(twoDTriangle, {triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
+					float z = triangle.interpolateInsideTriangle<float>({triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
 					putPixel(col, row, z, color);
 					putIModelIndex(col, row, model_i);
 				}
