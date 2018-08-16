@@ -9,3 +9,4 @@ using point3d_t = glm::vec3;
 using line3d_t = std::pair<point3d_t,point3d_t>;
 using hexahedron_t = std::vector<line3d_t>;
 using hom_point_t = glm::vec4;
+using exponent_t = float; // Because I keep moving between int/float on this

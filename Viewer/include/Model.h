@@ -15,10 +15,6 @@ public:
 	bool draw_triangle_normals;
 	bool draw_bbox;
 	float normal_length = 1;
-	color_t emissive_color;
-	color_t diffusive_color;
-	color_t specular_color;
-	int specular_exponent;
 
   protected:
 	virtual ~Model() {}

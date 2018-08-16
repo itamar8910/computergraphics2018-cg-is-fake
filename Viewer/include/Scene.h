@@ -44,8 +44,9 @@ public:
 	void DrawLineTest();
 
 	vector<string> get_models_names();
+	bool hasActiveModel() const; 
 
-	int ActiveModel;
-	int ActiveLight;
-	int ActiveCamera;
+int ActiveModel;
+int ActiveLight;
+int ActiveCamera;
 };

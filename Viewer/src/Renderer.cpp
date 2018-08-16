@@ -43,10 +43,12 @@ void Renderer::SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x
 	this->fullTransform = getViewport() * cProjection * inverse(cTransform) * oTransform;
 }
 
-void Renderer::setObjectColors(glm::vec3 _emissive, glm::vec3 _diffusive, glm::vec3 _specular){
+void Renderer::setObjectColors(glm::vec3 _emissive, glm::vec3 _diffusive, glm::vec3 _specular, exponent_t _specular_exponent)
+{
 	model_emissive_color = _emissive;
 	model_diffusive_color = _diffusive;
 	model_specular_color = _specular;
+	model_specular_exponent = _specular_exponent;
 }
 
 void Renderer::setLights(glm::vec3 _ambient_color_light, vector<Light*>& _lights){
@@ -66,8 +68,6 @@ void Renderer::DrawTriangles(const vector<triangle3d_t> &triangles, const glm::v
 const int _depth  = 255;
 glm::mat4x4 Renderer::getViewport() {
     glm::mat4x4 m(1);
-	// int _width = width;
-	// int _height = height;
 	int _width = min(width, height);
 	int _height = min(width, height);
     m[3][0] = _width/2.f;
@@ -121,28 +121,25 @@ void Renderer::scanFill(const triangle3d_t &triangle, const triangle3d_t &triang
 		{
 			if (triangle.IsPointInTri(glm::vec3(col, row, 0)))
 			{
-				float z;
+				float z = triangle.interpolateInsideTriangle<float>({triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
 				switch (current_shading)
 				{
 				case Shading::Flat:
 				{
-					z = triangle.interpolateInsideTriangle<float>({triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
 					break;
 				}
 				case Shading::Gouraud:
 				{
 					color = triangle.interpolateInsideTriangle<glm::vec3>(vertex_illumin, glm::vec2(col, row));
-					z = triangle.interpolateInsideTriangle<float>({triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
 					break;
 				}
 				case Shading::Phong:
 				{
 					glm::vec3 pointNormal = triangle.interpolateInsideTriangle<glm::vec3>(triangleWorld.vert_normals, glm::vec2(col, row));
-					float xInWord = triangle.interpolateInsideTriangle<float>({triangleWorld[0].x, triangleWorld[1].x, triangleWorld[2].x}, glm::vec2(col, row));
-					float yInWord = triangle.interpolateInsideTriangle<float>({triangleWorld[0].y, triangleWorld[1].y, triangleWorld[2].y}, glm::vec2(col, row));
-					float zInWord = triangle.interpolateInsideTriangle<float>({triangleWorld[0].z, triangleWorld[1].z, triangleWorld[2].z}, glm::vec2(col, row));
-					color = calc_color_shade(glm::vec3(xInWord, yInWord, zInWord), pointNormal);
-					z = triangle.interpolateInsideTriangle<float>({triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
+					// float xInWord = triangle.interpolateInsideTriangle<float>({triangleWorld[0].x, triangleWorld[1].x, triangleWorld[2].x}, glm::vec2(col, row));
+					// float yInWord = triangle.interpolateInsideTriangle<float>({triangleWorld[0].y, triangleWorld[1].y, triangleWorld[2].y}, glm::vec2(col, row));
+					// color = calc_color_shade(glm::vec3(xInWord, yInWord, z), pointNormal);
+					color = calc_color_shade(glm::vec3(col, row, z), pointNormal);
 					break;
 				}
 				}
@@ -279,7 +276,6 @@ void Renderer::createBuffers(int w, int h)
 }
 
 glm::vec3 Renderer::calc_color_shade(const glm::vec3& location, const glm::vec3& normal) const{
-	int specular_exponent = 1; // TODO: extract to member of Renderer
 	color_t total_color(0, 0, 0);
 	total_color += ambient_color_light * model_emissive_color;
 	glm::vec3 transformedLocation = ApplyObjectTransform(location);
@@ -295,7 +291,7 @@ glm::vec3 Renderer::calc_color_shade(const glm::vec3& location, const glm::vec3&
 		// calc specular
 		glm::vec3 R = 2.0f * transformedNormal * glm::dot(L, transformedNormal) - L; // reflection of light
 		glm::vec3 V = glm::normalize(camLocation - transformedLocation);
-		glm::vec3 specular_illumination_color = light->color * model_specular_color * ((float)glm::pow(glm::dot(R, V), specular_exponent));
+		glm::vec3 specular_illumination_color = light->color * model_specular_color * ((float)glm::pow(glm::dot(R, V), model_specular_exponent));
 		total_color += specular_illumination_color;
 		glm::clamp(total_color, color_t(0, 0, 0), color_t(1, 1, 1));
 		if(total_color == color_t(1,1,1))

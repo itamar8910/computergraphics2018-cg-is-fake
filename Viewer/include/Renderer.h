@@ -32,12 +32,13 @@ private:
 	glm::mat4x4 oTransform; // object transform
 	glm::mat4x4 nTransform; // normals transform
 	vector<Light*> lights;
-	glm::vec3 ambient_color_light;
-	glm::vec3 camLocation;
+	color_t ambient_color_light;
+	point3d_t camLocation;
 
-	glm::vec3 model_emissive_color;
-	glm::vec3 model_diffusive_color;
-	glm::vec3 model_specular_color;
+	color_t model_emissive_color;
+	color_t model_diffusive_color;
+	color_t model_specular_color;
+	exponent_t model_specular_exponent;
 
 
 	glm::mat4x4 getViewport();
@@ -91,7 +92,7 @@ public:
 	// Sets the transformations for model and normals. The object transformations 
 	// decide the spacial relations of the object with respect to the world.
 	void SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x4& nTransform);
-	void setObjectColors(glm::vec3 _emissive, glm::vec3 _diffusive, glm::vec3 _specular);
+	void setObjectColors(color_t _emissive, color_t _diffusive, color_t _specular, exponent_t specular_exponent);
 	void setLights(glm::vec3 ambient_color_light, vector<Light*>& lights);
 
 	glm::vec3 calc_color_shade(const glm::vec3& location, const glm::vec3& normal) const;

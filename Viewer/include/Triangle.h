@@ -3,6 +3,7 @@
 #include "Light.h"
 #include <array>
 #include <vector>
+class Model;
 class Triangle
 {
 public:
@@ -26,6 +27,7 @@ public:
   point3d_t center;
   point3d_t face_normal;
   color_t color;
+  Model *model;
 
   Triangle();
   Triangle(point3d_t a, point3d_t b, point3d_t c, color_t color = glm::vec3(0, 0, 0));

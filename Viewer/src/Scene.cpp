@@ -95,3 +95,7 @@ vector<string> Scene::get_models_names(){
 void Scene::addLight(Light& light){
 	lights.push_back(&light);
 }
+bool Scene::hasActiveModel() const
+{
+	return this->ActiveModel != -1;
+}

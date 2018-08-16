@@ -81,7 +81,8 @@ MeshModel::MeshModel(const string& fileName, const string& _name) : name(_name),
 											   current_scale(1), centerOfMass(0),
 											   emissive_color(1, 0, 0),
 											   diffusive_color(0.5, 0.5, 0.5),
-											   specular_color(0.005, 0.005, 0.005)
+											   specular_color(0.005, 0.005, 0.005),
+											   specular_exponent(1)
 {
 	if(fileName.length() > 0){
 		LoadFile(fileName);
@@ -187,7 +188,7 @@ void MeshModel::Draw(Renderer& renderer, const glm::vec3& color, int model_i)
 {
 	// send transformation to renderer
 	renderer.SetObjectMatrices(worldTransform, normalTransform);
-	renderer.setObjectColors(emissive_color, diffusive_color, specular_color);
+	renderer.setObjectColors(emissive_color, diffusive_color, specular_color, specular_exponent);
 	if (this->draw_vertex_normals)
 	{
 		for (auto &pair : this->vertex_normals)

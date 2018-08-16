@@ -35,6 +35,7 @@ public:
 	color_t emissive_color;
 	color_t diffusive_color;
 	color_t specular_color;
+	exponent_t specular_exponent;
 
 	const hexahedron_t CalcBbox() const;
 	const vector<line3d_t> CalcTriangeNormals() const;
