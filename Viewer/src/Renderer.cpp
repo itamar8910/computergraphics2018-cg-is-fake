@@ -104,10 +104,6 @@ float getXOfLine(glm::vec3 point1, glm::vec3 point2, float y){
 
 void Renderer::scanFill(const triangle3d_t &triangle, const triangle3d_t &triangleWorld, const glm::vec3 &_color, int model_i)
 {
-	float xmin = min(min(triangle[0].x, triangle[1].x), triangle[2].x);
-	float xmax = max(max(triangle[0].x, triangle[1].x), triangle[2].x);
-	float ymin = min(min(triangle[0].y, triangle[1].y), triangle[2].y);
-	float ymax = max(max(triangle[0].y, triangle[1].y), triangle[2].y);
 	vector<glm::vec3> vertex_illumin;
 	if (current_shading == Shading::Gouraud)
 	{
@@ -119,9 +115,9 @@ void Renderer::scanFill(const triangle3d_t &triangle, const triangle3d_t &triang
 	// float z = triangle[0].z; // TODO: interpolate z value (templtae the interpolation inside triangle function)
 	// flat shading
 	glm::vec3 color = calc_color_shade(triangleWorld.center, triangleWorld.face_normal);
-	for (int row = ymin; row <= ymax; row++)
+	for (int row = triangle.ymin; row <= triangle.ymax; row++)
 	{
-		for (int col = xmin; col <= xmax; col++)
+		for (int col = triangle.xmin; col <= triangle.xmax; col++)
 		{
 			if (triangle.IsPointInTri(glm::vec3(col, row, 0)))
 			{
@@ -291,14 +287,14 @@ glm::vec3 Renderer::calc_color_shade(const glm::vec3& location, const glm::vec3&
 
 	// loop over lights & calc diffusive & specular
 	for(auto* light : lights){
-		glm::vec3 L = light->location - transformedLocation;
+		glm::vec3 L = glm::normalize(light->location - transformedLocation);
 		// calc diffusive
 		float cos_theta = glm::dot(L, transformedNormal) / (glm::length(L) * glm::length(transformedNormal));
 		glm::vec3 diffusive_illumination_color = light->color * model_diffusive_color * cos_theta;
 		total_color += diffusive_illumination_color;
 		// calc specular
 		glm::vec3 R = 2.0f * transformedNormal * glm::dot(L, transformedNormal) - L; // reflection of light
-		glm::vec3 V = camLocation - transformedLocation;
+		glm::vec3 V = glm::normalize(camLocation - transformedLocation);
 		glm::vec3 specular_illumination_color = light->color * model_specular_color * ((float)glm::pow(glm::dot(R, V), specular_exponent));
 		total_color += specular_illumination_color;
 		glm::clamp(total_color, color_t(0, 0, 0), color_t(1, 1, 1));

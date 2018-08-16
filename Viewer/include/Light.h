@@ -10,6 +10,7 @@ public:
   ~Light();
   color_t color;
   point3d_t location;
+  // virtual color_t applyOn(const point3d_t p, const point3d_t &normal, const Model &model, point3d_t COP);
 };
 
 // class AmbientLight: public Light

@@ -9,10 +9,10 @@ using namespace std;
 Triangle::Triangle(point3d_t a, point3d_t b, point3d_t c, color_t color)
     : vertices({a, b, c}), center((a + b + c) / 3.0f), face_normal(glm::normalize(-glm::cross(c - a, b - a))), color(color)
 {
-    // xmin = min(min(vertices[0].x, vertices[1].x), vertices[2].x);
-    // xmax = max(max(vertices[0].x, vertices[1].x), vertices[2].x);
-    // ymin = min(min(vertices[0].y, vertices[1].y), vertices[2].y);
-    // ymax = max(max(vertices[0].y, vertices[1].y), vertices[2].y);
+    xmin = min(min(vertices[0].x, vertices[1].x), vertices[2].x);
+    xmax = max(max(vertices[0].x, vertices[1].x), vertices[2].x);
+    ymin = min(min(vertices[0].y, vertices[1].y), vertices[2].y);
+    ymax = max(max(vertices[0].y, vertices[1].y), vertices[2].y);
     }
 
 Triangle::Triangle(const std::vector<point3d_t> &vertices) : Triangle(vertices[0], vertices[1], vertices[2]) {}
