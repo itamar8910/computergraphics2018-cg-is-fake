@@ -108,70 +108,52 @@ void Renderer::scanFill(const triangle3d_t &triangle, const triangle3d_t &triang
 	float xmax = max(max(triangle[0].x, triangle[1].x), triangle[2].x);
 	float ymin = min(min(triangle[0].y, triangle[1].y), triangle[2].y);
 	float ymax = max(max(triangle[0].y, triangle[1].y), triangle[2].y);
-	// float z = triangle[0].z; // TODO: interpolate z value (templtae the interpolation inside triangle function)
-	switch(current_shading)
+	vector<glm::vec3> vertex_illumin;
+	if (current_shading == Shading::Gouraud)
 	{
-	case Shading::Flat:
-	{
-		// flat shading
-		glm::vec3 color = calc_color_shade(triangleWorld.center, triangleWorld.face_normal);
-		for (int row = ymin; row <= ymax; row++)
-		{
-			for (int col = xmin; col <= xmax; col++)
-			{
-				if (triangle.IsPointInTri(glm::vec3(col, row, 0)))
-				{
-					float z = triangle.interpolateInsideTriangle<float>({triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
-					putPixel(col, row, z, color);
-					putIModelIndex(col, row, model_i);
-				}
-			}
-		}
-		break;
-	}
-	case Shading::Gouraud:
-	{
-		vector<glm::vec3> vertex_illumin;
 		for (int i = 0; i <= 3; i++)
 		{
 			vertex_illumin.push_back(calc_color_shade(triangleWorld[i], triangleWorld.vert_normals[i]));
 		}
-		for (int row = ymin; row <= ymax; row++)
-		{
-			for (int col = xmin; col <= xmax; col++)
-			{
-				if (triangle.IsPointInTri(glm::vec3(col, row, 0)))
-				{
-					glm::vec3 color = triangle.interpolateInsideTriangle<glm::vec3>(vertex_illumin, glm::vec2(col, row));
-					float z = triangle.interpolateInsideTriangle<float>({triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
-					putPixel(col, row, z, color);
-					putIModelIndex(col, row, model_i);
-				}
-			}
-		}
-		break;
 	}
-	case Shading::Phong:
+	// float z = triangle[0].z; // TODO: interpolate z value (templtae the interpolation inside triangle function)
+	// flat shading
+	glm::vec3 color = calc_color_shade(triangleWorld.center, triangleWorld.face_normal);
+	for (int row = ymin; row <= ymax; row++)
 	{
-		for (int row = ymin; row <= ymax; row++)
+		for (int col = xmin; col <= xmax; col++)
 		{
-			for (int col = xmin; col <= xmax; col++)
+			if (triangle.IsPointInTri(glm::vec3(col, row, 0)))
 			{
-				if (triangle.IsPointInTri(glm::vec3(col, row, 0)))
+				float z;
+				switch (current_shading)
+				{
+				case Shading::Flat:
+				{
+					z = triangle.interpolateInsideTriangle<float>({triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
+					break;
+				}
+				case Shading::Gouraud:
+				{
+					color = triangle.interpolateInsideTriangle<glm::vec3>(vertex_illumin, glm::vec2(col, row));
+					z = triangle.interpolateInsideTriangle<float>({triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
+					break;
+				}
+				case Shading::Phong:
 				{
 					glm::vec3 pointNormal = triangle.interpolateInsideTriangle<glm::vec3>(triangleWorld.vert_normals, glm::vec2(col, row));
 					float xInWord = triangle.interpolateInsideTriangle<float>({triangleWorld[0].x, triangleWorld[1].x, triangleWorld[2].x}, glm::vec2(col, row));
 					float yInWord = triangle.interpolateInsideTriangle<float>({triangleWorld[0].y, triangleWorld[1].y, triangleWorld[2].y}, glm::vec2(col, row));
 					float zInWord = triangle.interpolateInsideTriangle<float>({triangleWorld[0].z, triangleWorld[1].z, triangleWorld[2].z}, glm::vec2(col, row));
-					glm::vec3 color = calc_color_shade(glm::vec3(xInWord, yInWord, zInWord), pointNormal);
-					float z = triangle.interpolateInsideTriangle<float>({triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
-					putPixel(col, row, z, color);
-					putIModelIndex(col, row, model_i);
+					color = calc_color_shade(glm::vec3(xInWord, yInWord, zInWord), pointNormal);
+					z = triangle.interpolateInsideTriangle<float>({triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
+					break;
 				}
+				}
+				putPixel(col, row, z, color);
+				putIModelIndex(col, row, model_i);
 			}
 		}
-		break;
-	}
 	}
 }
 
