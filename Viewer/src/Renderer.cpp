@@ -302,7 +302,7 @@ void Renderer::createBuffers(int w, int h)
 
 glm::vec3 Renderer::calc_color_shade(const glm::vec3& location, const glm::vec3& normal) const{
 	int specular_exponent = 1; // TODO: extract to member of Renderer
-	glm::vec3 total_color(0, 0, 0);
+	color_t total_color(0, 0, 0);
 	total_color += ambient_color_light * model_emissive_color;
 	glm::vec3 transformedLocation = ApplyObjectTransform(location);
 	glm::vec3 transformedNormal = ApplyObjectTransform(normal);
@@ -319,7 +319,11 @@ glm::vec3 Renderer::calc_color_shade(const glm::vec3& location, const glm::vec3&
 		glm::vec3 V = camLocation - transformedLocation;
 		glm::vec3 specular_illumination_color = light->color * model_specular_color * ((float)glm::pow(glm::dot(R, V), specular_exponent));
 		total_color += specular_illumination_color;
-		// TODO: clamping
+		glm::clamp(total_color, color_t(0, 0, 0), color_t(1, 1, 1));
+		if(total_color == color_t(1,1,1))
+		{
+			break;
+		}
 	}
 	
 	return total_color;
