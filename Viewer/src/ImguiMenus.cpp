@@ -21,7 +21,9 @@ float keyboard_step_size = 0.1f;
 
 bool showDemoWindow = false;
 bool showCamPosWindow = false;
+bool showShadingWindow = false;
 bool showAnotherWindow = false;
+bool showMaterialWindow = true;
 bool showFile = false;
 glm::vec4 clearColor = glm::vec4(0.4f, 0.55f, 0.60f, 1.00f);
 
@@ -131,6 +133,37 @@ void ShowCamPosWindow(Scene* scene){
 	ImGui::End();
 }
 
+void ShowShadingWindow(Scene* scene){
+	ImGui::Begin("Shading Window");
+	if (ImGui::TreeNode("Select shading type")){
+			vector<string> shading_names = {"Flat", "Gouraud", "Phong"};
+			for (int i = 0; i < (int)shading_names.size(); i++)
+			{
+				if (ImGui::Selectable( shading_names[i].c_str(), static_cast<int>(scene->renderer->current_shading) == i)){
+					scene->renderer->current_shading = static_cast<Shading>(i);
+				}
+			}
+			ImGui::TreePop();
+
+		}
+	ImGui::End();
+}
+
+void ShowMaterialWindow(Scene *scene)
+{
+	ImGui::Begin("Material Window");
+	if(scene->hasActiveModel())
+	{
+		// Using a refernce here made 
+		MeshModel *active_model = dynamic_cast<MeshModel*>(scene->models[scene->ActiveModel]); 
+		ImGui::ColorEdit3("Backgroun Color", (float*)&clearColor); // Edit 3 floats representing a color
+		ImGui::ColorEdit3("Emissive Color", (float *)&(active_model->emissive_color));
+		ImGui::ColorEdit3("Diffusive Color", (float *)&(active_model->diffusive_color));
+		ImGui::ColorEdit3("Specular Color", (float *)&(active_model->specular_color));
+		ImGui::SliderFloat("Specular Exponent", &(active_model->specular_exponent),0,10);
+	}
+	ImGui::End();
+}
 void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 {
 	ImGui::SetNextWindowPos(ImVec2(0, 20), ImGuiCond_Once);
@@ -153,6 +186,8 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		static int prevActiveModel = scene->ActiveModel;
 		ImGui::SliderFloat("keyboard step size", &keyboard_step_size, 0.05f, 5.0f); 
 		ImGui::Checkbox("Camera Window", &showCamPosWindow);      // Edit bools storing our windows open/close state
+		ImGui::Checkbox("Shading Window", &showShadingWindow);      // Edit bools storing our windows open/close state
+		ImGui::Checkbox("Material Window", &showMaterialWindow);      // Edit bools storing our windows open/close state
 		ImGui::Checkbox("Rotate around model frame",&ModelFrame);
 		ImGui::SliderFloat("translate X", &xPos, -10.0f, 10.0f);           
 		ImGui::SliderFloat("translate Y", &yPos, -10.0f, 10.0f);           
@@ -246,16 +281,8 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		} // End "if some model is active" condition
 
 
-		// ImGui::ColorEdit3("clear color", (float*)&clearColor); // Edit 3 floats representing a color
 
-		// ImGui::Checkbox("Demo Window", &showDemoWindow);      // Edit bools storing our windows open/close state
-		
-		// ImGui::Checkbox("Mouse Window", &showAnotherWindow);
-
-
-		ImGui::SameLine();
-
-		// ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		
 		if(!isAnyWindowFocused && io.MouseWheel != 0.0f){ // we don't want to re-scale the model if the user scrolls the gui
 			// scale += io.MouseWheel/MOUSE_WHEEL_INCREMENT;
@@ -382,6 +409,15 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 	if(showCamPosWindow){
 		ShowCamPosWindow(scene);
 	}
+
+	if(showShadingWindow){
+		ShowShadingWindow(scene);
+	}
+	if(showMaterialWindow)
+	{
+		ShowMaterialWindow(scene);
+	}
+
 
 	// Demonstrate creating a fullscreen menu bar and populating it.
 	{

@@ -2,6 +2,7 @@
 #include "InitShader.h"
 #include <imgui/imgui.h>
 #include <iostream>
+#include "utils.h"
 
 using namespace std;
 
@@ -12,12 +13,14 @@ Renderer::Renderer() : width(1280), height(720)
 {
 	initOpenGLRendering();
 	createBuffers(1280,720);
+	current_shading = Shading::Flat;
 }
 
 Renderer::Renderer(int w, int h) : width(w), height(h)
 {
 	initOpenGLRendering();
 	createBuffers(w,h);
+	current_shading = Shading::Flat;
 }
 
 Renderer::~Renderer()
@@ -25,8 +28,9 @@ Renderer::~Renderer()
 	delete[] colorBuffer;
 }
 
-void Renderer::SetCameraTransform(const glm::mat4x4& cTransform){
+void Renderer::SetCameraTransform(const glm::vec3& camLocation, const glm::mat4x4& cTransform){
 	this->cTransform = cTransform;
+	this->camLocation = camLocation;
 }
 
 void Renderer::SetProjection(const glm::mat4x4& projection){
@@ -39,10 +43,24 @@ void Renderer::SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x
 	this->fullTransform = getViewport() * cProjection * inverse(cTransform) * oTransform;
 }
 
-void Renderer::DrawTriangles(const vector<vector<glm::vec3>> &triangles, const vector<glm::vec3> *normals, const glm::vec3& color, int model_i)
+void Renderer::setObjectColors(glm::vec3 _emissive, glm::vec3 _diffusive, glm::vec3 _specular, exponent_t _specular_exponent)
 {
-	for(const vector<glm::vec3> triangle : triangles){
-		DrawTriangle(triangle, color, model_i);
+	model_emissive_color = _emissive;
+	model_diffusive_color = _diffusive;
+	model_specular_color = _specular;
+	model_specular_exponent = _specular_exponent;
+}
+
+void Renderer::setLights(glm::vec3 _ambient_color_light, vector<Light*>& _lights){
+	ambient_color_light = _ambient_color_light;
+	lights = _lights;
+
+}
+
+void Renderer::DrawTriangles(const vector<triangle3d_t> &triangles, const glm::vec3 &color, int model_i)
+{
+	for(int triangle_i = 0; triangle_i < (int)triangles.size(); triangle_i++){
+		DrawTriangle(triangles[triangle_i], color, model_i);
 	}
 }
 
@@ -50,8 +68,6 @@ void Renderer::DrawTriangles(const vector<vector<glm::vec3>> &triangles, const v
 const int _depth  = 255;
 glm::mat4x4 Renderer::getViewport() {
     glm::mat4x4 m(1);
-	// int _width = width;
-	// int _height = height;
 	int _width = min(width, height);
 	int _height = min(width, height);
     m[3][0] = _width/2.f;
@@ -64,20 +80,21 @@ glm::mat4x4 Renderer::getViewport() {
     return m;
 }
 
-void Renderer::DrawTriangle(const vector<glm::vec3>& triangle, const glm::vec3& color, int model_i) 
+void Renderer::DrawTriangle(const triangle3d_t &triangle, const glm::vec3 &color, int model_i)
 {
-	vector<glm::vec3> transformedTriangle;
-	for(const glm::vec3& originalPoint : triangle){
-		transformedTriangle.push_back(TransformPoint(originalPoint));
-	} 
+	vector<glm::vec3> transformedTriangle_v;
+	// vector<glm::vec3> transformedNormals;
+	for(const glm::vec3& originalPoint : triangle.vertices){
+		transformedTriangle_v.push_back(TransformPoint(originalPoint));
+	}
+	triangle3d_t transformedTriangle = triangle3d_t(transformedTriangle_v);
+	// for(const glm::vec3 originalNormal : normals){
+	// 	transformedNormals.push_back(TransformPoint(originalNormal));
+	// }
 
 	// draw 3 edges of transformed triangle
-	// DrawLineHelper(transformedTriangle[0], transformedTriangle[1], color, model_i);
-	// DrawLineHelper(transformedTriangle[1], transformedTriangle[2], color, model_i);
-	// DrawLineHelper(transformedTriangle[0], transformedTriangle[2], color, model_i);
 
-	scanFill(transformedTriangle, color);
-
+	scanFill(transformedTriangle, triangle, color, model_i);
 }
 
 float getXOfLine(glm::vec3 point1, glm::vec3 point2, float y){
@@ -85,30 +102,49 @@ float getXOfLine(glm::vec3 point1, glm::vec3 point2, float y){
 	return point1.x + ((delta) * (y - point1.y));
 }
 
-//Solution from https://www.gamedev.net/forums/topic/295943-is-this-a-better-point-in-triangle-test-2d/?do=findComment&comment=2873961
-float Sign(const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3)
+void Renderer::scanFill(const triangle3d_t &triangle, const triangle3d_t &triangleWorld, const glm::vec3 &_color, int model_i)
 {
-  return (v1.x - v3.x) * (v2.y - v3.y) - (v2.x - v3.x) * (v1.y - v3.y);
-}
-
-bool IsPointInTri(const glm::vec3 &p, const vector<glm::vec3> &triangle)
-{
-	const glm::vec3 &v1 = triangle[0], &v2 = triangle[1], &v3 = triangle[2];
-	return Sign(p, v1, v2) >= 0.0 && Sign(p, v2, v3) >= 0.0 && Sign(p, v3, v1) >= 0.0;
-}
-
-
-void Renderer::scanFill(const vector<glm::vec3>& triangle, const glm::vec3& color){
-	float xmin = min(min(triangle[0].x, triangle[1].x), triangle[2].x);
-	float xmax = max(max(triangle[0].x, triangle[1].x), triangle[2].x);
-	float ymin = min(min(triangle[0].y, triangle[1].y), triangle[2].y);
-	float ymax = max(max(triangle[0].y, triangle[1].y), triangle[2].y);
-	float z = triangle[0].z;
-	for(int row = ymin; row <= ymax; row++){
-		for(int col = xmin; col <= xmax; col++){
-			if (IsPointInTri(glm::vec3(col, row, 0), triangle))
+	vector<glm::vec3> vertex_illumin;
+	if (current_shading == Shading::Gouraud)
+	{
+		for (int i = 0; i <= 3; i++)
+		{
+			vertex_illumin.push_back(calc_color_shade(triangleWorld[i], triangleWorld.vert_normals[i]));
+		}
+	}
+	// float z = triangle[0].z; // TODO: interpolate z value (templtae the interpolation inside triangle function)
+	// flat shading
+	glm::vec3 color = calc_color_shade(triangleWorld.center, triangleWorld.face_normal);
+	for (int row = triangle.ymin; row <= triangle.ymax; row++)
+	{
+		for (int col = triangle.xmin; col <= triangle.xmax; col++)
+		{
+			if (triangle.IsPointInTri(glm::vec3(col, row, 0)))
 			{
+				float z = triangle.interpolateInsideTriangle<float>({triangle[0].z, triangle[1].z, triangle[2].z}, glm::vec2(col, row));
+				switch (current_shading)
+				{
+				case Shading::Flat:
+				{
+					break;
+				}
+				case Shading::Gouraud:
+				{
+					color = triangle.interpolateInsideTriangle<glm::vec3>(vertex_illumin, glm::vec2(col, row));
+					break;
+				}
+				case Shading::Phong:
+				{
+					glm::vec3 pointNormal = triangle.interpolateInsideTriangle<glm::vec3>(triangleWorld.vert_normals, glm::vec2(col, row));
+					// float xInWord = triangle.interpolateInsideTriangle<float>({triangleWorld[0].x, triangleWorld[1].x, triangleWorld[2].x}, glm::vec2(col, row));
+					// float yInWord = triangle.interpolateInsideTriangle<float>({triangleWorld[0].y, triangleWorld[1].y, triangleWorld[2].y}, glm::vec2(col, row));
+					// color = calc_color_shade(glm::vec3(xInWord, yInWord, z), pointNormal);
+					color = calc_color_shade(glm::vec3(col, row, z), pointNormal);
+					break;
+				}
+				}
 				putPixel(col, row, z, color);
+				putIModelIndex(col, row, model_i);
 			}
 		}
 	}
@@ -121,6 +157,14 @@ glm::vec3 Renderer::TransformPoint(const glm::vec3 &originalPoint) const
 		transformed = this->fullTransform * homogPoint;
 		transformed /= transformed.w;
 		return glm::vec3(transformed);
+}
+
+glm::vec3 Renderer::ApplyObjectTransform(const glm::vec3 &originalPoint) const{
+	glm::vec4 homogPoint(originalPoint, 1);
+	glm::vec4 transformed;
+	transformed = oTransform * homogPoint;
+	transformed /= transformed.w;
+	return glm::vec3(transformed);
 }
 
 void Renderer::DrawLine(const glm::vec3 &point1, const glm::vec3 &point2, const glm::vec3 &color, int model_i){
@@ -229,6 +273,34 @@ void Renderer::createBuffers(int w, int h)
 			model_i_buffer[i + j*width] = -1;
 		}
 	}
+}
+
+glm::vec3 Renderer::calc_color_shade(const glm::vec3& location, const glm::vec3& normal) const{
+	color_t total_color(0, 0, 0);
+	total_color += ambient_color_light * model_emissive_color;
+	glm::vec3 transformedLocation = ApplyObjectTransform(location);
+	glm::vec3 transformedNormal = ApplyObjectTransform(normal);
+
+	// loop over lights & calc diffusive & specular
+	for(auto* light : lights){
+		glm::vec3 L = glm::normalize(light->location - transformedLocation);
+		// calc diffusive
+		float cos_theta = glm::dot(L, transformedNormal) / (glm::length(L) * glm::length(transformedNormal));
+		glm::vec3 diffusive_illumination_color = light->color * model_diffusive_color * cos_theta;
+		total_color += diffusive_illumination_color;
+		// calc specular
+		glm::vec3 R = 2.0f * transformedNormal * glm::dot(L, transformedNormal) - L; // reflection of light
+		glm::vec3 V = glm::normalize(camLocation - transformedLocation);
+		glm::vec3 specular_illumination_color = light->color * model_specular_color * ((float)glm::pow(glm::dot(R, V), model_specular_exponent));
+		total_color += specular_illumination_color;
+		glm::clamp(total_color, color_t(0, 0, 0), color_t(1, 1, 1));
+		if(total_color == color_t(1,1,1))
+		{
+			break;
+		}
+	}
+	
+	return total_color;
 }
 
 //##############################

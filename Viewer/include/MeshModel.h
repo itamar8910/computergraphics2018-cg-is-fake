@@ -5,6 +5,7 @@
 #include <array>
 #include "Model.h"
 #include <utility>
+#include "Definitions.h"
 
 #define ORIGINAL_SCALE 1
 
@@ -14,31 +15,30 @@ using namespace std;
  * MeshModel class. Mesh model object represents a triangle mesh (loaded fron an obj file).
  * 
  */
-typedef vector<glm::vec3> triangle;
-typedef glm::vec3 point;
-typedef std::pair<point,point> line;
-typedef vector<line> hexahedron;
-typedef glm::vec3 color;
 
 class MeshModel : public Model
 {
 public:
 	string name;
 
-	vector<triangle> triangles;
-	vector<line> vertex_normals;
-	vector<line> triangle_normals;
-	hexahedron bbox;
+	vector<triangle3d_t> triangles;
+	vector<line3d_t> vertex_normals;
+	vector<line3d_t> triangle_normals;
+	hexahedron_t bbox;
 
 	// Add more attributes.
 	glm::mat4x4 worldTransform;
 	glm::mat4x4 normalTransform; 
 	float x, y, z; // current position in the world, used for translation before rotation
 	float current_scale; // original scale of this model
-
 	glm::vec3 centerOfMass;
-	const hexahedron CalcBbox() const;
-	const vector<line> CalcTriangeNormals() const;
+	color_t emissive_color;
+	color_t diffusive_color;
+	color_t specular_color;
+	exponent_t specular_exponent;
+
+	const hexahedron_t CalcBbox() const;
+	const vector<line3d_t> CalcTriangeNormals() const;
 	
 public:
 	MeshModel(const string& fileName = "", const string& _name = "N/A");
@@ -49,7 +49,7 @@ public:
 	/**
 	 * This function sends the renderer all nesessary information to draw the model
 	*/
-	void Draw(Renderer& renderer, const glm::vec3& color = glm::vec3(0, 0, 0), int model_i = -1);
+	void Draw(Renderer& renderer, const color_t& color = glm::vec3(0, 0, 0), int model_i = -1);
 	void scale(float s);
 	void translate(float x, float y, float z);
 	void rotateX(float theta, bool model_frame=true);

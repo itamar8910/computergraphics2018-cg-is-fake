@@ -78,7 +78,11 @@ glm::vec2 vec2fFromStream(std::istream& issLine)
 
 
 MeshModel::MeshModel(const string& fileName, const string& _name) : name(_name), worldTransform(glm::mat4(1)), normalTransform(glm::mat4(1)), x(0), y(0), z(0),
-											   current_scale(1), centerOfMass(0)
+											   current_scale(1), centerOfMass(0),
+											   emissive_color(1, 0, 0),
+											   diffusive_color(0.5, 0.5, 0.5),
+											   specular_color(0.005, 0.005, 0.005),
+											   specular_exponent(1)
 {
 	if(fileName.length() > 0){
 		LoadFile(fileName);
@@ -104,11 +108,9 @@ void MeshModel::initializeInternals(){
 glm::vec3 MeshModel::calcCenterOfMass() const{
 	glm::vec3 pointsSum(0);
 	for(const auto& triangle : triangles){
-		for(const auto& point  : triangle){
-			pointsSum += point;
-		}
+			pointsSum += triangle.center;
 	}
-	return (pointsSum * (float)(1.0 / (triangles.size() * 3.0))) * (float)current_scale;
+	return pointsSum * (1.0f / triangles.size()) * current_scale;
 }
 
 MeshModel::~MeshModel()
@@ -120,7 +122,7 @@ void MeshModel::LoadFile(const string& fileName)
 	ifstream ifile(fileName.c_str());
 	vector<FaceIdx> faces;
 	vector<glm::vec3> vertices;
-	vector<point> normals;
+	vector<point3d_t> normals;
 	// while not end of file
 	while (!ifile.eof())
 	{
@@ -169,15 +171,16 @@ void MeshModel::LoadFile(const string& fileName)
 	for (auto& face : faces) // iterate over faces
 	{
 		vector<glm::vec3> triangle;
+		vector<glm::vec3> triangle_normals;
 		for (int i = 0; i < FACE_ELEMENTS; i++) // iterate over face's vertices
 		{
 			// append i'th vetice of current face to list of all vertices
 			// obj files are 1-indexed
-			point current_vertex =vertices[face.v[i]-1];
 			triangle.push_back(vertices[face.v[i]-1]);
-			vertex_normals.push_back(pair<point, point>(current_vertex,current_vertex + normal_length*glm::normalize(normals[face.vn[i] - 1])));
+			triangle_normals.push_back(normals[face.vn[i] - 1]);
 		}
 		triangles.push_back(triangle);
+		triangles.back().vert_normals = triangle_normals;
 	}
 }
 
@@ -185,7 +188,7 @@ void MeshModel::Draw(Renderer& renderer, const glm::vec3& color, int model_i)
 {
 	// send transformation to renderer
 	renderer.SetObjectMatrices(worldTransform, normalTransform);
-
+	renderer.setObjectColors(emissive_color, diffusive_color, specular_color, specular_exponent);
 	if (this->draw_vertex_normals)
 	{
 		for (auto &pair : this->vertex_normals)
@@ -195,30 +198,30 @@ void MeshModel::Draw(Renderer& renderer, const glm::vec3& color, int model_i)
 	}
 	if(this->draw_triangle_normals)
 	{
-		for(auto &pair : this->triangle_normals)
+		for(auto &tri : this->triangles)
 		{
-			renderer.DrawLine(pair.first, pair.first + normal_length * pair.second, glm::vec3(0, 1, 0));
+			renderer.DrawLine(tri.center, tri.center + normal_length * tri.face_normal, glm::vec3(0, 1, 0));
 		}
 	}
 	if(draw_bbox)
 	{
-		for (const line &a : bbox)
+		for (const auto &a : bbox)
 		{
 			renderer.DrawLine(a.first, a.second);
 		}
 	}
 	// send triangles to renderer
-	renderer.DrawTriangles(triangles, nullptr, color, model_i);
+	renderer.DrawTriangles(triangles, color, model_i);
 }
 
-const vector<line> MeshModel::CalcTriangeNormals() const
+const vector<line3d_t> MeshModel::CalcTriangeNormals() const
 {
-	vector<line> triangle_normals;
+	vector<line3d_t> triangle_normals;
 	for (const auto &triangle : triangles)
 	{
-		point tri_normal = -glm::cross(triangle[2] - triangle[0], triangle[1] - triangle[0]); // See the book, page 272
-		point face_center = (triangle[0] + triangle[1] + triangle[2]) / (float)3.0;
-		triangle_normals.push_back(pair<point, point>(face_center, glm::normalize(tri_normal)));
+		point3d_t tri_normal = -glm::cross(triangle[2] - triangle[0], triangle[1] - triangle[0]); // See the book, page 272
+		point3d_t face_center = (triangle[0] + triangle[1] + triangle[2]) / (float)3.0;
+		triangle_normals.push_back(line3d_t(face_center, glm::normalize(tri_normal)));
 	}
 	return triangle_normals;
 }

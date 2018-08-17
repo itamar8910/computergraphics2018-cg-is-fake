@@ -2,6 +2,7 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include "Renderer.h"
+#include "Definitions.h"
 using namespace std;
 
 /*
