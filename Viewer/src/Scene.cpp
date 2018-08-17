@@ -11,14 +11,14 @@ string getCameraName(int cam_i){
 	return "_Camera" + to_string(cam_i);
 }
 
-void Scene::AddCamera(Camera& c){
-	cameras.push_back(&c);
+void Scene::AddCamera(Camera *c){
+	cameras.push_back(c);
 	int cam_i = cameras.size() - 1;
 	MeshModel* camera_model = new MeshModel("../../Data/camera.obj", getCameraName(cam_i));
 	camera_model->rotateY(180.0);
 	camera_model->translate(0, 0, 5);
 	camera_models.push_back(camera_model);
-	c.camera_model = camera_model;
+	c->camera_model = camera_model;
 }
 
 void Scene::SpawnPrimitive(const string& primitive_name)
@@ -30,17 +30,17 @@ void Scene::SpawnPrimitive(const string& primitive_name)
 		new_prim = PrimMeshModel::CreatePyramid();
 		new_prim->name = "pyramid #" + to_string(pyramid_i++);
 	}
-	addModel(*new_prim);
+	addModel(new_prim);
 }
 
 void Scene::LoadOBJModel(string fileName)
 {
 	MeshModel *model = new MeshModel(fileName);
-	addModel(*model);
+	addModel(model);
 }
 
-void Scene::addModel(MeshModel& model){
-	models.push_back(&model);
+void Scene::addModel(MeshModel *model){
+	models.push_back(model);
 }
 
 void Scene::Draw()
@@ -92,9 +92,10 @@ vector<string> Scene::get_models_names(){
 	return names;
 }
 
-void Scene::addLight(Light& light){
-	lights.push_back(&light);
+void Scene::addLight(Light  *light){
+	lights.push_back(light);
 }
+
 bool Scene::hasActiveModel() const
 {
 	return this->ActiveModel != -1;

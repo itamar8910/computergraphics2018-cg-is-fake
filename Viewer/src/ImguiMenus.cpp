@@ -117,7 +117,7 @@ void ShowCamPosWindow(Scene* scene){
 	if(ImGui::Button("Add camera")){
 		Camera* c = new Camera();
 		c->Perspective();
-		scene->AddCamera(*c);
+		scene->AddCamera(c);
 	}
 
 	if (ImGui::TreeNode("Select active camera")){
