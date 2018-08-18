@@ -28,7 +28,7 @@ bool Triangle::IsPointInTri(const glm::vec3 &p) const
 	return Sign(p, v1, v2) >= 0.0 && Sign(p, v2, v3) >= 0.0 && Sign(p, v3, v1) >= 0.0;
 }
 
-Triangle::operator std::__1::vector<point3d_t, std::__1::allocator<point3d_t>>() const
+Triangle::operator std::vector<point3d_t, std::allocator<point3d_t>>() const
 {
     return vertices;
 }

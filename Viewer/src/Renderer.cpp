@@ -291,7 +291,7 @@ glm::vec3 Renderer::calc_color_shade(const glm::vec3& location, const glm::vec3&
 		// calc specular
 		glm::vec3 R = 2.0f * transformedNormal * glm::dot(L, transformedNormal) - L; // reflection of light
 		glm::vec3 V = glm::normalize(camLocation - transformedLocation);
-		glm::vec3 specular_illumination_color = light->color * model_specular_color * ((float)glm::pow(glm::dot(R, V), model_specular_exponent));
+		glm::vec3 specular_illumination_color = light->color * model_specular_color * ((float)glm::pow(abs(glm::dot(R, V)), model_specular_exponent));
 		total_color += specular_illumination_color;
 		glm::clamp(total_color, color_t(0, 0, 0), color_t(1, 1, 1));
 		if(total_color == color_t(1,1,1))
