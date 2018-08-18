@@ -19,6 +19,7 @@ public:
 	vector<Camera*> cameras;
 	Renderer *renderer;
 	bool render_cameras;
+	bool render_lights;
 	glm::vec3 ambient_light_color;
 
 public:

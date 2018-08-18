@@ -9,6 +9,12 @@ Light::Light(color_t _color, glm::vec3 _location) : color(_color), location(_loc
 {
 }
 
+void Light::translate(float x, float y, float z)
+{
+    model->translate(x, y, z);
+    location += point3d_t(x, y, z);
+}
+
 // color_t Light::applyOn(const point3d_t p, const point3d_t &normal, const Model &model, point3d_t COP)
 // {
 //     /* Calculates illumination gained by a light on a model, given it's normal (Already transformed) and the views Center of Projection*/

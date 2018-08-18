@@ -79,6 +79,13 @@ void Scene::Draw()
 			cam_model->Draw(*renderer, color, -1);
 		}
 	}
+	if(render_lights)
+	{
+		for(const Light *light : lights)
+		{
+			light->model->Draw(*renderer, color_t(1, 1, 1), -1);
+		}
+	}
 
 	renderer->SwapBuffers();
 }
@@ -91,9 +98,16 @@ vector<string> Scene::get_models_names(){
 	}
 	return names;
 }
-
+const string getLightName(int light_i)
+{
+	return "Light #" + to_string(light_i);
+}
+#define LIGHT_MODEL "../../Data/banana.obj"
 void Scene::addLight(Light  *light){
 	lights.push_back(light);
+	int light_i = lights.size() - 1;
+	MeshModel *light_model = new MeshModel(LIGHT_MODEL, getLightName(light_i));
+	light->model = light_model;
 }
 
 bool Scene::hasActiveModel() const
