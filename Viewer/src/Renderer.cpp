@@ -9,13 +9,6 @@ using namespace std;
 #define ABS(x) (x > 0 ? x : -x)
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 
-Renderer::Renderer() : width(1280), height(720)
-{
-	initOpenGLRendering();
-	createBuffers(1280,720);
-	current_shading = Shading::Flat;
-}
-
 Renderer::Renderer(int w, int h) : width(w), height(h)
 {
 	initOpenGLRendering();
@@ -26,6 +19,8 @@ Renderer::Renderer(int w, int h) : width(w), height(h)
 Renderer::~Renderer()
 {
 	delete[] colorBuffer;
+	delete[] model_i_buffer;
+	delete[] zBuffer;
 }
 
 void Renderer::SetCameraTransform(const glm::vec3& camLocation, const glm::mat4x4& cTransform){
@@ -270,14 +265,8 @@ void Renderer::createBuffers(int w, int h)
 	colorBuffer = new float[3*w*h];
 	zBuffer = new float[w*h];
 	model_i_buffer = new int[w*h];
-	for (int i = 0; i < w; i++)
-	{
-		for (int j = 0; j < h; j++)
-		{
-			putPixel(i, j, numeric_limits<float>::min(), glm::vec3(0.0f, 0.0f, 0.0f), true);
-			model_i_buffer[i + j*width] = -1;
-		}
-	}
+	color_t initial_color(0.0f, 0.0f, 0.0f);
+	ClearColorBuffer(initial_color);
 }
 
 glm::vec3 Renderer::calc_color_shade(const glm::vec3& location, const glm::vec3& normal) const{

@@ -24,7 +24,7 @@ void Scene::AddCamera(Camera *c){
 void Scene::SpawnPrimitive(const string& primitive_name)
 {
 	static int pyramid_i = 1;
-	PrimMeshModel *new_prim;
+	PrimMeshModel *new_prim = nullptr;
 	if(primitive_name=="pyramid")
 	{
 		new_prim = PrimMeshModel::CreatePyramid();
