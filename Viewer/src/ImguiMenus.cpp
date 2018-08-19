@@ -164,12 +164,27 @@ void ShowShadingWindow(Scene* scene){
 	// translate active light
 	ImGui::SliderFloat("translate X", &scene->lights[scene->ActiveLight]->location.x, -50.0f, 50.0f);
 	ImGui::SliderFloat("translate Y", &scene->lights[scene->ActiveLight]->location.y, -50.0f, 50.0f);
-	ImGui::SliderFloat("translate Z", &scene->lights[scene->ActiveLight]->location.z, -50.0f, 50.0f);
+	if(scene->lights[scene->ActiveLight]->type != LightType::Planar){ // can't transfomr planar source in Z
+		ImGui::SliderFloat("translate Z", &scene->lights[scene->ActiveLight]->location.z, -50.0f, 50.0f);
+	}
 
 	// add new light
-	// TODO: choose point source / planar source
-	if(ImGui::Button("Add new light")){
-		scene->addLight();
+	const char* types[] = { "Point", "Planar" };
+	if (ImGui::Button("Add new light")){
+		ImGui::OpenPopup("Add new light");
+	}
+	ImGui::SameLine();
+	if (ImGui::BeginPopup("Add new light"))
+	{
+		ImGui::Text("Light type");
+		ImGui::Separator();
+		for (int i = 0; i < 2; i++){
+			if (ImGui::MenuItem(types[i])){
+				scene->addLight(nullptr, static_cast<LightType>(i));
+			}
+		}
+		ImGui::EndPopup();
+		
 	}
 	ImGui::End();
 }

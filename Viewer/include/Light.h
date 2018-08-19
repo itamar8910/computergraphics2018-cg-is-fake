@@ -9,14 +9,16 @@ enum Axis
   Y,
   Z
 };
+enum class LightType {Point, Planar};
 
 class Light
 {
 public:
-  Light(color_t _color, point3d_t location);
+  Light(color_t _color, point3d_t location, LightType _type = LightType::Point);
   ~Light();
   color_t color;
   point3d_t location;
+  LightType type;
   // virtual color_t applyOn(const point3d_t p, const point3d_t &normal, const Model &model, point3d_t COP);
 	void translate(float x, float y, float z);
 };

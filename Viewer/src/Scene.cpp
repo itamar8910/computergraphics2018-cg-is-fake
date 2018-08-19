@@ -109,11 +109,13 @@ string getLightName(int light_i)
 
 #define LIGHT_MODEL "../../Data/obj_examples/banana.obj"
 #define DEFAULT_LIGHT_COLOR glm::vec3(0.5, 0.5, 0.5)
-#define DEFAULT_LIGHT_POS glm::vec3(0, 0, 10)
+#define DEFAULT_POINT_LIGHT_POS glm::vec3(0, 0, 10)
+#define DEFAULT_PLANAR_LIGHT_POS glm::vec3(0, 0, 1000000) // planar source modeled as point source at infinity
 
-void Scene::addLight(Light  *light){
+void Scene::addLight(Light  *light, LightType type){
 	if(light == nullptr){
-		light = new Light(DEFAULT_LIGHT_COLOR, DEFAULT_LIGHT_POS);
+		glm::vec3 light_location = (type == LightType::Point) ? DEFAULT_POINT_LIGHT_POS : DEFAULT_PLANAR_LIGHT_POS;
+		light = new Light(DEFAULT_LIGHT_COLOR, light_location, type);
 	}
 	lights.push_back(light);
 	int light_i = lights.size() - 1;
