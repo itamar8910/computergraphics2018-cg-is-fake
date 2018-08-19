@@ -1,4 +1,5 @@
 
+#pragma once
 #include "utils.h"
 #include <vector>
 
@@ -14,3 +15,9 @@ int m_sign(float x){
 	return (x > 0) ? 1 : -1;
 }
 
+glm::mat4x4 getScaleMatrix(float s)
+{
+	glm::mat4x4 scale = glm::mat4(1.0);
+	scale[3][3] = 1.0 / s;
+	return scale;
+}

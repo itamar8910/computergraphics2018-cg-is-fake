@@ -1,8 +1,10 @@
 #include "Renderer.h"
+#include "utils.h"
 class AntiAliasingRenderer:public Renderer
 {
   protected:
     virtual void putPixel(int i, int j, float z, const color_t &color, bool clear = false);
+	  virtual void ClearColorBuffer(const glm::vec3 &color);
     color_t getSuperSamplePixel(int i,int j);
     int super_sampling_factor;
     float *super_sampling_buffer;
@@ -41,5 +43,17 @@ AntiAliasingRenderer::~AntiAliasingRenderer()
 void AntiAliasingRenderer::SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x4& nTransform)
 {
   // Scale models for super sampling
-  return Renderer::SetObjectMatrices(oTransform, nTransform);
+  return Renderer::SetObjectMatrices(getScaleMatrix(super_sampling_factor) * oTransform, nTransform);
+}
+
+void AntiAliasingRenderer::ClearColorBuffer(const glm::vec3 &color)
+{
+	for (int i = 0; i < width*super_sampling_factor; i++)
+	{
+    for (int j = 0; j < height * super_sampling_factor; j++)
+    {
+			putPixel(i, j, numeric_limits<float>::min(), color, true);
+			model_i_buffer[i + j*width] = -1;
+		}
+	}
 }

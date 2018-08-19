@@ -6,6 +6,7 @@
 using namespace std;
 
 glm::mat4x4 getTranslationMatrix(float x, float y, float z);
+glm::mat4x4 getScaleMatrix(float s);
 int m_sign(float x);
 
 // templated so we can use it for interpolating vectors (e.g normals) & floats (e.g z values)

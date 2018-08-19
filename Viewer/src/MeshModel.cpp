@@ -227,8 +227,7 @@ const vector<line3d_t> MeshModel::CalcTriangeNormals() const
 }
 
 void MeshModel::scale(float s){
-	glm::mat4x4 scale = glm::mat4(1.0);
-	scale[3][3] = 1.0 / (s / ((float)current_scale));
+	glm::mat4x4 scale = getScaleMatrix(s / current_scale);
 	current_scale = s;
 	// glm::vec3 centerOfMass = calcCenterOfMass();
 	worldTransform = getTranslationMatrix(x , y, z) * scale * getTranslationMatrix(-x, -y , -z ) * worldTransform;
