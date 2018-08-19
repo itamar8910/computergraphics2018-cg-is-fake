@@ -53,7 +53,7 @@ private:
 	void DrawLineHelper(const glm::vec3 &point1, const glm::vec3 &point2
 						, const glm::vec3 &color= glm::vec3(0.0, 0.0, 0.0), int model_i=-1);
 
-	void DrawTriangle(const triangle3d_t &triangle, const glm::vec3& color = glm::vec3(0, 0, 0), int model_i=-1);
+	void DrawTriangle(const triangle3d_t &triangle, int model_i=-1, bool uniform_material = true, vector<color_t> vertices_ambient = NULL_VERTICES_COLOR, vector<color_t> vertices_diffusive = NULL_VERTICES_COLOR, vector<color_t> vertices_specular = NULL_VERTICES_COLOR);
 
 	//##############################
 	//##openGL stuff. Don't touch.##
@@ -77,7 +77,10 @@ public:
 	void Init();
 
 	// Draws wireframe triangles to the color buffer
-	void DrawTriangles(const vector<triangle3d_t> &triangles, const glm::vec3& color = glm::vec3(0, 0, 0), int model_i = -1);
+	void DrawTriangles(const vector<triangle3d_t> &triangles, int model_i = -1, bool uniform_material = true,
+					vector<vector<color_t>> vertices_ambient = vector<vector<color_t>>(),
+					vector<vector<color_t>> vertices_diffusive = vector<vector<color_t>>(),
+					vector<vector<color_t>> vertices_specular = vector<vector<color_t>>());
 
 	void DrawLine(const glm::vec3 &point1, const glm::vec3 &point2, const glm::vec3 &color = glm::vec3(0.0, 0.0, 0.0), int model_i = -1);
 	

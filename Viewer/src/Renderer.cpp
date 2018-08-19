@@ -57,10 +57,13 @@ void Renderer::setLights(glm::vec3 _ambient_color_light, vector<Light*>& _lights
 
 }
 
-void Renderer::DrawTriangles(const vector<triangle3d_t> &triangles, const glm::vec3 &color, int model_i)
+void Renderer::DrawTriangles(const vector<triangle3d_t> &triangles, int model_i, bool uniform_material, 
+		vector<vector<color_t>> vertices_ambient,
+		vector<vector<color_t>> vertices_diffusive, vector<vector<color_t>>vertices_specular)
 {
 	for(int triangle_i = 0; triangle_i < (int)triangles.size(); triangle_i++){
-		DrawTriangle(triangles[triangle_i], color, model_i);
+		DrawTriangle(triangles[triangle_i], model_i, uniform_material, vertices_ambient[triangle_i],
+													 vertices_diffusive[triangle_i], vertices_specular[triangle_i]);
 	}
 }
 
@@ -80,7 +83,11 @@ glm::mat4x4 Renderer::getViewport() {
     return m;
 }
 
-void Renderer::DrawTriangle(const triangle3d_t &triangle, const glm::vec3 &color, int model_i)
+void Renderer::DrawTriangle(const triangle3d_t &triangle, int model_i, 
+					bool uniform_material, 
+					vector<color_t> vertices_ambient, 
+					vector<color_t> vertices_diffusive, 
+					vector<color_t> vertices_specular)
 {
 	vector<glm::vec3> transformedTriangle_v;
 	// vector<glm::vec3> transformedNormals;
@@ -94,12 +101,20 @@ void Renderer::DrawTriangle(const triangle3d_t &triangle, const glm::vec3 &color
 
 	// draw 3 edges of transformed triangle
 
-	scanFill(transformedTriangle, triangle, model_i);
+	scanFill(transformedTriangle, triangle, model_i, uniform_material, vertices_ambient, vertices_diffusive, vertices_specular);
 }
 
 float getXOfLine(glm::vec3 point1, glm::vec3 point2, float y){
 	float delta = (point2.x - point1.x) / (point2.y - point1.y);
 	return point1.x + ((delta) * (y - point1.y));
+}
+
+color_t mean_color(vector<color_t> colors){
+	color_t total_color = color_t(0, 0, 0);
+	for(auto color : colors){
+		total_color += color;
+	}
+	return total_color * (1.0f / (float)colors.size());
 }
 
 void Renderer::scanFill(const triangle3d_t &triangle, const triangle3d_t &triangleWorld, int model_i,
@@ -109,9 +124,17 @@ void Renderer::scanFill(const triangle3d_t &triangle, const triangle3d_t &triang
 	vector<glm::vec3> vertex_illumin;
 	if (current_shading == Shading::Gouraud)
 	{
+		color_t ambient_color = model_emissive_color;
+		color_t diffusive_color = model_diffusive_color;
+		color_t specular_color = model_specular_color;
+		if(!uniform_material){
+			ambient_color = mean_color(vertices_ambient);
+			diffusive_color = mean_color(vertices_diffusive);
+			specular_color = mean_color(vertices_specular);
+		}
 		for (int i = 0; i <= 3; i++)
 		{
-			vertex_illumin.push_back(calc_color_shade(triangleWorld[i], triangleWorld.vert_normals[i], model_emissive_color, model_diffusive_color, model_specular_color));
+			vertex_illumin.push_back(calc_color_shade(triangleWorld[i], triangleWorld.vert_normals[i], ambient_color, diffusive_color, specular_color));
 		}
 	}
 	
@@ -135,7 +158,7 @@ void Renderer::scanFill(const triangle3d_t &triangle, const triangle3d_t &triang
 				{
 				case Shading::Flat:
 				{
-					color = calc_color_shade(triangleWorld.center, triangleWorld.face_normal, model_emissive_color, model_diffusive_color, model_specular_color);
+					color = calc_color_shade(triangleWorld.center, triangleWorld.face_normal, ambient_color, diffusive_color, specular_color);
 					break;
 				}
 				case Shading::Gouraud:

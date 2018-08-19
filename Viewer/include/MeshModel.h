@@ -37,6 +37,12 @@ public:
 	color_t specular_color;
 	exponent_t specular_exponent;
 
+	// colors for non-uniform material
+	// for each triangle, holds colors of its vertices
+	vector<vector<color_t>> ambient_colors;
+	vector<vector<color_t>> diffusive_colors;
+	vector<vector<color_t>> specular_colors;
+
 	const hexahedron_t CalcBbox() const;
 	const vector<line3d_t> CalcTriangeNormals() const;
 	
@@ -56,4 +62,6 @@ public:
 	void rotateY(float theta, bool model_frame=true);
 	void rotateZ(float theta, bool model_frame=true);
 	glm::vec3 calcCenterOfMass() const;
+	void generateRandomNonUniformMaterial();
+	vector<vector<color_t>> getEmptyTrianglesColors();
 };
