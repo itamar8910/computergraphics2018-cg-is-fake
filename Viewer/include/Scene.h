@@ -15,6 +15,7 @@ class Scene {
 public:
 	vector<Model*> models;
 	vector<MeshModel*> camera_models;
+	vector<MeshModel*> light_models;
 	vector<Light*> lights;
 	vector<Camera*> cameras;
 	Renderer *renderer;

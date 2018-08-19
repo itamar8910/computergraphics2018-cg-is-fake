@@ -9,7 +9,6 @@ enum Axis
   Y,
   Z
 };
-class MeshModel;
 
 class Light
 {
@@ -18,7 +17,6 @@ public:
   ~Light();
   color_t color;
   point3d_t location;
-  MeshModel *model;
   // virtual color_t applyOn(const point3d_t p, const point3d_t &normal, const Model &model, point3d_t COP);
 	void translate(float x, float y, float z);
 };

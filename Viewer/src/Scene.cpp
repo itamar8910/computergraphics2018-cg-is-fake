@@ -81,9 +81,13 @@ void Scene::Draw()
 	}
 	if(render_lights)
 	{
-		for(const Light *light : lights)
+		for(int light_i = 0; light_i < (int)lights.size(); light_i++)
 		{
-			light->model->Draw(*renderer, color_t(1, 1, 1), -1);
+			Light* light = lights[light_i];
+			MeshModel* light_model = light_models[light_i];
+			light_model->worldTransform = glm::mat4x4(1);
+			light_model->translate(light->location.x, light->location.y, light->location.z);
+			light_model->Draw(*renderer, color_t(1, 1, 1), -1);
 		}
 	}
 
@@ -98,16 +102,16 @@ vector<string> Scene::get_models_names(){
 	}
 	return names;
 }
-const string getLightName(int light_i)
+string getLightName(int light_i)
 {
 	return "Light #" + to_string(light_i);
 }
-#define LIGHT_MODEL "../../Data/banana.obj"
+#define LIGHT_MODEL "../../Data/obj_examples/banana.obj"
 void Scene::addLight(Light  *light){
 	lights.push_back(light);
 	int light_i = lights.size() - 1;
 	MeshModel *light_model = new MeshModel(LIGHT_MODEL, getLightName(light_i));
-	light->model = light_model;
+	light_models.push_back(light_model);
 }
 
 bool Scene::hasActiveModel() const
