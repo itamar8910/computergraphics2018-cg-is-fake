@@ -87,6 +87,7 @@ void Scene::Draw()
 			MeshModel* light_model = light_models[light_i];
 			light_model->worldTransform = glm::mat4x4(1);
 			light_model->translate(light->location.x, light->location.y, light->location.z);
+			light_model->ambient_color = light_model->diffusive_color = light_model->specular_color = light->color;
 			light_model->Draw(*renderer, color_t(1, 1, 1), -1);
 		}
 	}
