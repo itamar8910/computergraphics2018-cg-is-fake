@@ -32,7 +32,7 @@ public:
 	float x, y, z; // current position in the world, used for translation before rotation
 	float current_scale; // original scale of this model
 	glm::vec3 centerOfMass;
-	color_t emissive_color;
+	color_t ambient_color;
 	color_t diffusive_color;
 	color_t specular_color;
 	exponent_t specular_exponent;

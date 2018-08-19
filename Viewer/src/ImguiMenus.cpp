@@ -156,8 +156,8 @@ void ShowMaterialWindow(Scene *scene)
 	{
 		// Using a refernce here made 
 		MeshModel *active_model = dynamic_cast<MeshModel*>(scene->models[scene->ActiveModel]); 
-		ImGui::ColorEdit3("Backgroun Color", (float*)&clearColor); // Edit 3 floats representing a color
-		ImGui::ColorEdit3("Emissive Color", (float *)&(active_model->emissive_color));
+		ImGui::ColorEdit3("Background Color", (float*)&clearColor); // Edit 3 floats representing a color
+		ImGui::ColorEdit3("Ambient Color", (float *)&(active_model->ambient_color));
 		ImGui::ColorEdit3("Diffusive Color", (float *)&(active_model->diffusive_color));
 		ImGui::ColorEdit3("Specular Color", (float *)&(active_model->specular_color));
 		ImGui::SliderFloat("Specular Exponent", &(active_model->specular_exponent),0,10);

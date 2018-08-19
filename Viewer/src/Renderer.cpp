@@ -136,10 +136,15 @@ void Renderer::scanFill(const triangle3d_t &triangle, const triangle3d_t &triang
 				case Shading::Phong:
 				{
 					glm::vec3 pointNormal = triangle.interpolateInsideTriangle<glm::vec3>(triangleWorld.vert_normals, glm::vec2(col, row));
-					// float xInWord = triangle.interpolateInsideTriangle<float>({triangleWorld[0].x, triangleWorld[1].x, triangleWorld[2].x}, glm::vec2(col, row));
-					// float yInWord = triangle.interpolateInsideTriangle<float>({triangleWorld[0].y, triangleWorld[1].y, triangleWorld[2].y}, glm::vec2(col, row));
-					// color = calc_color_shade(glm::vec3(xInWord, yInWord, z), pointNormal);
-					color = calc_color_shade(glm::vec3(col, row, z), pointNormal);
+					/*
+					Note: calculation of zInWorld is NOT a duplication of z
+					      - z in is View frame and used for zBuffer
+						  -z Inworld is in worldFrame and used for shading calculation
+					*/
+					float xInWorld = triangle.interpolateInsideTriangle<float>({triangleWorld[0].x, triangleWorld[1].x, triangleWorld[2].x}, glm::vec2(col, row));
+					float yInWorld = triangle.interpolateInsideTriangle<float>({triangleWorld[0].y, triangleWorld[1].y, triangleWorld[2].y}, glm::vec2(col, row));
+					float zInWorld = triangle.interpolateInsideTriangle<float>({triangleWorld[0].z, triangleWorld[1].z, triangleWorld[2].z}, glm::vec2(col, row));
+					color = calc_color_shade(glm::vec3(xInWorld, yInWorld, zInWorld), pointNormal);
 					break;
 				}
 				}
@@ -289,7 +294,7 @@ glm::vec3 Renderer::calc_color_shade(const glm::vec3& location, const glm::vec3&
 		glm::vec3 diffusive_illumination_color = light->color * model_diffusive_color * cos_theta;
 		total_color += diffusive_illumination_color;
 		// calc specular
-		glm::vec3 R = 2.0f * transformedNormal * glm::dot(L, transformedNormal) - L; // reflection of light
+		glm::vec3 R = glm::normalize(2.0f * transformedNormal * glm::dot(L, transformedNormal) - L); // reflection of light
 		glm::vec3 V = glm::normalize(camLocation - transformedLocation);
 		glm::vec3 specular_illumination_color = light->color * model_specular_color * ((float)glm::pow(abs(glm::dot(R, V)), model_specular_exponent));
 		total_color += specular_illumination_color;
