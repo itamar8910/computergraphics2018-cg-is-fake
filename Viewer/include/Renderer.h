@@ -43,11 +43,13 @@ private:
 
 	glm::mat4x4 getViewport();
 	// Draw's a pixel in location p with color color
-	void putPixel(int i, int j, float z, const glm::vec3 &color,bool clear=false);
+	protected:
+	virtual void putPixel(int i, int j, float z, const color_t &color, bool clear = false);
 	glm::vec3 getPixel(int i, int j) const;
 	void putIModelIndex(int i, int j, int model_i);
 	void putZBufferval(int i, int j, int z);
 	float getZBufferVal(int i, int j);
+	public:
 	// creates float array of dimension [3,w,h]
 	void createBuffers(int w, int h);
 	void DrawLineHelper(const glm::vec3 &point1, const glm::vec3 &point2
@@ -70,8 +72,7 @@ public:
 	int width, height;
 	Shading current_shading;
 
-	Renderer();
-	Renderer(int w, int h);
+	Renderer(int w=1280, int h=720);
 	~Renderer();
 	// Local initializations of your implementation
 	void Init();

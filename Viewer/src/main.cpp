@@ -16,6 +16,7 @@
 #include "ImguiMenus.h"
 #include "MeshModel.h"
 #include "PrimMeshModel.h"
+#include "AntiAliasingRenderer.hpp"
 #include <iostream>
 using namespace std;
 
@@ -52,7 +53,7 @@ int main(int argc, char **argv)
 	if (!window)
 		return 1;
 	// Setup renderer and scene
-	Renderer renderer = Renderer(w, h);
+	AntiAliasingRenderer renderer(w, h);
 	Scene scene = Scene(&renderer);
 	setup_scene(scene);
 	if (argc < 2)
