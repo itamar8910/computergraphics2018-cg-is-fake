@@ -37,6 +37,7 @@ public:
 	color_t specular_color;
 	exponent_t specular_exponent;
 
+	bool use_uniform;
 	// colors for non-uniform material
 	// for each triangle, holds colors of its vertices
 	vector<vector<color_t>> ambient_colors;

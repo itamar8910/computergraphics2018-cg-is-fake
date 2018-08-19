@@ -194,13 +194,19 @@ void ShowMaterialWindow(Scene *scene)
 	ImGui::Begin("Material Window");
 	if(scene->hasActiveModel())
 	{
-		// Using a refernce here made 
 		MeshModel *active_model = dynamic_cast<MeshModel*>(scene->models[scene->ActiveModel]); 
-		ImGui::ColorEdit3("Background Color", (float*)&clearColor); // Edit 3 floats representing a color
-		ImGui::ColorEdit3("Ambient Color", (float *)&(active_model->ambient_color));
-		ImGui::ColorEdit3("Diffusive Color", (float *)&(active_model->diffusive_color));
-		ImGui::ColorEdit3("Specular Color", (float *)&(active_model->specular_color));
-		ImGui::SliderFloat("Specular Exponent", &(active_model->specular_exponent),0,10);
+		ImGui::Checkbox("Uniform Material", &active_model->use_uniform);
+		if(active_model->use_uniform){
+			ImGui::ColorEdit3("Background Color", (float*)&clearColor); // Edit 3 floats representing a color
+			ImGui::ColorEdit3("Ambient Color", (float *)&(active_model->ambient_color));
+			ImGui::ColorEdit3("Diffusive Color", (float *)&(active_model->diffusive_color));
+			ImGui::ColorEdit3("Specular Color", (float *)&(active_model->specular_color));
+			ImGui::SliderFloat("Specular Exponent", &(active_model->specular_exponent),0,10);
+		}else{
+			if(ImGui::Button("re-generate")){
+				active_model->generateRandomNonUniformMaterial();
+			}
+		}
 	}
 	ImGui::End();
 }

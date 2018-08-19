@@ -82,7 +82,7 @@ MeshModel::MeshModel(const string& fileName, const string& _name) : name(_name),
 											   ambient_color(1, 0, 0),
 											   diffusive_color(0.5, 0.5, 0.5),
 											   specular_color(1, 1, 1),
-											   specular_exponent(1)
+											   specular_exponent(1), use_uniform(true)
 {
 	if(fileName.length() > 0){
 		LoadFile(fileName);
@@ -114,6 +114,7 @@ void MeshModel::initializeInternals(){
 	ambient_colors = getEmptyTrianglesColors();
 	diffusive_colors = getEmptyTrianglesColors();
 	specular_colors = getEmptyTrianglesColors();
+	generateRandomNonUniformMaterial();
 }
 
 glm::vec3 MeshModel::calcCenterOfMass() const{
@@ -222,7 +223,7 @@ void MeshModel::Draw(Renderer& renderer, const glm::vec3& color, int model_i)
 		}
 	}
 	// send triangles to renderer
-	renderer.DrawTriangles(triangles, model_i, false, ambient_colors, diffusive_colors, specular_colors);
+	renderer.DrawTriangles(triangles, model_i, use_uniform, ambient_colors, diffusive_colors, specular_colors);
 }
 
 const vector<line3d_t> MeshModel::CalcTriangeNormals() const
@@ -301,10 +302,13 @@ void MeshModel::rotateZ(float theta,bool model_frame){
 }
 
 color_t random_color(){
-	return {rand()%255, rand()%255, rand()%255};
+	return {(rand()%255) / 255.0f, (rand()%255) / 255.0f, (rand()%255) / 255.0f};
 }
 
 void MeshModel::generateRandomNonUniformMaterial(){
+	ambient_colors.clear();
+	diffusive_colors.clear();
+	specular_colors.clear();
 	for(int triangle_i = 0; triangle_i < (int)triangles.size(); triangle_i++){
 		ambient_colors.push_back({random_color(), random_color(), random_color()});
 		diffusive_colors.push_back({random_color(), random_color(), random_color()});
