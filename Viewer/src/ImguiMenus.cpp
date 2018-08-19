@@ -186,6 +186,11 @@ void ShowShadingWindow(Scene* scene){
 		ImGui::EndPopup();
 		
 	}
+	ImGui::Text("");
+	
+	// control ambient light
+	ImGui::ColorEdit3("Ambient light Color", (float*)&(scene->ambient_light_color));
+
 	ImGui::End();
 }
 
