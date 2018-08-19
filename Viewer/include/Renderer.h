@@ -80,7 +80,8 @@ public:
 	void DrawTriangles(const vector<triangle3d_t> &triangles, const glm::vec3& color = glm::vec3(0, 0, 0), int model_i = -1);
 
 	void DrawLine(const glm::vec3 &point1, const glm::vec3 &point2, const glm::vec3 &color = glm::vec3(0.0, 0.0, 0.0), int model_i = -1);
-	void scanFill(const triangle3d_t &triangle, const triangle3d_t &triangleWorld, const glm::vec3 &color, int model_i = -1);
+	
+	void scanFill(const triangle3d_t &triangle, const triangle3d_t &triangleWorld, int model_i = -1, bool uniform_material = true, vector<color_t> vertices_ambient = NULL_VERTICES_COLOR, vector<color_t> vertices_diffusive = NULL_VERTICES_COLOR, vector<color_t> vertices_specular = NULL_VERTICES_COLOR);
 	glm::vec3 TransformPoint(const glm::vec3 &originalPoint) const;
 	glm::vec3 ApplyObjectTransform(const glm::vec3 &originalPoint) const;
 	// Sets the camera transformations with relation to world coordinates
@@ -95,7 +96,7 @@ public:
 	void setObjectColors(color_t _emissive, color_t _diffusive, color_t _specular, exponent_t specular_exponent);
 	void setLights(glm::vec3 ambient_color_light, vector<Light*>& lights);
 
-	glm::vec3 calc_color_shade(const glm::vec3& location, const glm::vec3& normal) const;
+	glm::vec3 calc_color_shade(const glm::vec3& location, const glm::vec3& normal, color_t ambient_color, color_t diffusive_color, color_t specular_color) const;
 
 	// Swaps between the back buffer and front buffer, as explained in class.
 	// https://en.wikipedia.org/wiki/Multiple_buffering#Double_buffering_in_computer_graphics
