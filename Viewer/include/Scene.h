@@ -35,7 +35,7 @@ public:
 
 	void addModel(MeshModel *model);
 
-	void addLight(Light *light);
+	void addLight(Light *light = nullptr);
 	
 	// Draws the current scene.
 	void Draw();

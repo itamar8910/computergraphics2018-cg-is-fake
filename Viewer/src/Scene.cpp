@@ -106,8 +106,15 @@ string getLightName(int light_i)
 {
 	return "Light #" + to_string(light_i);
 }
+
 #define LIGHT_MODEL "../../Data/obj_examples/banana.obj"
+#define DEFAULT_LIGHT_COLOR glm::vec3(0.5, 0.5, 0.5)
+#define DEFAULT_LIGHT_POS glm::vec3(0, 0, 10)
+
 void Scene::addLight(Light  *light){
+	if(light == nullptr){
+		light = new Light(DEFAULT_LIGHT_COLOR, DEFAULT_LIGHT_POS);
+	}
 	lights.push_back(light);
 	int light_i = lights.size() - 1;
 	MeshModel *light_model = new MeshModel(LIGHT_MODEL, getLightName(light_i));
