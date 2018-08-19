@@ -25,7 +25,7 @@ public:
 
 public:
 	Scene() : render_cameras(true) {};
-	Scene(Renderer *renderer) : renderer(renderer), render_cameras(true) {};
+	Scene(Renderer *renderer) : renderer(renderer), render_cameras(true), ambient_light_color(1, 1, 1){};
 
 	void SpawnPrimitive(const string &primitive_name = "pyramid");
 	void AddCamera(Camera *c);

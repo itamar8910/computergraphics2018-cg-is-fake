@@ -159,13 +159,16 @@ void ShowShadingWindow(Scene* scene){
 	}
 
 	// choose color
-	ImGui::ColorEdit3("Light's Color", (float*)&(scene->lights[scene->ActiveLight]->color));
-
-	// translate active light
-	ImGui::SliderFloat("translate X", &scene->lights[scene->ActiveLight]->location.x, -50.0f, 50.0f);
-	ImGui::SliderFloat("translate Y", &scene->lights[scene->ActiveLight]->location.y, -50.0f, 50.0f);
-	if(scene->lights[scene->ActiveLight]->type != LightType::Planar){ // can't transfomr planar source in Z
-		ImGui::SliderFloat("translate Z", &scene->lights[scene->ActiveLight]->location.z, -50.0f, 50.0f);
+	if(!scene->lights.empty())
+	{
+		ImGui::ColorEdit3("Light's Color", (float *)&(scene->lights[scene->ActiveLight]->color));
+		// translate active light
+		ImGui::SliderFloat("translate X", &scene->lights[scene->ActiveLight]->location.x, -50.0f, 50.0f);
+		ImGui::SliderFloat("translate Y", &scene->lights[scene->ActiveLight]->location.y, -50.0f, 50.0f);
+		if (scene->lights[scene->ActiveLight]->type != LightType::Planar)
+		{ // can't transfomr planar source in Z
+			ImGui::SliderFloat("translate Z", &scene->lights[scene->ActiveLight]->location.z, -50.0f, 50.0f);
+		}
 	}
 
 	// add new light
@@ -181,6 +184,7 @@ void ShowShadingWindow(Scene* scene){
 		for (int i = 0; i < 2; i++){
 			if (ImGui::MenuItem(types[i])){
 				scene->addLight(nullptr, static_cast<LightType>(i));
+				scene->ActiveLight = scene->lights.size() - 1;
 			}
 		}
 		ImGui::EndPopup();

@@ -81,8 +81,8 @@ MeshModel::MeshModel(const string& fileName, const string& _name) : name(_name),
 											   current_scale(1), centerOfMass(0),
 											   ambient_color(1, 0, 0),
 											   diffusive_color(0.5, 0.5, 0.5),
-											   specular_color(1, 1, 1),
-											   specular_exponent(1)
+											   specular_color(0.5, 0.5, 0.5),
+											   specular_exponent(5)
 {
 	if(fileName.length() > 0){
 		LoadFile(fileName);
