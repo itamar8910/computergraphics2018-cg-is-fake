@@ -117,7 +117,7 @@ void ShowCamPosWindow(Scene* scene){
 	if(ImGui::Button("Add camera")){
 		Camera* c = new Camera();
 		c->Perspective();
-		scene->AddCamera(*c);
+		scene->AddCamera(c);
 	}
 
 	if (ImGui::TreeNode("Select active camera")){
@@ -145,7 +145,47 @@ void ShowShadingWindow(Scene* scene){
 			}
 			ImGui::TreePop();
 
+	}
+	// select active light
+	if (ImGui::TreeNode("Select active light")){
+		for (int light_i = 0; light_i < (int)scene->lights.size(); light_i++)
+		{
+			if (ImGui::Selectable( ("Light " + to_string(light_i)).c_str(), scene->ActiveLight == light_i)){
+				scene->ActiveLight = light_i;
+			}
 		}
+		ImGui::TreePop();
+
+	}
+
+	// choose color
+	ImGui::ColorEdit3("Light's Color", (float*)&(scene->lights[scene->ActiveLight]->color));
+
+	// translate active light
+	ImGui::SliderFloat("translate X", &scene->lights[scene->ActiveLight]->location.x, -50.0f, 50.0f);
+	ImGui::SliderFloat("translate Y", &scene->lights[scene->ActiveLight]->location.y, -50.0f, 50.0f);
+	if(scene->lights[scene->ActiveLight]->type != LightType::Planar){ // can't transfomr planar source in Z
+		ImGui::SliderFloat("translate Z", &scene->lights[scene->ActiveLight]->location.z, -50.0f, 50.0f);
+	}
+
+	// add new light
+	const char* types[] = { "Point", "Planar" };
+	if (ImGui::Button("Add new light")){
+		ImGui::OpenPopup("Add new light");
+	}
+	ImGui::SameLine();
+	if (ImGui::BeginPopup("Add new light"))
+	{
+		ImGui::Text("Light type");
+		ImGui::Separator();
+		for (int i = 0; i < 2; i++){
+			if (ImGui::MenuItem(types[i])){
+				scene->addLight(nullptr, static_cast<LightType>(i));
+			}
+		}
+		ImGui::EndPopup();
+		
+	}
 	ImGui::End();
 }
 
@@ -186,7 +226,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		static int prevActiveModel = scene->ActiveModel;
 		ImGui::SliderFloat("keyboard step size", &keyboard_step_size, 0.05f, 5.0f); 
 		ImGui::Checkbox("Camera Window", &showCamPosWindow);      // Edit bools storing our windows open/close state
-		ImGui::Checkbox("Shading Window", &showShadingWindow);      // Edit bools storing our windows open/close state
+		ImGui::Checkbox("Lighting&Shading Window", &showShadingWindow);      // Edit bools storing our windows open/close state
 		ImGui::Checkbox("Material Window", &showMaterialWindow);      // Edit bools storing our windows open/close state
 		ImGui::Checkbox("Rotate around model frame",&ModelFrame);
 		ImGui::SliderFloat("translate X", &xPos, -10.0f, 10.0f);           

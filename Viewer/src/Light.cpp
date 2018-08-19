@@ -5,8 +5,13 @@ TODO: add sub classes for point source & parallel source
 - should probably implement parallel source as very distannt point source like slides say
 */
 
-Light::Light(color_t _color, glm::vec3 _location) : color(_color), location(_location)
+Light::Light(color_t _color, glm::vec3 _location, LightType _type) : color(_color), location(_location), type(_type)
 {
+}
+
+void Light::translate(float x, float y, float z)
+{
+    location += point3d_t(x, y, z);
 }
 
 // color_t Light::applyOn(const point3d_t p, const point3d_t &normal, const Model &model, point3d_t COP)

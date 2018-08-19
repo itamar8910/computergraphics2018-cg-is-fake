@@ -15,10 +15,12 @@ class Scene {
 public:
 	vector<Model*> models;
 	vector<MeshModel*> camera_models;
+	vector<MeshModel*> light_models;
 	vector<Light*> lights;
 	vector<Camera*> cameras;
 	Renderer *renderer;
 	bool render_cameras;
+	bool render_lights;
 	glm::vec3 ambient_light_color;
 
 public:
@@ -26,14 +28,14 @@ public:
 	Scene(Renderer *renderer) : renderer(renderer), render_cameras(true) {};
 
 	void SpawnPrimitive(const string &primitive_name = "pyramid");
-	void AddCamera(Camera& c);
+	void AddCamera(Camera *c);
 
 	// Loads an obj file into the scene.
 	void LoadOBJModel(string fileName);
 
-	void addModel(MeshModel& model);
+	void addModel(MeshModel *model);
 
-	void addLight(Light& light);
+	void addLight(Light *light = nullptr, LightType type = LightType::Point);
 	
 	// Draws the current scene.
 	void Draw();
