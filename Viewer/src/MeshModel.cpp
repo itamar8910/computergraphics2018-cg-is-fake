@@ -82,7 +82,8 @@ MeshModel::MeshModel(const string& fileName, const string& _name) : name(_name),
 											   ambient_color(1, 0, 0),
 											   diffusive_color(0.5, 0.5, 0.5),
 											   specular_color(0.5, 0.5, 0.5),
-											   specular_exponent(5)
+											   specular_exponent(5),
+											   use_uniform(true)
 {
 	if(fileName.length() > 0){
 		LoadFile(fileName);
@@ -98,11 +99,23 @@ MeshModel::MeshModel(const string& fileName, const string& _name) : name(_name),
 	}
 }
 
+vector<vector<color_t>> MeshModel::getEmptyTrianglesColors(){
+	vector<vector<color_t>> triangle_colors;
+	for(int i = 0; i < (int) triangles.size(); i++){
+		triangle_colors.push_back(NULL_VERTICES_COLOR);
+	}
+	return triangle_colors;
+}
+
 void MeshModel::initializeInternals(){
 	scale(ORIGINAL_SCALE);
 	centerOfMass = calcCenterOfMass();
 	bbox = CalcBbox();
 	triangle_normals = CalcTriangeNormals();
+	ambient_colors = getEmptyTrianglesColors();
+	diffusive_colors = getEmptyTrianglesColors();
+	specular_colors = getEmptyTrianglesColors();
+	generateRandomNonUniformMaterial();
 }
 
 glm::vec3 MeshModel::calcCenterOfMass() const{
@@ -211,7 +224,7 @@ void MeshModel::Draw(Renderer& renderer, const glm::vec3& color, int model_i)
 		}
 	}
 	// send triangles to renderer
-	renderer.DrawTriangles(triangles, color, model_i);
+	renderer.DrawTriangles(triangles, model_i, use_uniform, ambient_colors, diffusive_colors, specular_colors);
 }
 
 const vector<line3d_t> MeshModel::CalcTriangeNormals() const
@@ -287,4 +300,19 @@ void MeshModel::rotateZ(float theta,bool model_frame){
 	rotate[1][0] = -glm::sin(glm::radians(theta));
 	rotate[1][1] = glm::cos(glm::radians(theta));
 	worldTransform = getTranslationMatrix(x + centerOfMass.x, y + centerOfMass.y, z + centerOfMass.z) * rotate * getTranslationMatrix(-x - centerOfMass.x, -y - centerOfMass.y, -z - centerOfMass.z) * worldTransform;
+}
+
+color_t random_color(){
+	return {(rand()%255) / 255.0f, (rand()%255) / 255.0f, (rand()%255) / 255.0f};
+}
+
+void MeshModel::generateRandomNonUniformMaterial(){
+	ambient_colors.clear();
+	diffusive_colors.clear();
+	specular_colors.clear();
+	for(int triangle_i = 0; triangle_i < (int)triangles.size(); triangle_i++){
+		ambient_colors.push_back({random_color(), random_color(), random_color()});
+		diffusive_colors.push_back({random_color(), random_color(), random_color()});
+		specular_colors.push_back({random_color(), random_color(), random_color()});
+	}
 }
