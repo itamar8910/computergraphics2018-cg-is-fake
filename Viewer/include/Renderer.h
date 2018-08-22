@@ -92,7 +92,7 @@ public:
 
 	// Sets the transformations for model and normals. The object transformations 
 	// decide the spacial relations of the object with respect to the world.
-	void SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x4& nTransform);
+	virtual void SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x4& nTransform);
 	void setObjectColors(color_t _emissive, color_t _diffusive, color_t _specular, exponent_t specular_exponent);
 	void setLights(glm::vec3 ambient_color_light, vector<Light*>& lights);
 
@@ -103,7 +103,7 @@ public:
 	void SwapBuffers();
 
 	// Sets the color buffer to a new color (all pixels are set to this color).
-	void ClearColorBuffer(const glm::vec3& color);
+	virtual void ClearColorBuffer(const glm::vec3& color);
 
 	// Resize the buffer.
 	void Viewport(int w, int h);
