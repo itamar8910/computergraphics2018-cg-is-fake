@@ -21,9 +21,11 @@ class Renderer
 private:
 	// 3*width*height
 	float *colorBuffer;
+
 	// width*height
 	float *zBuffer;
-	
+	float supersampling_coeff;
+
 	glm::vec3 clearColor;
 
 	// TODO: make these a smart pointer to avoid copying each time
@@ -68,7 +70,9 @@ public:
 
 	glm::mat4x4 fullTransform; // full transform: world coordinates -> screen
 	int width, height;
+	int screen_width, screen_height;
 	Shading current_shading;
+	
 
 	Renderer();
 	Renderer(int w, int h);
@@ -116,4 +120,7 @@ public:
 
 	// Draw wide vertical and horizontal lines on the screen
 	void SetDemoBuffer();
+
+	void set_supersampling_coeff(float _coeff);
+	void resampleColorBuffer();
 };
