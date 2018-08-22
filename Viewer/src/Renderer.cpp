@@ -8,7 +8,7 @@ using namespace std;
 
 #define ABS(x) (x > 0 ? x : -x)
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
-#define INIT_SUPERSAMPLING 1.0
+#define INIT_SUPERSAMPLING 1.0 // must be >= 1.0
 Renderer::Renderer() : supersampling_coeff(1.0), width(1280), height(720), screen_width(1280), screen_height(720)
 {
 	set_supersampling_coeff(INIT_SUPERSAMPLING);
@@ -472,13 +472,27 @@ void Renderer::set_supersampling_coeff(float _coeff){
 	supersampling_coeff = _coeff;
 }
 
+float get_avg_in_box(float* buffer, int width, int col, int row, float supersampling_coeff, int color_i){
+	float valsSum = 0;
+	float numvals = 0;
+	for(int r = int((row-1) * supersampling_coeff) + 1; r <= int((row+1) * supersampling_coeff) - 1; r++){
+		for(int c = int((col-1) * supersampling_coeff) + 1; c <= int((col+1) * supersampling_coeff) - 1; c++){
+			valsSum += buffer[INDEX(width, c, r, color_i)];
+			numvals += 1;
+		}
+	}
+	return valsSum / numvals;
+	
+}
+
 void Renderer::resampleColorBuffer(){
 	float* screen_colorBuffer = new float[3 * screen_height * screen_width];
 	for(int r = 0; r < screen_height; r++){
 		for(int c = 0; c < screen_width; c++){
-			screen_colorBuffer[INDEX(screen_width, c, r, 0)] = colorBuffer[INDEX(width, int(c * supersampling_coeff), int(r* supersampling_coeff), 0)];
-			screen_colorBuffer[INDEX(screen_width, c, r, 1)] = colorBuffer[INDEX(width, int(c * supersampling_coeff), int(r* supersampling_coeff), 1)];
-			screen_colorBuffer[INDEX(screen_width, c, r, 2)] = colorBuffer[INDEX(width, int(c * supersampling_coeff), int(r* supersampling_coeff), 2)];
+			screen_colorBuffer[INDEX(screen_width, c, r, 0)] = get_avg_in_box(colorBuffer, width, c, r, supersampling_coeff, 0); // colorBuffer[INDEX(width, int(c * supersampling_coeff), int(r * supersampling_coeff), 0)];
+			screen_colorBuffer[INDEX(screen_width, c, r, 1)] = get_avg_in_box(colorBuffer, width, c, r, supersampling_coeff, 1); // colorBuffer[INDEX(width, int(c * supersampling_coeff), int(r * supersampling_coeff), 0)];
+			screen_colorBuffer[INDEX(screen_width, c, r, 2)] = get_avg_in_box(colorBuffer, width, c, r, supersampling_coeff, 2); // colorBuffer[INDEX(width, int(c * supersampling_coeff), int(r * supersampling_coeff), 0)];
+			
 		}
 	}
 	delete[] colorBuffer;
