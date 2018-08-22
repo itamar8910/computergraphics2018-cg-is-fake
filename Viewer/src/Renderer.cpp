@@ -14,6 +14,7 @@ Renderer::Renderer() : width(1280), height(720)
 	initOpenGLRendering();
 	createBuffers(1280,720);
 	current_shading = Shading::Flat;
+	fog_color = color_t(1, 1, 1);
 }
 
 Renderer::Renderer(int w, int h) : width(w), height(h)
@@ -55,6 +56,10 @@ void Renderer::setLights(glm::vec3 _ambient_color_light, vector<Light*>& _lights
 	ambient_color_light = _ambient_color_light;
 	lights = _lights;
 
+}
+void Renderer::setFogColor(color_t color)
+{
+	fog_color = color;
 }
 
 void Renderer::DrawTriangles(const vector<triangle3d_t> &triangles, int model_i, bool uniform_material, 
@@ -180,6 +185,14 @@ void Renderer::scanFill(const triangle3d_t &triangle, const triangle3d_t &triang
 					color = calc_color_shade(glm::vec3(xInWorld, yInWorld, zInWorld), pointNormal, ambient_color, diffusive_color, specular_color);
 					break;
 				}
+				}
+				if(fog_enabled)
+				{
+					float zInWorld = triangle.interpolateInsideTriangle<float>({triangleWorld[0].z, triangleWorld[1].z, triangleWorld[2].z}, glm::vec2(col, row));
+					float dist = abs(z);
+					float min_dist = 0;
+					float fog_factor = (_depth - dist) / (_depth - min_dist);
+					color = fog_color * fog_factor + color * (1 - fog_factor);
 				}
 				putPixel(col, row, z, color);
 				putIModelIndex(col, row, model_i);
