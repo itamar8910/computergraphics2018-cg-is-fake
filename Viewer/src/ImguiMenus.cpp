@@ -327,7 +327,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 			ImGui::SliderFloat("Normal scale", &(active->normal_length), 0.1, 0.5);
 			static float supersampling_coeff = 1.0f;
 			float prev_supersampling_coeff = supersampling_coeff;
-			ImGui::SliderFloat("Supersampling", &(supersampling_coeff), 1.0f, 2.0f);
+			ImGui::SliderFloat("Supersampling", &(supersampling_coeff), 1.0f, 3.0f);
 			if(prev_supersampling_coeff != supersampling_coeff){
 				scene->renderer->set_supersampling_coeff(supersampling_coeff);
 				prev_supersampling_coeff = supersampling_coeff;

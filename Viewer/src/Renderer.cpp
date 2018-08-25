@@ -262,8 +262,6 @@ void Renderer::putPixel(int i, int j, float z, const glm::vec3 &color,bool clear
 		{
 			return;
 		}
-		// i = int(i / supersampling_coeff);
-		// j = int(j / supersampling_coeff);
 		colorBuffer[INDEX(width, i, j, 0)] = color.x;
 		colorBuffer[INDEX(width, i, j, 1)] = color.y;
 		colorBuffer[INDEX(width, i, j, 2)] = color.z;
@@ -460,7 +458,7 @@ void Renderer::Viewport(int w, int h)
 	screen_width = w;
 	screen_height = h;
 	delete[] colorBuffer;
-	colorBuffer = new float[3 * h*w];
+	// colorBuffer = new float[3 * h*w];
 	createOpenGLBuffer();
 	createBuffers(width, height);
 }
@@ -468,15 +466,20 @@ void Renderer::Viewport(int w, int h)
 void Renderer::set_supersampling_coeff(float _coeff){
 	width = int(width * ( _coeff / supersampling_coeff));
 	height = int(height * ( _coeff / supersampling_coeff));
-	
+	// don't allow going below screen width, height
+	width = max(width, screen_width);
+	height = max(height, screen_height);
+	cout << "width:" << width << "," << "height:" << height << endl;
 	supersampling_coeff = _coeff;
 }
 
 float get_avg_in_box(float* buffer, int width, int col, int row, float supersampling_coeff, int color_i){
 	float valsSum = 0;
 	float numvals = 0;
-	for(int r = int((row-1) * supersampling_coeff) + 1; r <= int((row+1) * supersampling_coeff) - 1; r++){
-		for(int c = int((col-1) * supersampling_coeff) + 1; c <= int((col+1) * supersampling_coeff) - 1; c++){
+	int init_row = max(int((row-1) * supersampling_coeff) + 1, 0);
+	int init_col = max(int((col-1) * supersampling_coeff) + 1, 0);
+	for(int r = init_row; r <= int((row+1) * supersampling_coeff) - 1; r++){
+		for(int c = init_col; c <= int((col+1) * supersampling_coeff) - 1; c++){
 			valsSum += buffer[INDEX(width, c, r, color_i)];
 			numvals += 1;
 		}
@@ -489,10 +492,9 @@ void Renderer::resampleColorBuffer(){
 	float* screen_colorBuffer = new float[3 * screen_height * screen_width];
 	for(int r = 0; r < screen_height; r++){
 		for(int c = 0; c < screen_width; c++){
-			screen_colorBuffer[INDEX(screen_width, c, r, 0)] = get_avg_in_box(colorBuffer, width, c, r, supersampling_coeff, 0); // colorBuffer[INDEX(width, int(c * supersampling_coeff), int(r * supersampling_coeff), 0)];
-			screen_colorBuffer[INDEX(screen_width, c, r, 1)] = get_avg_in_box(colorBuffer, width, c, r, supersampling_coeff, 1); // colorBuffer[INDEX(width, int(c * supersampling_coeff), int(r * supersampling_coeff), 0)];
-			screen_colorBuffer[INDEX(screen_width, c, r, 2)] = get_avg_in_box(colorBuffer, width, c, r, supersampling_coeff, 2); // colorBuffer[INDEX(width, int(c * supersampling_coeff), int(r * supersampling_coeff), 0)];
-			
+			screen_colorBuffer[INDEX(screen_width, c, r, 0)] = get_avg_in_box(colorBuffer, width, c, r, supersampling_coeff, 0);
+			screen_colorBuffer[INDEX(screen_width, c, r, 1)] = get_avg_in_box(colorBuffer, width, c, r, supersampling_coeff, 1);
+			screen_colorBuffer[INDEX(screen_width, c, r, 2)] = get_avg_in_box(colorBuffer, width, c, r, supersampling_coeff, 2);
 		}
 	}
 	delete[] colorBuffer;

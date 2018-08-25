@@ -23,6 +23,7 @@ endif ()
 set(glad_INCLUDE_DIRS "ThirdParty/glad/include")
 if(APPLE) #Macs have problem with building glfw. need to install using `brew install glfw`
     message("Mac detected, attempting to link existing glfw")
+
     set(glfw_INCLUDE_DIRS "/usr/local/Cellar/glfw/3.2.1/include") 
 else()
     set(glfw_INCLUDE_DIRS "ThirdParty/glfw/include")
