@@ -15,6 +15,7 @@ Renderer::Renderer() : supersampling_coeff(1.0), width(1280), height(720), scree
 	initOpenGLRendering();
 	createBuffers(width,height);
 	current_shading = Shading::Flat;
+	fog_color = color_t(1, 1, 1);
 }
 
 Renderer::Renderer(int w, int h) : supersampling_coeff(1.0), width(w), height(h), screen_width(w), screen_height(h)
@@ -57,6 +58,11 @@ void Renderer::setLights(glm::vec3 _ambient_color_light, vector<Light*>& _lights
 	ambient_color_light = _ambient_color_light;
 	lights = _lights;
 
+}
+void Renderer::setFog(color_t color,bool enabled)
+{
+	fog_color = color;
+	fog_enabled = enabled;
 }
 
 void Renderer::DrawTriangles(const vector<triangle3d_t> &triangles, int model_i, bool uniform_material, 
@@ -182,6 +188,17 @@ void Renderer::scanFill(const triangle3d_t &triangle, const triangle3d_t &triang
 					color = calc_color_shade(glm::vec3(xInWorld, yInWorld, zInWorld), pointNormal, ambient_color, diffusive_color, specular_color);
 					break;
 				}
+				}
+				if(fog_enabled)
+				{
+					float dist = abs(z);
+					float max_z = 310;
+					float min_z = 240;
+					float fog_factor = abs((max_z - dist) / (max_z - min_z));
+					if (fog_factor > 1 || fog_factor < 0)//Sanity check
+						fog_factor = 0;
+					color = fog_color * fog_factor + color * (1 - fog_factor);
+					glm::clamp(color, color_t(0, 0, 0), color_t(1, 1, 1));
 				}
 				putPixel(col, row, z, color);
 				putIModelIndex(col, row, model_i);

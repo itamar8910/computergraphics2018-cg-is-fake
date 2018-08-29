@@ -21,11 +21,13 @@ public:
 	Renderer *renderer;
 	bool render_cameras;
 	bool render_lights;
-	glm::vec3 ambient_light_color;
+	color_t ambient_light_color;
+	color_t fog_color;
+	bool fog_enabled;
 
 public:
 	Scene() : render_cameras(true) {};
-	Scene(Renderer *renderer) : renderer(renderer), render_cameras(true), ambient_light_color(1, 1, 1){};
+	Scene(Renderer *renderer) : renderer(renderer), render_cameras(true), ambient_light_color(1, 1, 1),fog_color(0.6,0.6,0.6),fog_enabled(true){};
 
 	void SpawnPrimitive(const string &primitive_name = "pyramid");
 	void AddCamera(Camera *c);
