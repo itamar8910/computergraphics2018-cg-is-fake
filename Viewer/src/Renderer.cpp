@@ -8,18 +8,20 @@ using namespace std;
 
 #define ABS(x) (x > 0 ? x : -x)
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
-
-Renderer::Renderer() : width(1280), height(720)
+#define INIT_SUPERSAMPLING 1.0 // must be >= 1.0
+Renderer::Renderer() : supersampling_coeff(1.0), width(1280), height(720), screen_width(1280), screen_height(720)
 {
+	set_supersampling_coeff(INIT_SUPERSAMPLING);
 	initOpenGLRendering();
-	createBuffers(1280,720);
+	createBuffers(width,height);
 	current_shading = Shading::Flat;
 }
 
-Renderer::Renderer(int w, int h) : width(w), height(h)
+Renderer::Renderer(int w, int h) : supersampling_coeff(1.0), width(w), height(h), screen_width(w), screen_height(h)
 {
+	set_supersampling_coeff(INIT_SUPERSAMPLING);
 	initOpenGLRendering();
-	createBuffers(w,h);
+	createBuffers(width,height);
 	current_shading = Shading::Flat;
 }
 
@@ -425,7 +427,7 @@ void Renderer::SwapBuffers()
 	// Makes glScreenTex (which was allocated earlier) the current texture.
 	glBindTexture(GL_TEXTURE_2D, glScreenTex);
 	// memcopy's colorBuffer into the gpu.
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_FLOAT, colorBuffer);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, screen_width, screen_height, GL_RGB, GL_FLOAT, colorBuffer);
 	// Tells opengl to use mipmapping
 	glGenerateMipmap(GL_TEXTURE_2D);
 	// Make glScreenVtc current VAO
@@ -453,10 +455,49 @@ void Renderer::Viewport(int w, int h)
 	{
 		return;
 	}
-	width = w;
-	height = h;
+	screen_width = w;
+	screen_height = h;
 	delete[] colorBuffer;
-	colorBuffer = new float[3 * h*w];
+	// colorBuffer = new float[3 * h*w];
 	createOpenGLBuffer();
-	createBuffers(w, h);
+	createBuffers(width, height);
+}
+
+void Renderer::set_supersampling_coeff(float _coeff){
+	width = int(width * ( _coeff / supersampling_coeff));
+	height = int(height * ( _coeff / supersampling_coeff));
+	// don't allow going below screen width, height
+	width = max(width, screen_width);
+	height = max(height, screen_height);
+	cout << "width:" << width << "," << "height:" << height << endl;
+	supersampling_coeff = _coeff;
+}
+
+float get_avg_in_box(float* buffer, int width, int col, int row, float supersampling_coeff, int color_i){
+	float valsSum = 0;
+	float numvals = 0;
+	int init_row = max(int((row-1) * supersampling_coeff) + 1, 0);
+	int init_col = max(int((col-1) * supersampling_coeff) + 1, 0);
+	for(int r = init_row; r <= int((row+1) * supersampling_coeff) - 1; r++){
+		for(int c = init_col; c <= int((col+1) * supersampling_coeff) - 1; c++){
+			valsSum += buffer[INDEX(width, c, r, color_i)];
+			numvals += 1;
+		}
+	}
+	return valsSum / numvals;
+	
+}
+
+void Renderer::resampleColorBuffer(){
+	float* screen_colorBuffer = new float[3 * screen_height * screen_width];
+	for(int r = 0; r < screen_height; r++){
+		for(int c = 0; c < screen_width; c++){
+			screen_colorBuffer[INDEX(screen_width, c, r, 0)] = get_avg_in_box(colorBuffer, width, c, r, supersampling_coeff, 0);
+			screen_colorBuffer[INDEX(screen_width, c, r, 1)] = get_avg_in_box(colorBuffer, width, c, r, supersampling_coeff, 1);
+			screen_colorBuffer[INDEX(screen_width, c, r, 2)] = get_avg_in_box(colorBuffer, width, c, r, supersampling_coeff, 2);
+		}
+	}
+	delete[] colorBuffer;
+	colorBuffer = screen_colorBuffer;
+	
 }

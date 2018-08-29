@@ -93,7 +93,7 @@ void Scene::Draw()
 			light_model->Draw(*renderer, color_t(1, 1, 1), -1);
 		}
 	}
-
+	renderer->resampleColorBuffer();
 	renderer->SwapBuffers();
 }
 
