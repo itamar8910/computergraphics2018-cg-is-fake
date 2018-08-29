@@ -50,6 +50,7 @@ void Scene::Draw()
 	renderer->SetProjection(activeCamera.projection);
 	renderer->SetCameraTransform(glm::vec3(activeCamera.x, activeCamera.y, activeCamera.z), activeCamera.cTransform);
 	renderer->setLights(ambient_light_color, lights);
+	renderer->setFog(fog_color, fog_enabled);
 	// Tell all models to draw themselves
 	int model_i = 0;
 	float active_camera_look_z_sign = m_sign(cameras[ActiveCamera]->lookDirection.z);

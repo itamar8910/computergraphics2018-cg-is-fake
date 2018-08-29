@@ -194,6 +194,12 @@ void ShowShadingWindow(Scene* scene){
 	
 	// control ambient light
 	ImGui::ColorEdit3("Ambient light Color", (float*)&(scene->ambient_light_color));
+	//Control fog
+	ImGui::Checkbox("Fog Enabled",&scene->fog_enabled);
+	if(scene->fog_enabled)
+	{
+		ImGui::ColorEdit3("Fog Color", (float *)&(scene->fog_color));
+	}
 
 	ImGui::End();
 }

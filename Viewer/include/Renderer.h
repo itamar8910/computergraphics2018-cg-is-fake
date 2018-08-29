@@ -101,7 +101,7 @@ public:
 	void SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x4& nTransform);
 	void setObjectColors(color_t _emissive, color_t _diffusive, color_t _specular, exponent_t specular_exponent);
 	void setLights(glm::vec3 ambient_color_light, vector<Light*>& lights);
-	void setFogColor(color_t color);
+	void setFog(color_t color, bool enabled);
 
 	glm::vec3 calc_color_shade(const glm::vec3& location, const glm::vec3& normal, color_t ambient_color, color_t diffusive_color, color_t specular_color) const;
 

@@ -57,9 +57,10 @@ void Renderer::setLights(glm::vec3 _ambient_color_light, vector<Light*>& _lights
 	lights = _lights;
 
 }
-void Renderer::setFogColor(color_t color)
+void Renderer::setFog(color_t color,bool enabled)
 {
 	fog_color = color;
+	fog_enabled = enabled;
 }
 
 void Renderer::DrawTriangles(const vector<triangle3d_t> &triangles, int model_i, bool uniform_material, 
