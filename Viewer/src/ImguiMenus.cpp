@@ -37,6 +37,8 @@ void ShowCamPosWindow(Scene* scene){
 	
 	Camera* cam  = scene->cameras[scene->ActiveCamera];
 	static float xPos = cam->x, yPos = cam->y, zPos = cam->z, fovY = cam->fovY, aspect = cam->aspectRatio, zNear = cam->zNear, zFar = cam->zFar;
+	static float yRotate = 0, xRotate = 0, zRotate = 0;
+	float prev_yRotate = yRotate, prev_xRotate=xRotate, prev_zRotate=zRotate;
 	static int prevActiveCam = scene->ActiveCamera;
 	ImGui::Text("CamPos Window");
 
@@ -76,7 +78,9 @@ void ShowCamPosWindow(Scene* scene){
 	ImGui::SliderFloat("translate X", &xPos, -100.0f, 100.0f);           
 	ImGui::SliderFloat("translate Y", &yPos, -100.0f, 100.0f);           
 	ImGui::SliderFloat("translate Z", &zPos, -100.0f, 100.0f); 
-	// ImGui::SliderFloat("rotate Y", &yRotate, 0.0f, 360.0f);           
+	ImGui::SliderFloat("rotate X", &xRotate, -70.0f, 70.0f);           
+	ImGui::SliderFloat("rotate Y", &yRotate, -70.0f, 70.0f);           
+	ImGui::SliderFloat("rotate Z", &zRotate, -70.0f, 70.0f);           
   
 	ImGui::SliderFloat("FOV Y", &fovY, 5.0f, 180.0f);   
 	ImGui::SliderFloat("aspect ratio", &aspect, 0.1f, 10.0f);   
@@ -97,10 +101,18 @@ void ShowCamPosWindow(Scene* scene){
 	if((int)zPos != (int)cam->z){
 		cam->translate(0, 0, zPos - cam->z);
 	}
-	// if(prev_yRotate != yRotate){
-	// 	cam->rotateY(yRotate - prev_yRotate);
-	// 	prev_yRotate = yRotate;
-	// }
+	if(prev_xRotate != xRotate){
+		cam->rotateX(xRotate - prev_xRotate);
+		prev_xRotate = xRotate;
+	}
+	if(prev_yRotate != yRotate){
+		cam->rotateY(yRotate - prev_yRotate);
+		prev_yRotate = yRotate;
+	}
+	if(prev_zRotate != zRotate){
+		cam->rotateZ(zRotate - prev_zRotate);
+		prev_zRotate = zRotate;
+	}
 	if(fovY != cam->fovY){
 		cam->setPerspectiveParams(fovY, cam->aspectRatio, cam->zNear, cam->zFar);
 	}

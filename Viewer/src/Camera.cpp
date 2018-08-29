@@ -26,6 +26,15 @@ void Camera::translate(float x, float y, float z){
     camera_model->translate(x, y, z);
 }
 
+void Camera::rotateX(float theta){
+    glm::mat4x4 rotate = glm::mat4(1.0); // identity matrix
+    rotate[1][1] = glm::cos(glm::radians(theta));
+	rotate[1][2] = glm::sin(glm::radians(theta));
+	rotate[2][1] = -glm::sin(glm::radians(theta));
+	rotate[2][2] = glm::cos(glm::radians(theta));
+    SetTransformation(getTranslationMatrix(x, y , z) * rotate * getTranslationMatrix(-x, -y , -z) * cTransform);
+}
+
 void Camera::rotateY(float theta){
 	glm::mat4x4 rotate = glm::mat4(1.0); // identity matrix
 	rotate[0][0] = glm::cos(glm::radians(theta));
@@ -33,6 +42,15 @@ void Camera::rotateY(float theta){
 	rotate[2][0] = -glm::sin(glm::radians(theta));
 	rotate[2][2] = glm::cos(glm::radians(theta));
 	SetTransformation(getTranslationMatrix(x, y , z) * rotate * getTranslationMatrix(-x, -y , -z) * cTransform);
+}
+
+void Camera::rotateZ(float theta){
+    glm::mat4x4 rotate = glm::mat4(1.0); // identity matrix
+	rotate[0][0] = glm::cos(glm::radians(theta));
+	rotate[0][1] = glm::sin(glm::radians(theta));
+	rotate[1][0] = -glm::sin(glm::radians(theta));
+	rotate[1][1] = glm::cos(glm::radians(theta));
+    SetTransformation(getTranslationMatrix(x, y , z) * rotate * getTranslationMatrix(-x, -y , -z) * cTransform);
 }
 
 void Camera::Ortho( const float left, const float right,
