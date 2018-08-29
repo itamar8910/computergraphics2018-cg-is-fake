@@ -188,11 +188,14 @@ void Renderer::scanFill(const triangle3d_t &triangle, const triangle3d_t &triang
 				}
 				if(fog_enabled)
 				{
-					float zInWorld = triangle.interpolateInsideTriangle<float>({triangleWorld[0].z, triangleWorld[1].z, triangleWorld[2].z}, glm::vec2(col, row));
 					float dist = abs(z);
-					float min_dist = 0;
-					float fog_factor = (_depth - dist) / (_depth - min_dist);
+					float max_z = 310;
+					float min_z = 240;
+					float fog_factor = abs((max_z - dist) / (max_z - min_z));
+					if (fog_factor > 1 || fog_factor < 0)//Sanity check
+						fog_factor = 0;
 					color = fog_color * fog_factor + color * (1 - fog_factor);
+					glm::clamp(color, color_t(0, 0, 0), color_t(1, 1, 1));
 				}
 				putPixel(col, row, z, color);
 				putIModelIndex(col, row, model_i);
