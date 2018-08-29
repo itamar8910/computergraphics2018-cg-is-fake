@@ -113,7 +113,7 @@ string getLightName(int light_i)
 
 #define LIGHT_MODEL "../../Data/obj_examples/banana.obj"
 #define DEFAULT_LIGHT_COLOR glm::vec3(1, 1, 1)
-#define DEFAULT_POINT_LIGHT_POS glm::vec3(0, 0, 10)
+#define DEFAULT_POINT_LIGHT_POS glm::vec3(0, 0, 15)
 #define DEFAULT_PLANAR_LIGHT_POS glm::vec3(0, 0, 1000000) // planar source modeled as point source at infinity
 
 void Scene::addLight(Light  *light, LightType type){
