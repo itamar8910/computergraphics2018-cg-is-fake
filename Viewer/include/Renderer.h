@@ -44,7 +44,7 @@ private:
 
 	color_t fog_color;
 	bool fog_enabled =true;
-
+	GLuint programID;
 
 	glm::mat4x4 getViewport();
 	// Draw's a pixel in location p with color color
@@ -77,8 +77,8 @@ public:
 	Shading current_shading;
 	GLuint MVPID;
 
-	Renderer();
-	Renderer(int w, int h);
+	Renderer(GLuint programID);
+	Renderer(int w, int h, GLuint programID);
 	~Renderer();
 	// Local initializations of your implementation
 	void Init();
