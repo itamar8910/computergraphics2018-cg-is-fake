@@ -43,7 +43,8 @@ void Renderer::SetProjection(const glm::mat4x4& projection){
 void Renderer::SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x4& nTransform){
 	this->oTransform = oTransform;
 	this->nTransform = nTransform;
-	this->fullTransform = getViewport() * cProjection * inverse(cTransform) * oTransform;
+	// this->fullTransform = getViewport() * cProjection * inverse(cTransform) * oTransform;
+	this->fullTransform = cProjection * inverse(cTransform) * oTransform;
 }
 
 void Renderer::setObjectColors(glm::vec3 _emissive, glm::vec3 _diffusive, glm::vec3 _specular, exponent_t _specular_exponent)
@@ -82,13 +83,6 @@ void Renderer::DrawModel(GLuint vertexBufferID, int num_of_triangles){
 	// draw the model
 	glDrawArrays(GL_TRIANGLES, 0, num_of_triangles * 3);
 	glDisableVertexAttribArray(0);
-	/*
-
-	TODO: write shaders 
-			- make sure the shaders that are edited & tracked by git are used by the executable
-
-
-	*/
 }
 
 void Renderer::DrawTriangles(const vector<triangle3d_t> &triangles, int model_i, bool uniform_material, 
@@ -434,22 +428,22 @@ void Renderer::initOpenGLRendering()
 	// memcopy tex to buffer[sizeof(vtc),sizeof(vtc)+sizeof(tex)]
 	glBufferSubData( GL_ARRAY_BUFFER, sizeof(vtc), sizeof(tex), tex);
 	// Loads and compiles a sheder.
-	GLuint program = InitShader( "vshader.glsl", "fshader.glsl" );
+	GLuint program = InitShader( "vertex_shader.glsl", "fragment_shader.glsl" );
 	// Make this program the current one.
 	glUseProgram( program );
-	// Tells the shader where to look for the vertex position data, and the data dimensions.
-	GLint  vPosition = glGetAttribLocation( program, "vPosition" );
-	glEnableVertexAttribArray( vPosition );
-	glVertexAttribPointer( vPosition,2,GL_FLOAT,GL_FALSE,0,0 );
-	// Same for texture coordinates data.
-	GLint  vTexCoord = glGetAttribLocation( program, "vTexCoord" );
-	glEnableVertexAttribArray( vTexCoord );
-	glVertexAttribPointer( vTexCoord,2,GL_FLOAT,GL_FALSE,0,(GLvoid *)sizeof(vtc) );
+	// // Tells the shader where to look for the vertex position data, and the data dimensions.
+	// GLint  vPosition = glGetAttribLocation( program, "vPosition" );
+	// glEnableVertexAttribArray( vPosition );
+	// glVertexAttribPointer( vPosition,2,GL_FLOAT,GL_FALSE,0,0 );
+	// // Same for texture coordinates data.
+	// GLint  vTexCoord = glGetAttribLocation( program, "vTexCoord" );
+	// glEnableVertexAttribArray( vTexCoord );
+	// glVertexAttribPointer( vTexCoord,2,GL_FLOAT,GL_FALSE,0,(GLvoid *)sizeof(vtc) );
 
-	//glProgramUniform1i( program, glGetUniformLocation(program, "texture"), 0 );
+	// //glProgramUniform1i( program, glGetUniformLocation(program, "texture"), 0 );
 
-	// Tells the shader to use GL_TEXTURE0 as the texture id.
-	glUniform1i(glGetUniformLocation(program, "texture"),0);
+	// // Tells the shader to use GL_TEXTURE0 as the texture id.
+	// glUniform1i(glGetUniformLocation(program, "texture"),0);
 
 	// Get a handle for our "MVP" uniform
 	this->MVPID = glGetUniformLocation(program, "MVP");
@@ -458,12 +452,12 @@ void Renderer::initOpenGLRendering()
 
 void Renderer::createOpenGLBuffer()
 {
-	// Makes GL_TEXTURE0 the current active texture unit
-	glActiveTexture(GL_TEXTURE0);
-	// Makes glScreenTex (which was allocated earlier) the current texture.
-	glBindTexture(GL_TEXTURE_2D, glScreenTex);
-	// malloc for a texture on the gpu.
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_FLOAT, NULL);
+	// // Makes GL_TEXTURE0 the current active texture unit
+	// glActiveTexture(GL_TEXTURE0);
+	// // Makes glScreenTex (which was allocated earlier) the current texture.
+	// glBindTexture(GL_TEXTURE_2D, glScreenTex);
+	// // malloc for a texture on the gpu.
+	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_FLOAT, NULL);
 	glViewport(0, 0, width, height);
 }
 

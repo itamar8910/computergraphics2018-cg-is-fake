@@ -122,7 +122,7 @@ set_target_properties(${PROJECT_NAME} glad imgui
 foreach(shader ${SHADER_FILES})
 	get_filename_component(shader_name ${shader} NAME)
 	message(STATUS ">>> shader: ${shader_name} is copied to ${CMAKE_CURRENT_BINARY_DIR}/${shader_name}")
-	configure_file(${shader} ${CMAKE_CURRENT_BINARY_DIR}/${shader_name} COPYONLY)
+	configure_file(${shader} ${CMAKE_CURRENT_BINARY_DIR}/bin/${shader_name} COPYONLY)
 endforeach()
 
 # Copies the shaders from the build (out-of-source-build) directory to the current

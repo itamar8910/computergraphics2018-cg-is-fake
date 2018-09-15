@@ -69,6 +69,8 @@ int main(int argc, char **argv)
 
 	scene.ActiveModel = 0;
 
+	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+
 	// Setup Dear ImGui binding
 	ImGuiIO &io = SetupDearImgui(window);
 	// Main loop - the famous "Game Loop" in video games :)
@@ -89,6 +91,7 @@ int main(int argc, char **argv)
 		DrawImguiMenus(io, &scene, argc - 1);
 		// Rendering + user rendering - finishing the ImGui frame
 		// go to function implementation to add your rendering calls.
+		glClear( GL_COLOR_BUFFER_BIT );
 		RenderFrame(window, &renderer); // --> go to line 137
 	}
 	// Cleanup
@@ -177,6 +180,9 @@ void RenderFrame(GLFWwindow* window, Renderer* renderer)
 	// Telling opengl to resize the framebuffer
 	glViewport(0, 0, displayW, displayH);
 	
+
+
+
 	// put renderer code here
 	// #######################################
 	renderer->Viewport(displayW, displayH);
