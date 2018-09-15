@@ -20,7 +20,7 @@ class MeshModel : public Model
 {
 public:
 	string name;
-
+	GLuint vertexBufferID;
 	vector<triangle3d_t> triangles;
 	vector<line3d_t> vertex_normals;
 	vector<line3d_t> triangle_normals;
@@ -65,4 +65,5 @@ public:
 	glm::vec3 calcCenterOfMass() const;
 	void generateRandomNonUniformMaterial();
 	vector<vector<color_t>> getEmptyTrianglesColors();
+	void fillGLBuffers();
 };

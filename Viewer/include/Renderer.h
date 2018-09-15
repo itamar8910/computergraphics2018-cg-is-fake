@@ -75,13 +75,15 @@ public:
 	int width, height;
 	int screen_width, screen_height;
 	Shading current_shading;
-	
+	GLuint MVPID;
 
 	Renderer();
 	Renderer(int w, int h);
 	~Renderer();
 	// Local initializations of your implementation
 	void Init();
+
+	void DrawModel(GLuint vertexBufferID, int num_of_triangles);
 
 	// Draws wireframe triangles to the color buffer
 	void DrawTriangles(const vector<triangle3d_t> &triangles, int model_i = -1, bool uniform_material = true,

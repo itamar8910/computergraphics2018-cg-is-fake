@@ -26,13 +26,13 @@ struct FaceIdx
 
 	FaceIdx()
 	{
-		for (int i = 0; i < FACE_ELEMENTS + 1; i++)
+		for (int i = 0; i < FACE_ELEMENTS; i++)
 			v[i] = vn[i] = vt[i] = 0;
 	}
 
 	FaceIdx(std::istream& issLine)
 	{
-		for (int i = 0; i < FACE_ELEMENTS + 1; i++)
+		for (int i = 0; i < FACE_ELEMENTS; i++)
 			v[i] = vn[i] = vt[i] = 0;
 
 		char c;
@@ -116,6 +116,27 @@ void MeshModel::initializeInternals(){
 	diffusive_colors = getEmptyTrianglesColors();
 	specular_colors = getEmptyTrianglesColors();
 	generateRandomNonUniformMaterial();
+	glGenBuffers(1, &vertexBufferID);
+	fillGLBuffers();
+}
+
+void MeshModel::fillGLBuffers(){
+	GLfloat* vertex_buffer_data = new GLfloat[triangles.size() * 3 * 3];
+	// fill vertex_buffer_data with data from triangles vector
+	for(int i = 0; i < (int)triangles.size(); i++){
+		const auto& triangle = triangles[i];
+		for(int j = 0; j < 3; j++){ // loop over vertices
+			vertex_buffer_data[i*9 + j*3 + 0] = triangle.vertices[j].x;
+			vertex_buffer_data[i*9 + j*3 + 1] = triangle.vertices[j].y;
+			vertex_buffer_data[i*9 + j*3 + 2] = triangle.vertices[j].z;
+		}
+	}
+	// bind vertexBuffer
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
+	// put data inside vertexBuffer
+	// TODO: maybe should be DYNAMIC_DRAW because we transform?
+	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * 3, vertex_buffer_data, GL_STATIC_DRAW);
+	delete[] vertex_buffer_data; // TODO: check that this is OK
 }
 
 glm::vec3 MeshModel::calcCenterOfMass() const{
@@ -160,7 +181,9 @@ void MeshModel::LoadFile(const string& fileName)
 		}
 		else if (lineType == "vn") // vertex normal
 		{
-			normals.push_back(vec3fFromStream(issLine));
+			auto vec = vec3fFromStream(issLine);
+			auto vec2 = vec;
+			normals.push_back(vec2);
 		}
 		else if (lineType == "#" || lineType == "")
 		{
@@ -224,7 +247,10 @@ void MeshModel::Draw(Renderer& renderer, const glm::vec3& color, int model_i)
 		}
 	}
 	// send triangles to renderer
-	renderer.DrawTriangles(triangles, model_i, use_uniform, ambient_colors, diffusive_colors, specular_colors);
+	// renderer.DrawTriangles(triangles, model_i, use_uniform, ambient_colors, diffusive_colors, specular_colors);
+	
+	// TODO: call renderer.DrawModel here & pass this model's VertexBuffer ID
+	renderer.DrawModel(vertexBufferID, triangles.size());
 }
 
 const vector<line3d_t> MeshModel::CalcTriangeNormals() const

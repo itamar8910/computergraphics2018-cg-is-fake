@@ -65,6 +65,32 @@ void Renderer::setFog(color_t color,bool enabled)
 	fog_enabled = enabled;
 }
 
+void Renderer::DrawModel(GLuint vertexBufferID, int num_of_triangles){
+	// send full MVP transform to shader
+	glUniformMatrix4fv(this->MVPID, 1, GL_FALSE, &this->fullTransform[0][0]);
+	// set layout of vertices buffer
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
+	glVertexAttribPointer(
+			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
+			3,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+	);
+	// draw the model
+	glDrawArrays(GL_TRIANGLES, 0, num_of_triangles * 3);
+	glDisableVertexAttribArray(0);
+	/*
+
+	TODO: write shaders 
+			- make sure the shaders that are edited & tracked by git are used by the executable
+
+
+	*/
+}
+
 void Renderer::DrawTriangles(const vector<triangle3d_t> &triangles, int model_i, bool uniform_material, 
 		vector<vector<color_t>> vertices_ambient,
 		vector<vector<color_t>> vertices_diffusive, vector<vector<color_t>>vertices_specular)
@@ -424,6 +450,10 @@ void Renderer::initOpenGLRendering()
 
 	// Tells the shader to use GL_TEXTURE0 as the texture id.
 	glUniform1i(glGetUniformLocation(program, "texture"),0);
+
+	// Get a handle for our "MVP" uniform
+	this->MVPID = glGetUniformLocation(program, "MVP");
+
 }
 
 void Renderer::createOpenGLBuffer()
@@ -450,7 +480,7 @@ void Renderer::SwapBuffers()
 	// Make glScreenVtc current VAO
 	glBindVertexArray(glScreenVtc);
 	// Finally renders the data.
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+	// glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void Renderer::ClearColorBuffer(const glm::vec3& color)

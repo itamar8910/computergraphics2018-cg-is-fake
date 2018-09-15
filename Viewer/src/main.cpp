@@ -55,7 +55,9 @@ int main(int argc, char **argv)
 	setup_scene(scene);
 	if (argc < 2)
 	{
+		cout << "loading OBJ model" << endl;
 		scene.LoadOBJModel(TEAPOT_MODEL);
+		cout << "loaded OBJ model" << endl;
 	}
 	
 
