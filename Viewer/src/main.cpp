@@ -17,6 +17,8 @@
 #include "MeshModel.h"
 #include "PrimMeshModel.h"
 #include <iostream>
+#include "InitShader.h"
+
 using namespace std;
 
 // Callback for the error state of glfw
@@ -40,6 +42,8 @@ void setup_scene(Scene& scene){
 	scene.ActiveCamera = 0;
 	scene.ActiveLight = 0;
 }
+
+
 
 #define TEAPOT_MODEL "../../Data/obj_examples/teapot.obj"
 int main(int argc, char **argv)
@@ -71,6 +75,28 @@ int main(int argc, char **argv)
 
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
+
+	// ################# DEBUG CODE
+
+	// Create and compile our GLSL program from the shaders
+	GLuint programID = InitShader( "vertex_shader.glsl", "fragment_shader.glsl" );
+
+
+	static const GLfloat g_vertex_buffer_data[] = { 
+		-1.0f, -1.0f, 0.0f,
+		 1.0f, -1.0f, 0.0f,
+		 0.0f,  1.0f, 0.0f,
+	};
+
+	GLuint vertexbuffer;
+	glGenBuffers(1, &vertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+
+
+	// ################# END DEBUG CODE
+
+
 	// Setup Dear ImGui binding
 	ImGuiIO &io = SetupDearImgui(window);
 	// Main loop - the famous "Game Loop" in video games :)
@@ -92,7 +118,35 @@ int main(int argc, char **argv)
 		// Rendering + user rendering - finishing the ImGui frame
 		// go to function implementation to add your rendering calls.
 		glClear( GL_COLOR_BUFFER_BIT );
+
+		// ################# DEBUG CODE
+
+		// Use our shader
+		glUseProgram(programID);
+
+		// 1rst attribute buffer : vertices
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+		glVertexAttribPointer(
+			0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+			3,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+		);
+
+		// Draw the triangle !
+		glDrawArrays(GL_TRIANGLES, 0, 3); // 3 indices starting at 0 -> 1 triangle
+
+		glDisableVertexAttribArray(0);
+
+		// ################# END DEBUG CODE
+
+
 		RenderFrame(window, &renderer); // --> go to line 137
+		// Swap buffers
+		// glfwSwapBuffers(window);
 	}
 	// Cleanup
 	Cleanup(window);
@@ -183,11 +237,11 @@ void RenderFrame(GLFWwindow* window, Renderer* renderer)
 
 
 
-	// put renderer code here
-	// #######################################
-	renderer->Viewport(displayW, displayH);
-	renderer->ClearColorBuffer(GetClearColor());
-	// #######################################
+	// // put renderer code here
+	// // #######################################
+	// renderer->Viewport(displayW, displayH);
+	// renderer->ClearColorBuffer(GetClearColor());
+	// // #######################################
 	
 	// Actual rendering of ImGui. ImGui only creates buffers and textures, 
 	// which are sent to opengl for the actual rendering.
