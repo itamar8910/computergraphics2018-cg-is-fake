@@ -135,7 +135,7 @@ void MeshModel::fillGLBuffers(){
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 	// put data inside vertexBuffer
 	// TODO: maybe should be DYNAMIC_DRAW because we transform?
-	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * 3, vertex_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * 3 * sizeof(GLfloat), vertex_buffer_data, GL_STATIC_DRAW);
 	delete[] vertex_buffer_data; // TODO: check that this is OK
 }
 
@@ -225,31 +225,7 @@ void MeshModel::Draw(Renderer& renderer, const glm::vec3& color, int model_i)
 	// send transformation to renderer
 	renderer.SetObjectMatrices(worldTransform, normalTransform);
 	renderer.setObjectColors(ambient_color, diffusive_color, specular_color, specular_exponent);
-	// if (this->draw_vertex_normals)
-	// {
-	// 	for (auto &pair : this->vertex_normals)
-	// 	{
-	// 		renderer.DrawLine(pair.first, pair.first + normal_length * pair.second, glm::vec3(0, 0, 1));
-	// 	}
-	// }
-	// if(this->draw_triangle_normals)
-	// {
-	// 	for(auto &tri : this->triangles)
-	// 	{
-	// 		renderer.DrawLine(tri.center, tri.center + normal_length * tri.face_normal, glm::vec3(0, 1, 0));
-	// 	}
-	// }
-	// if(draw_bbox)
-	// {
-	// 	for (const auto &a : bbox)
-	// 	{
-	// 		renderer.DrawLine(a.first, a.second);
-	// 	}
-	// }
-	// send triangles to renderer
-	// renderer.DrawTriangles(triangles, model_i, use_uniform, ambient_colors, diffusive_colors, specular_colors);
 	
-	// TODO: call renderer.DrawModel here & pass this model's VertexBuffer ID
 	renderer.DrawModel(vertexBufferID, triangles.size());
 }
 

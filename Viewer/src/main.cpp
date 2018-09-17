@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 		// draw scene here
 		scene.Draw();
 
-		draw_demo_triangle(scene.renderer->MVPID);
+		// draw_demo_triangle(scene.renderer->MVPID);
 
 
 		RenderFrame(window, &renderer); // --> go to line 137
