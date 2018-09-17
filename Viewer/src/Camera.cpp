@@ -1,9 +1,10 @@
 #include "Camera.h"
 #include "utils.h"
 #include <utils.h>
+#include <glm/gtc/matrix_transform.hpp>
 
 Camera::Camera() : cTransform(glm::mat4(1)), projection(glm::mat4(1)), x(0), y(0), z(10),
-                    fovY(45.0), aspectRatio(1.0), zNear(-1.0f), zFar(-100.0f),
+                    fovY(45.0), aspectRatio(1.0), zNear(1.0f), zFar(100.0f),
                     lookDirection(0, 0, -1), perspective(0), camera_model(nullptr)
 {
 }
@@ -87,6 +88,7 @@ void Camera::Perspective(){
 
 void Camera::Perspective( const float fovy, const float aspect,
 		          const float zNear, const float zFar){
+    // this->projection = glm::perspective(glm::radians(fovy),  aspect, zNear, zFar);
     float top = glm::tan(glm::radians(fovy) / 2.0f) * zNear;
     float bottom = -top;
     float right = top * aspect;

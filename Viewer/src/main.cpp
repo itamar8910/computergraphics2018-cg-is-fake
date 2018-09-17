@@ -18,6 +18,7 @@
 #include "PrimMeshModel.h"
 #include <iostream>
 #include "InitShader.h"
+#include <glm/gtc/matrix_transform.hpp>
 
 using namespace std;
 
@@ -44,7 +45,6 @@ void setup_scene(Scene& scene){
 	scene.ActiveLight = 0;
 }
 
-#include <glm/gtc/matrix_transform.hpp>
 
 #define TEAPOT_MODEL "../../Data/obj_examples/teapot.obj"
 int main(int argc, char **argv)
