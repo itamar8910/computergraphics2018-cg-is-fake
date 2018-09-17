@@ -9,18 +9,20 @@ using namespace std;
 #define ABS(x) (x > 0 ? x : -x)
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 #define INIT_SUPERSAMPLING 1.0 // must be >= 1.0
-Renderer::Renderer() : supersampling_coeff(1.0), width(1280), height(720), screen_width(1280), screen_height(720)
+Renderer::Renderer(GLuint _programID) : supersampling_coeff(1.0), width(1280), height(720), screen_width(1280), screen_height(720)
 {
 	set_supersampling_coeff(INIT_SUPERSAMPLING);
+	this->programID = _programID;
 	initOpenGLRendering();
 	createBuffers(width,height);
 	current_shading = Shading::Flat;
 	fog_color = color_t(1, 1, 1);
 }
 
-Renderer::Renderer(int w, int h) : supersampling_coeff(1.0), width(w), height(h), screen_width(w), screen_height(h)
+Renderer::Renderer(int w, int h, GLuint _programID) : supersampling_coeff(1.0), width(w), height(h), screen_width(w), screen_height(h)
 {
 	set_supersampling_coeff(INIT_SUPERSAMPLING);
+	this->programID = _programID;
 	initOpenGLRendering();
 	createBuffers(width,height);
 	current_shading = Shading::Flat;
@@ -390,63 +392,12 @@ glm::vec3 Renderer::calc_color_shade(const glm::vec3& location, const glm::vec3&
 // don't linger here for now, we will have a few tutorials about opengl later.
 void Renderer::initOpenGLRendering()
 {
-	// // Creates a unique identifier for an opengl texture.
-	// glGenTextures(1, &glScreenTex);
-	// // Same for vertex array object (VAO). VAO is a set of buffers that describe a renderable object.
+	
 	glGenVertexArrays(1, &glScreenVtc);
-	// GLuint buffer;
-	// Makes this VAO the current one.
+	
 	glBindVertexArray(glScreenVtc);
-	// // Creates a unique identifier for a buffer.
-	// glGenBuffers(1, &buffer);
-	// // (-1, 1)____(1, 1)
-	// //	     |\  |
-	// //	     | \ | <--- The exture is drawn over two triangles that stretch over the screen.
-	// //	     |__\|
-	// // (-1,-1)    (1,-1)
-	// const GLfloat vtc[]={
-	// 	-1, -1,
-	// 	 1, -1,
-	// 	-1,  1,
-	// 	-1,  1,
-	// 	 1, -1,
-	// 	 1,  1
-	// };
-	// const GLfloat tex[]={
-	// 	0,0,
-	// 	1,0,
-	// 	0,1,
-	// 	0,1,
-	// 	1,0,
-	// 	1,1};
-	// // Makes this buffer the current one.
-	// glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	// // This is the opengl way for doing malloc on the gpu. 
-	// glBufferData(GL_ARRAY_BUFFER, sizeof(vtc)+sizeof(tex), NULL, GL_STATIC_DRAW);
-	// // memcopy vtc to buffer[0,sizeof(vtc)-1]
-	// glBufferSubData( GL_ARRAY_BUFFER, 0, sizeof(vtc), vtc);
-	// // memcopy tex to buffer[sizeof(vtc),sizeof(vtc)+sizeof(tex)]
-	// glBufferSubData( GL_ARRAY_BUFFER, sizeof(vtc), sizeof(tex), tex);
-	// // Loads and compiles a sheder.
-	// GLuint program = InitShader( "vertex_shader.glsl", "fragment_shader.glsl" );
-	// // Make this program the current one.
-	// glUseProgram( program );
-	// // // Tells the shader where to look for the vertex position data, and the data dimensions.
-	// // GLint  vPosition = glGetAttribLocation( program, "vPosition" );
-	// // glEnableVertexAttribArray( vPosition );
-	// // glVertexAttribPointer( vPosition,2,GL_FLOAT,GL_FALSE,0,0 );
-	// // // Same for texture coordinates data.
-	// // GLint  vTexCoord = glGetAttribLocation( program, "vTexCoord" );
-	// // glEnableVertexAttribArray( vTexCoord );
-	// // glVertexAttribPointer( vTexCoord,2,GL_FLOAT,GL_FALSE,0,(GLvoid *)sizeof(vtc) );
-
-	// // //glProgramUniform1i( program, glGetUniformLocation(program, "texture"), 0 );
-
-	// // // Tells the shader to use GL_TEXTURE0 as the texture id.
-	// // glUniform1i(glGetUniformLocation(program, "texture"),0);
-
-	// // Get a handle for our "MVP" uniform
-	// this->MVPID = glGetUniformLocation(program, "MVP");
+	
+	this->MVPID = glGetUniformLocation(this->programID, "MVP");
 
 }
 

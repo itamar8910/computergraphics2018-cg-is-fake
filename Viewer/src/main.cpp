@@ -55,7 +55,9 @@ int main(int argc, char **argv)
 	if (!window)
 		return 1;
 	// Setup renderer and scene
-	Renderer renderer = Renderer(w, h);
+	// Create and compile our GLSL program from the shaders
+	GLuint programID = InitShader( "vertex_shader.glsl", "fragment_shader.glsl" );
+	Renderer renderer = Renderer(w, h, programID);
 	Scene scene = Scene(&renderer);
 	setup_scene(scene);
 	if (argc < 2)
@@ -78,13 +80,9 @@ int main(int argc, char **argv)
 
 
 
-	// Create and compile our GLSL program from the shaders
-	GLuint programID = InitShader( "vertex_shader.glsl", "fragment_shader.glsl" );
 
-	// Get a handle for our "MVP" uniform
-	// Only during the initialisation
-	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
-  
+
+
 
 
 	// Setup Dear ImGui binding
@@ -102,8 +100,6 @@ int main(int argc, char **argv)
 
 		// Use our shader
 		glUseProgram(programID);
-		// draw scene here
-		scene.Draw();
 		// Start the ImGui frame
 		StartFrame();
 		// imgui stuff here
@@ -116,7 +112,10 @@ int main(int argc, char **argv)
 		// Use our shader
 		glUseProgram(programID);
 
-		draw_demo_triangle(MatrixID);
+		// draw scene here
+		scene.Draw();
+
+		draw_demo_triangle(scene.renderer->MVPID);
 
 
 		RenderFrame(window, &renderer); // --> go to line 137

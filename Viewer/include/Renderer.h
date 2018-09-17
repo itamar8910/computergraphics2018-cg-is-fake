@@ -75,10 +75,11 @@ public:
 	int width, height;
 	int screen_width, screen_height;
 	Shading current_shading;
+	GLuint programID;
 	GLuint MVPID;
 
-	Renderer();
-	Renderer(int w, int h);
+	Renderer(GLuint _programID);
+	Renderer(int w, int h, GLuint _programID);
 	~Renderer();
 	// Local initializations of your implementation
 	void Init();
