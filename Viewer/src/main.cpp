@@ -33,6 +33,7 @@ void StartFrame();
 void RenderFrame(GLFWwindow* window, Renderer* renderer);
 // Cleanup routines of all the systems used here.
 void Cleanup(GLFWwindow* window);
+void draw_demo_triangle(GLuint MatrixID);
 
 void setup_scene(Scene& scene){
 	Camera* c = new Camera();
@@ -76,7 +77,6 @@ int main(int argc, char **argv)
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
 
-	// ################# DEBUG CODE
 
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = InitShader( "vertex_shader.glsl", "fragment_shader.glsl" );
@@ -85,43 +85,6 @@ int main(int argc, char **argv)
 	// Only during the initialisation
 	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
   
-
-
-	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	glm::mat4 Projection = glm::perspective(glm::radians(45.0f),  4.0f / 3.0f, 0.1f, 100.0f);
-	
-	// Or, for an ortho camera :
-	//glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
-	
-	// Camera matrix
-	glm::mat4 View = glm::lookAt(
-		glm::vec3(4,3,3), // Camera is at (4,3,3), in World Space
-		glm::vec3(0,0,0), // and looks at the origin
-		glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
-		);
-	
-	// Model matrix : an identity matrix (model will be at the origin)
-	glm::mat4 Model = glm::mat4(1.0f);
-	// Our ModelViewProjection : multiplication of our 3 matrices
-	glm::mat4 mvp = Projection * View * Model; // Remember, matrix multiplication is the other way around
-	
-
-
-	static const GLfloat g_vertex_buffer_data[] = { 
-		-1.0f, -1.0f, 0.0f,
-		 1.0f, -1.0f, 0.0f,
-		 0.0f,  1.0f, 0.0f,
-	};
-	
-
-	GLuint vertexbuffer;
-	glGenBuffers(1, &vertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-
-
-
-	// ################# END DEBUG CODE
 
 
 	// Setup Dear ImGui binding
@@ -149,33 +112,11 @@ int main(int argc, char **argv)
 		// go to function implementation to add your rendering calls.
 		glClear( GL_COLOR_BUFFER_BIT );
 
-		// ################# DEBUG CODE
 
 		// Use our shader
 		glUseProgram(programID);
 
-		// Send our transformation to the currently bound shader, in the "MVP" uniform
-		// This is done in the main loop since each model will have a different MVP matrix (At least for the M part)
-		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
-
-		// 1rst attribute buffer : vertices
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-		glVertexAttribPointer(
-			0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-			3,                  // size
-			GL_FLOAT,           // type
-			GL_FALSE,           // normalized?
-			0,                  // stride
-			(void*)0            // array buffer offset
-		);
-
-		// Draw the triangle !
-		glDrawArrays(GL_TRIANGLES, 0, 3); // 3 indices starting at 0 -> 1 triangle
-
-		glDisableVertexAttribArray(0);
-
-		// ################# END DEBUG CODE
+		draw_demo_triangle(MatrixID);
 
 
 		RenderFrame(window, &renderer); // --> go to line 137
@@ -185,6 +126,61 @@ int main(int argc, char **argv)
 	// Cleanup
 	Cleanup(window);
 	return 0;
+}
+
+void draw_demo_triangle(GLuint MatrixID){
+
+	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+	glm::mat4 Projection = glm::perspective(glm::radians(45.0f),  4.0f / 3.0f, 0.1f, 100.0f);
+	
+	// Or, for an ortho camera :
+	//glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
+	
+	// Camera matrix
+	glm::mat4 View = glm::lookAt(
+		glm::vec3(4,3,3), // Camera is at (4,3,3), in World Space
+		glm::vec3(0,0,0), // and looks at the origin
+		glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
+		);
+	
+	// Model matrix : an identity matrix (model will be at the origin)
+	glm::mat4 Model = glm::mat4(1.0f);
+	// Our ModelViewProjection : multiplication of our 3 matrices
+	glm::mat4 mvp = Projection * View * Model; // Remember, matrix multiplication is the other way around
+
+	static const GLfloat g_vertex_buffer_data[] = { 
+		-1.0f, -1.0f, 0.0f,
+		 1.0f, -1.0f, 0.0f,
+		 0.0f,  1.0f, 0.0f,
+	};
+	
+
+	GLuint vertexbuffer;
+	glGenBuffers(1, &vertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+
+	// Send our transformation to the currently bound shader, in the "MVP" uniform
+	// This is done in the main loop since each model will have a different MVP matrix (At least for the M part)
+	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
+
+	// 1rst attribute buffer : vertices
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	glVertexAttribPointer(
+		0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+		3,                  // size
+		GL_FLOAT,           // type
+		GL_FALSE,           // normalized?
+		0,                  // stride
+		(void*)0            // array buffer offset
+	);
+
+	// Draw the triangle !
+	glDrawArrays(GL_TRIANGLES, 0, 3); // 3 indices starting at 0 -> 1 triangle
+
+	glDisableVertexAttribArray(0);
+
 }
 
 // Callback for the error state of glfw
