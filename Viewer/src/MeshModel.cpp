@@ -225,27 +225,27 @@ void MeshModel::Draw(Renderer& renderer, const glm::vec3& color, int model_i)
 	// send transformation to renderer
 	renderer.SetObjectMatrices(worldTransform, normalTransform);
 	renderer.setObjectColors(ambient_color, diffusive_color, specular_color, specular_exponent);
-	if (this->draw_vertex_normals)
-	{
-		for (auto &pair : this->vertex_normals)
-		{
-			renderer.DrawLine(pair.first, pair.first + normal_length * pair.second, glm::vec3(0, 0, 1));
-		}
-	}
-	if(this->draw_triangle_normals)
-	{
-		for(auto &tri : this->triangles)
-		{
-			renderer.DrawLine(tri.center, tri.center + normal_length * tri.face_normal, glm::vec3(0, 1, 0));
-		}
-	}
-	if(draw_bbox)
-	{
-		for (const auto &a : bbox)
-		{
-			renderer.DrawLine(a.first, a.second);
-		}
-	}
+	// if (this->draw_vertex_normals)
+	// {
+	// 	for (auto &pair : this->vertex_normals)
+	// 	{
+	// 		renderer.DrawLine(pair.first, pair.first + normal_length * pair.second, glm::vec3(0, 0, 1));
+	// 	}
+	// }
+	// if(this->draw_triangle_normals)
+	// {
+	// 	for(auto &tri : this->triangles)
+	// 	{
+	// 		renderer.DrawLine(tri.center, tri.center + normal_length * tri.face_normal, glm::vec3(0, 1, 0));
+	// 	}
+	// }
+	// if(draw_bbox)
+	// {
+	// 	for (const auto &a : bbox)
+	// 	{
+	// 		renderer.DrawLine(a.first, a.second);
+	// 	}
+	// }
 	// send triangles to renderer
 	// renderer.DrawTriangles(triangles, model_i, use_uniform, ambient_colors, diffusive_colors, specular_colors);
 	
