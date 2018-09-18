@@ -40,6 +40,7 @@ void setup_scene(Scene& scene){
 	Camera* c = new Camera();
 	c->Perspective();
 	scene.AddCamera(c);
+	scene.addLight(nullptr, LightType::Point);
 	scene.ambient_light_color = glm::vec3(1, 1, 1);
 	scene.ActiveCamera = 0;
 	scene.ActiveLight = 0;
@@ -77,7 +78,10 @@ int main(int argc, char **argv)
 	scene.ActiveModel = 0;
 
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-
+	// Enable depth test
+	glEnable(GL_DEPTH_TEST);
+	// Accept fragment if it closer to the camera than the former one
+	glDepthFunc(GL_LESS);
 
 	// Setup Dear ImGui binding
 	ImGuiIO &io = SetupDearImgui(window);
@@ -100,7 +104,7 @@ int main(int argc, char **argv)
 		DrawImguiMenus(io, &scene, argc - 1);
 		// Rendering + user rendering - finishing the ImGui frame
 		// go to function implementation to add your rendering calls.
-		glClear( GL_COLOR_BUFFER_BIT );
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
 		// Use our shader

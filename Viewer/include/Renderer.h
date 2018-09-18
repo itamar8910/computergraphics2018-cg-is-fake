@@ -89,7 +89,7 @@ public:
 	// Local initializations of your implementation
 	void Init();
 
-	void DrawModel(GLuint vertexBufferID, int num_of_triangles);
+	void DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, int num_of_triangles);
 
 	// Draws wireframe triangles to the color buffer
 	void DrawTriangles(const vector<triangle3d_t> &triangles, int model_i = -1, bool uniform_material = true,

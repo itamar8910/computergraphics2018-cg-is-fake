@@ -140,10 +140,10 @@ void MeshModel::fillGLBuffers(){
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 	// put data inside vertexBuffer
 	// TODO: maybe should be DYNAMIC_DRAW because we transform?
-	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * 3 * sizeof(GLfloat), vertex_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * 3 * sizeof(GLfloat) + 5000, vertex_buffer_data, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, normalsBufferID);
-	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * 3 * sizeof(GLfloat), normals_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * 3 * sizeof(GLfloat) + + 5000, normals_buffer_data, GL_STATIC_DRAW);
 
 	delete[] vertex_buffer_data;
 	delete[] normals_buffer_data;
@@ -236,7 +236,7 @@ void MeshModel::Draw(Renderer& renderer, const glm::vec3& color, int model_i)
 	renderer.SetObjectMatrices(worldTransform, normalTransform);
 	renderer.setObjectColors(ambient_color, diffusive_color, specular_color, specular_exponent);
 	
-	renderer.DrawModel(vertexBufferID, triangles.size());
+	renderer.DrawModel(vertexBufferID, normalsBufferID, triangles.size());
 }
 
 const vector<line3d_t> MeshModel::CalcTriangeNormals() const
