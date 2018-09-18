@@ -8,6 +8,7 @@ class Camera
 {
 public:
 	glm::mat4x4 cTransform;
+	glm::mat4x4 viewTransform; // view transform (lookAt..)
 	glm::mat4x4 projection;
 	int x, y, z; // current position in the world, used for translation before rotation
 	float fovY;

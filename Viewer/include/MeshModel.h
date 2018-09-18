@@ -21,6 +21,7 @@ class MeshModel : public Model
 public:
 	string name;
 	GLuint vertexBufferID;
+	GLuint normalsBufferID;
 	vector<triangle3d_t> triangles;
 	vector<line3d_t> vertex_normals;
 	vector<line3d_t> triangle_normals;

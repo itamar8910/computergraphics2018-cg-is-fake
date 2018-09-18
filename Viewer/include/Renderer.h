@@ -30,6 +30,7 @@ private:
 
 	// TODO: make these a smart pointer to avoid copying each time
 	glm::mat4x4 cTransform; // camera transform
+	glm::mat4x4 cViewTransform; // camera view transform (lookAt..)
 	glm::mat4x4 cProjection; // camera projection
 	glm::mat4x4 oTransform; // object transform
 	glm::mat4x4 nTransform; // normals transform
@@ -75,8 +76,12 @@ public:
 	int width, height;
 	int screen_width, screen_height;
 	Shading current_shading;
+
 	GLuint programID;
-	GLuint MVPID;
+	GLuint MVPID; // MVP matrix
+	GLuint MID; // Model matrix
+	GLuint VID; // View matrix
+	GLuint lightPos_worldID; // View matrix
 
 	Renderer(GLuint _programID);
 	Renderer(int w, int h, GLuint _programID);
@@ -98,8 +103,8 @@ public:
 	glm::vec3 TransformPoint(const glm::vec3 &originalPoint) const;
 	glm::vec3 ApplyObjectTransform(const glm::vec3 &originalPoint) const;
 	// Sets the camera transformations with relation to world coordinates
-	void SetCameraTransform(const glm::vec3& camLocation, const glm::mat4x4& cTransform);
-
+	void SetCameraTransform(const glm::vec3& camLocation, const glm::mat4x4& cTransform, const glm::mat4x4& cViewTransform);
+	
 	// Sets the camera projection (perspective, orthographic etc...)
 	void SetProjection(const glm::mat4x4& projection);
 

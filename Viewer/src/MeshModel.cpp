@@ -117,26 +117,36 @@ void MeshModel::initializeInternals(){
 	specular_colors = getEmptyTrianglesColors();
 	generateRandomNonUniformMaterial();
 	glGenBuffers(1, &vertexBufferID);
+	glGenBuffers(1, &normalsBufferID);
 	fillGLBuffers();
 }
 
 void MeshModel::fillGLBuffers(){
 	GLfloat* vertex_buffer_data = new GLfloat[triangles.size() * 3 * 3];
-	// fill vertex_buffer_data with data from triangles vector
+	GLfloat* normals_buffer_data = new GLfloat[triangles.size() * 3 * 3];
+	// fill vertex_buffer_data, normals_buffer_data with data from triangles vector
 	for(int i = 0; i < (int)triangles.size(); i++){
 		const auto& triangle = triangles[i];
 		for(int j = 0; j < 3; j++){ // loop over vertices
 			vertex_buffer_data[i*9 + j*3 + 0] = triangle.vertices[j].x;
 			vertex_buffer_data[i*9 + j*3 + 1] = triangle.vertices[j].y;
 			vertex_buffer_data[i*9 + j*3 + 2] = triangle.vertices[j].z;
+			
+			normals_buffer_data[i*9 + j*3 + 0] = triangle.vert_normals[j].x;
+			normals_buffer_data[i*9 + j*3 + 1] = triangle.vert_normals[j].y;
+			normals_buffer_data[i*9 + j*3 + 2] = triangle.vert_normals[j].z;
 		}
 	}
-	// bind vertexBuffer
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 	// put data inside vertexBuffer
 	// TODO: maybe should be DYNAMIC_DRAW because we transform?
 	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * 3 * sizeof(GLfloat), vertex_buffer_data, GL_STATIC_DRAW);
-	delete[] vertex_buffer_data; // TODO: check that this is OK
+
+	glBindBuffer(GL_ARRAY_BUFFER, normalsBufferID);
+	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * 3 * sizeof(GLfloat), normals_buffer_data, GL_STATIC_DRAW);
+
+	delete[] vertex_buffer_data;
+	delete[] normals_buffer_data;
 }
 
 glm::vec3 MeshModel::calcCenterOfMass() const{

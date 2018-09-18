@@ -33,9 +33,10 @@ Renderer::~Renderer()
 	delete[] colorBuffer;
 }
 
-void Renderer::SetCameraTransform(const glm::vec3& camLocation, const glm::mat4x4& cTransform){
+void Renderer::SetCameraTransform(const glm::vec3& camLocation, const glm::mat4x4& cTransform, const glm::mat4x4& cViewTransform){
 	this->cTransform = cTransform;
 	this->camLocation = camLocation;
+	this->cViewTransform = cViewTransform;
 }
 
 void Renderer::SetProjection(const glm::mat4x4& projection){
@@ -46,7 +47,7 @@ void Renderer::SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x
 	this->oTransform = oTransform;
 	this->nTransform = nTransform;
 	// this->fullTransform = getViewport() * cProjection * inverse(cTransform) * oTransform;
-	this->fullTransform = cProjection * inverse(cTransform) * oTransform;
+	this->fullTransform = cProjection * cViewTransform * inverse(cTransform) * oTransform;
 }
 
 void Renderer::setObjectColors(glm::vec3 _emissive, glm::vec3 _diffusive, glm::vec3 _specular, exponent_t _specular_exponent)
@@ -400,6 +401,9 @@ void Renderer::initOpenGLRendering()
 	glBindVertexArray(glScreenVtc);
 	
 	this->MVPID = glGetUniformLocation(this->programID, "MVP");
+	this->MID = glGetUniformLocation(this->programID, "M");
+	this->VID = glGetUniformLocation(this->programID, "V");
+	this->lightPos_worldID = glGetUniformLocation(this->programID, "lightPos_world");
 
 }
 

@@ -79,12 +79,6 @@ int main(int argc, char **argv)
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
 
-
-
-
-
-
-
 	// Setup Dear ImGui binding
 	ImGuiIO &io = SetupDearImgui(window);
 	// Main loop - the famous "Game Loop" in video games :)
