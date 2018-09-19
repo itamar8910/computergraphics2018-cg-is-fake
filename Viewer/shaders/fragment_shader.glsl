@@ -12,19 +12,19 @@ out vec3 color;
 
 // Uniforms
 uniform vec3 LightPosition_worldspace;
+uniform vec3 light_color;
 
 
 void main()
 {
 
 	// TODO: convert to uniforms that are connected to GUI
-
 	// Light emission properties
-	vec3 LightColor = vec3(1,1,1);
+	vec3 LightColor = light_color;
 	float LightPower = 50.0f;
 
 	// Material properties
-	vec3 MaterialDiffuseColor = vec3(0.8,0.1,0.1);
+	vec3 MaterialDiffuseColor = vec3(0.8,0.1,0.1); // TODO: diffusive color = texture color
 	vec3 MaterialAmbientColor = vec3(0.1,0.1,0.1) * MaterialDiffuseColor;
 	vec3 MaterialSpecularColor = vec3(0.3,0.3,0.3);
 

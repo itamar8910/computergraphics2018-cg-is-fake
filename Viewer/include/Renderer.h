@@ -81,7 +81,8 @@ public:
 	GLuint MVPID; // MVP matrix
 	GLuint MID; // Model matrix
 	GLuint VID; // View matrix
-	GLuint lightPos_worldID; // View matrix
+	GLuint lightPos_worldID; // lightsPos uniform
+	GLuint lightColorID; // lightColor uniform
 
 	Renderer(GLuint _programID);
 	Renderer(int w, int h, GLuint _programID);

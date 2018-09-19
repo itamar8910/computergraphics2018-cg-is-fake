@@ -78,6 +78,7 @@ void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, int num_
 	glUniformMatrix4fv(this->MID, 1, GL_FALSE, &ModelMatrix[0][0]);
 	glUniformMatrix4fv(this->VID, 1, GL_FALSE, &this->cViewTransform[0][0]);
 	glUniform3f(this->lightPos_worldID, light->location.x, light->location.y, light->location.z);
+	glUniform3f(this->lightColorID, light->color.x, light->color.y, light->color.z);
 
 
 	// set layout of vertices buffer
@@ -424,7 +425,7 @@ void Renderer::initOpenGLRendering()
 	this->MID = glGetUniformLocation(this->programID, "M");
 	this->VID = glGetUniformLocation(this->programID, "V");
 	this->lightPos_worldID = glGetUniformLocation(this->programID, "LightPosition_worldspace");
-
+	this->lightColorID = glGetUniformLocation(this->programID, "light_color");
 }
 
 void Renderer::createOpenGLBuffer()
