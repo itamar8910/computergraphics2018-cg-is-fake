@@ -3,6 +3,7 @@
 #include <imgui/imgui.h>
 #include <iostream>
 #include "utils.h"
+#include <glm/gtc/type_ptr.hpp>
 
 using namespace std;
 
@@ -72,13 +73,25 @@ void Renderer::setFog(color_t color,bool enabled)
 void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, int num_of_triangles){
 
 	glm::mat4x4 ModelMatrix = inverse(cTransform) * oTransform;
-	Light* light = this->lights[0]; // TODO: support multiple / no lights
+	// Light* light = this->lights[0]; // TODO: support multiple / no lights
+
+	glm::vec3 lights_position_data[this->lights.size()];
+	glm::vec3 lights_color_data[this->lights.size()];
+	for(int light_i = 0; light_i < (int)(this->lights.size()); light_i++){
+		lights_position_data[light_i] = lights[light_i]->location;
+		lights_color_data[light_i] = lights[light_i]->color;
+	}
 
 	glUniformMatrix4fv(this->MVPID, 1, GL_FALSE, &this->fullTransform[0][0]);
 	glUniformMatrix4fv(this->MID, 1, GL_FALSE, &ModelMatrix[0][0]);
 	glUniformMatrix4fv(this->VID, 1, GL_FALSE, &this->cViewTransform[0][0]);
-	glUniform3f(this->lightPos_worldID, light->location.x, light->location.y, light->location.z);
-	glUniform3f(this->lightColorID, light->color.x, light->color.y, light->color.z);
+	glUniform1i(this->numLightsID, this->lights.size()); // TODO: check that this is the correct way to pass uniform int
+	// see https://www.opengl.org/discussion_boards/showthread.php/198200-Passing-array-of-vec3-to-fragment-shader 
+	// for passing uniform vector
+	glUniform3fv(this->lightsPositions_world_ArrayID, this->lights.size(), glm::value_ptr(lights_position_data[0]));
+	glUniform3fv(this->lightsColors_ArrayID, this->lights.size(), glm::value_ptr(lights_color_data[0]));
+	// glUniform3f(this->lightPos_worldID, light->location.x, light->location.y, light->location.z);
+	// glUniform3f(this->lightColorID, light->color.x, light->color.y, light->color.z);
 
 
 	// set layout of vertices buffer
@@ -424,8 +437,9 @@ void Renderer::initOpenGLRendering()
 	this->MVPID = glGetUniformLocation(this->programID, "MVP");
 	this->MID = glGetUniformLocation(this->programID, "M");
 	this->VID = glGetUniformLocation(this->programID, "V");
-	this->lightPos_worldID = glGetUniformLocation(this->programID, "LightPosition_worldspace");
-	this->lightColorID = glGetUniformLocation(this->programID, "light_color");
+	this->numLightsID = glGetUniformLocation(this->programID, "numLights");
+	this->lightsPositions_world_ArrayID = glGetUniformLocation(this->programID, "LightPositions_worldspace");
+	this->lightsColors_ArrayID = glGetUniformLocation(this->programID, "light_colors");
 }
 
 void Renderer::createOpenGLBuffer()
