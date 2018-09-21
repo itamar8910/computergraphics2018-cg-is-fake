@@ -7,6 +7,7 @@ in vec3 Position_worldspace;
 in vec3 Normal_cameraspace;
 in vec3 EyeDirection_cameraspace;
 in vec3 LightsDirection_cameraspace[MAX_NUM_LIGHTS];
+in vec2 UV;
 
 
 // Output data
@@ -17,6 +18,8 @@ out vec3 color;
 uniform int numLights;
 uniform vec3 LightPositions_worldspace[MAX_NUM_LIGHTS];
 uniform vec3 light_colors[MAX_NUM_LIGHTS];
+uniform bool has_texture;
+uniform sampler2D textureSampler;
 
 
 void main()
@@ -33,7 +36,10 @@ void main()
 		float LightPower = 50.0f;
 
 		// Material properties
-		vec3 MaterialDiffuseColor = vec3(0.8,0.1,0.1); // TODO: diffusive color = texture color
+		vec3 MaterialDiffuseColor = vec3(0.8,0.1,0.1); 
+		if(false && has_texture){
+			MaterialDiffuseColor = texture( textureSampler, UV ).rgb; // diffusive color = texture color
+		}
 		vec3 MaterialAmbientColor = vec3(0.1,0.1,0.1) * MaterialDiffuseColor;
 		vec3 MaterialSpecularColor = vec3(0.3,0.3,0.3);
 

@@ -70,7 +70,7 @@ void Renderer::setFog(color_t color,bool enabled)
 	fog_enabled = enabled;
 }
 
-void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, int num_of_triangles){
+void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint uvBufferID, bool hasTexture, int num_of_triangles){
 
 	glm::mat4x4 ModelMatrix = inverse(cTransform) * oTransform;
 	// Light* light = this->lights[0]; // TODO: support multiple / no lights
@@ -90,8 +90,8 @@ void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, int num_
 	// for passing uniform vector
 	glUniform3fv(this->lightsPositions_world_ArrayID, this->lights.size(), glm::value_ptr(lights_position_data[0]));
 	glUniform3fv(this->lightsColors_ArrayID, this->lights.size(), glm::value_ptr(lights_color_data[0]));
-	// glUniform3f(this->lightPos_worldID, light->location.x, light->location.y, light->location.z);
-	// glUniform3f(this->lightColorID, light->color.x, light->color.y, light->color.z);
+	
+	glUniform1i(this->hasTextureID, hasTexture);
 
 
 	// set layout of vertices buffer
@@ -118,10 +118,23 @@ void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, int num_
 			(void*)0            // array buffer offset
 	);
 
+	// set layout of uv buffer
+	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, uvBufferID);
+	glVertexAttribPointer(
+			2,                  // attribute. No particular reason for 0, but must match the layout in the shader.
+			2,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+	);
+
 	// draw the model
 	glDrawArrays(GL_TRIANGLES, 0, num_of_triangles * 3);
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
 }
 
 void Renderer::DrawTriangles(const vector<triangle3d_t> &triangles, int model_i, bool uniform_material, 
@@ -440,6 +453,7 @@ void Renderer::initOpenGLRendering()
 	this->numLightsID = glGetUniformLocation(this->programID, "numLights");
 	this->lightsPositions_world_ArrayID = glGetUniformLocation(this->programID, "LightPositions_worldspace");
 	this->lightsColors_ArrayID = glGetUniformLocation(this->programID, "light_colors");
+	this->hasTextureID = glGetUniformLocation(this->programID, "has_texture");
 }
 
 void Renderer::createOpenGLBuffer()

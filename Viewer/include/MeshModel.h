@@ -22,7 +22,6 @@ public:
 	string name;
 	GLuint vertexBufferID;
 	GLuint normalsBufferID;
-	GLuint normalsBufferID;
 	GLuint uvBufferID;
 	vector<triangle3d_t> triangles;
 	vector<line3d_t> vertex_normals;

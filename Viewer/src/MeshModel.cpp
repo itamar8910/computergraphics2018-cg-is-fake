@@ -84,7 +84,7 @@ MeshModel::MeshModel(const string& fileName, const string& _name) : name(_name),
 											   diffusive_color(0.5, 0.5, 0.5),
 											   specular_color(0.5, 0.5, 0.5),
 											   specular_exponent(5),
-											   use_uniform(true)
+											   use_uniform(true), has_texture(false)
 {
 	if(fileName.length() > 0){
 		has_texture = LoadFile(fileName);
@@ -154,21 +154,30 @@ void MeshModel::fillGLBuffers(){
 			normals_buffer_data[i*9 + j*3 + 1] = triangle.vert_normals[j].y;
 			normals_buffer_data[i*9 + j*3 + 2] = triangle.vert_normals[j].z;
 
-			uv_buffer_data[i*9 + j*3 + 0] = triangle.vert_normals[j].x;
-			uv_buffer_data[i*9 + j*3 + 1] = triangle.vert_normals[j].y;
+			if(has_texture){ 
+				// only fill texture buffer with data if model actually has a texture
+				// renderer has a uniform that will tell shaders whether to actually use texture data
+				// depending on whether the object has a texture or not
+				uv_buffer_data[i*6 + j*2 + 0] = triangle.vert_texture_uvs[j].x;
+				uv_buffer_data[i*6 + j*2 + 1] = triangle.vert_texture_uvs[j].y;
+			}
 
 		}
 	}
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 	// put data inside vertexBuffer
 	// TODO: maybe should be DYNAMIC_DRAW because we transform?
-	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * 3 * sizeof(GLfloat) + 5000, vertex_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * 3 * sizeof(GLfloat), vertex_buffer_data, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, normalsBufferID);
-	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * 3 * sizeof(GLfloat) + + 5000, normals_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * 3 * sizeof(GLfloat), normals_buffer_data, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, uvBufferID);
+	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * 2 * sizeof(GLfloat), uv_buffer_data, GL_STATIC_DRAW);
 
 	delete[] vertex_buffer_data;
 	delete[] normals_buffer_data;
+	delete[] uv_buffer_data;
 }
 
 glm::vec3 MeshModel::calcCenterOfMass() const{
@@ -270,7 +279,7 @@ void MeshModel::Draw(Renderer& renderer, const glm::vec3& color, int model_i)
 	renderer.SetObjectMatrices(worldTransform, normalTransform);
 	renderer.setObjectColors(ambient_color, diffusive_color, specular_color, specular_exponent);
 	
-	renderer.DrawModel(vertexBufferID, normalsBufferID, triangles.size());
+	renderer.DrawModel(vertexBufferID, normalsBufferID, uvBufferID, has_texture, triangles.size());
 }
 
 const vector<line3d_t> MeshModel::CalcTriangeNormals() const
