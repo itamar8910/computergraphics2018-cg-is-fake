@@ -70,7 +70,7 @@ void Renderer::setFog(color_t color,bool enabled)
 	fog_enabled = enabled;
 }
 
-void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint uvBufferID, bool hasTexture, int num_of_triangles){
+void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint uvBufferID, GLuint textureID, bool hasTexture, int num_of_triangles){
 
 	glm::mat4x4 ModelMatrix = inverse(cTransform) * oTransform;
 	// Light* light = this->lights[0]; // TODO: support multiple / no lights
@@ -93,6 +93,11 @@ void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint u
 	
 	glUniform1i(this->hasTextureID, hasTexture);
 
+	
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glUniform1i(textureSampleID, 0);
 
 	// set layout of vertices buffer
 	glEnableVertexAttribArray(0);
@@ -454,6 +459,7 @@ void Renderer::initOpenGLRendering()
 	this->lightsPositions_world_ArrayID = glGetUniformLocation(this->programID, "LightPositions_worldspace");
 	this->lightsColors_ArrayID = glGetUniformLocation(this->programID, "light_colors");
 	this->hasTextureID = glGetUniformLocation(this->programID, "has_texture");
+	this->textureSampleID = glGetUniformLocation(programID, "textureSampler");
 }
 
 void Renderer::createOpenGLBuffer()

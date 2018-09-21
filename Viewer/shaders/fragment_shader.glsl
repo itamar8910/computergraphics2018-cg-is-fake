@@ -37,7 +37,7 @@ void main()
 
 		// Material properties
 		vec3 MaterialDiffuseColor = vec3(0.8,0.1,0.1); 
-		if(false && has_texture){
+		if(has_texture){
 			MaterialDiffuseColor = texture( textureSampler, UV ).rgb; // diffusive color = texture color
 		}
 		vec3 MaterialAmbientColor = vec3(0.1,0.1,0.1) * MaterialDiffuseColor;
@@ -80,6 +80,7 @@ void main()
 
 	}
 	color = total_color;
+	//color = texture( textureSampler, UV ).rgb;
 	// Output color = red 
 	//color = vec3(1,0,0);
 

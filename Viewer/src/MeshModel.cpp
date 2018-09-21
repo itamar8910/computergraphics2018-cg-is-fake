@@ -88,7 +88,6 @@ MeshModel::MeshModel(const string& fileName, const string& _name) : name(_name),
 {
 	if(fileName.length() > 0){
 		has_texture = LoadFile(fileName);
-		initializeInternals();
 	}
 	draw_vertex_normals = false;
 	draw_triangle_normals = false;
@@ -113,6 +112,10 @@ MeshModel::MeshModel(const string& fileName, const string& _name) : name(_name),
 			this->texture_height = height;
 		}
 	}
+	if(fileName.length() > 0){ // segfaults withouts fileName.length() > 0 check, not sure why..
+		initializeInternals();
+	}
+
 }
 
 vector<vector<color_t>> MeshModel::getEmptyTrianglesColors(){
@@ -174,6 +177,25 @@ void MeshModel::fillGLBuffers(){
 
 	glBindBuffer(GL_ARRAY_BUFFER, uvBufferID);
 	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * 2 * sizeof(GLfloat), uv_buffer_data, GL_STATIC_DRAW);
+
+	if(has_texture){ // fill texture buffer
+		// Create one OpenGL texture
+		glGenTextures(1, &textureID);
+		
+		// "Bind" the newly created texture : all future texture functions will modify this texture
+		glBindTexture(GL_TEXTURE_2D, textureID);
+
+		// Give the image to OpenGL
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->texture_width, this->texture_height, 0, GL_BGR, GL_UNSIGNED_BYTE, &this->texture_img[0]);
+
+		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		// // ... which requires mipmaps. Generate them automatically.
+		// glGenerateMipmap(GL_TEXTURE_2D);
+	
+	}
 
 	delete[] vertex_buffer_data;
 	delete[] normals_buffer_data;
@@ -279,7 +301,7 @@ void MeshModel::Draw(Renderer& renderer, const glm::vec3& color, int model_i)
 	renderer.SetObjectMatrices(worldTransform, normalTransform);
 	renderer.setObjectColors(ambient_color, diffusive_color, specular_color, specular_exponent);
 	
-	renderer.DrawModel(vertexBufferID, normalsBufferID, uvBufferID, has_texture, triangles.size());
+	renderer.DrawModel(vertexBufferID, normalsBufferID, uvBufferID, textureID, has_texture, triangles.size());
 }
 
 const vector<line3d_t> MeshModel::CalcTriangeNormals() const

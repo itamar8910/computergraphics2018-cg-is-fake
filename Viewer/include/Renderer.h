@@ -85,13 +85,15 @@ public:
 	GLuint lightsPositions_world_ArrayID; // lightsPos array uniform
 	GLuint lightsColors_ArrayID; // lightColor array uniform
 	GLuint hasTextureID; // boolean uniform, true if current model has a texture
+	GLuint textureSampleID; 
+
 	Renderer(GLuint _programID);
 	Renderer(int w, int h, GLuint _programID);
 	~Renderer();
 	// Local initializations of your implementation
 	void Init();
 
-	void DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint uvBufferID, bool hasTexture, int num_of_triangles);
+	void DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint uvBufferID, GLuint textureID, bool hasTexture, int num_of_triangles);
 
 	// Draws wireframe triangles to the color buffer
 	void DrawTriangles(const vector<triangle3d_t> &triangles, int model_i = -1, bool uniform_material = true,

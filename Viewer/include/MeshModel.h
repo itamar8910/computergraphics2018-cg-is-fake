@@ -23,6 +23,7 @@ public:
 	GLuint vertexBufferID;
 	GLuint normalsBufferID;
 	GLuint uvBufferID;
+	GLuint textureID;
 	vector<triangle3d_t> triangles;
 	vector<line3d_t> vertex_normals;
 	vector<line3d_t> triangle_normals;
