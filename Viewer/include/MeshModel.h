@@ -22,6 +22,8 @@ public:
 	string name;
 	GLuint vertexBufferID;
 	GLuint normalsBufferID;
+	GLuint normalsBufferID;
+	GLuint uvBufferID;
 	vector<triangle3d_t> triangles;
 	vector<line3d_t> vertex_normals;
 	vector<line3d_t> triangle_normals;
@@ -44,14 +46,17 @@ public:
 	vector<vector<color_t>> ambient_colors;
 	vector<vector<color_t>> diffusive_colors;
 	vector<vector<color_t>> specular_colors;
-
+	bool has_texture;
+	vector<unsigned char> texture_img;
+	int texture_width, texture_height;
 	const hexahedron_t CalcBbox() const;
 	const vector<line3d_t> CalcTriangeNormals() const;
 	
 public:
 	MeshModel(const string& fileName = "", const string& _name = "N/A");
 	~MeshModel();
-	void LoadFile(const string& fileName);
+	// returns true if model has a texture
+	bool LoadFile(const string& fileName);
 	void initializeInternals();
 	
 	/**

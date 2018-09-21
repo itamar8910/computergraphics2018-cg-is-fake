@@ -6,6 +6,7 @@
 #include <sstream>
 #include "utils.h"
 #include "PrimMeshModel.h"
+#include "lodepng.h"
 
 #define FACE_ELEMENTS 3
 
@@ -86,7 +87,7 @@ MeshModel::MeshModel(const string& fileName, const string& _name) : name(_name),
 											   use_uniform(true)
 {
 	if(fileName.length() > 0){
-		LoadFile(fileName);
+		has_texture = LoadFile(fileName);
 		initializeInternals();
 	}
 	draw_vertex_normals = false;
@@ -96,6 +97,21 @@ MeshModel::MeshModel(const string& fileName, const string& _name) : name(_name),
 		string obj_fname = fileName.substr(fileName.rfind("/") + 1);
 		obj_fname = obj_fname.substr(0, obj_fname.find('.'));
 		name = obj_fname; 
+		if(has_texture){
+			// load texture
+			string dirpath = fileName.substr(0, fileName.rfind("/")+1);
+			string texture_png_path = dirpath + name + "_texture.png";
+			std::vector<unsigned char> image;
+			unsigned width, height;
+			unsigned error = lodepng::decode(image, width, height, texture_png_path);
+			if(error != 0)
+			{
+				std::cout << "error " << error << ": " << lodepng_error_text(error) << std::endl;
+			}
+			this->texture_img = image;
+			this->texture_width = width;
+			this->texture_height = height;
+		}
 	}
 }
 
@@ -118,13 +134,15 @@ void MeshModel::initializeInternals(){
 	generateRandomNonUniformMaterial();
 	glGenBuffers(1, &vertexBufferID);
 	glGenBuffers(1, &normalsBufferID);
+	glGenBuffers(1, &uvBufferID);
 	fillGLBuffers();
 }
 
 void MeshModel::fillGLBuffers(){
 	GLfloat* vertex_buffer_data = new GLfloat[triangles.size() * 3 * 3];
 	GLfloat* normals_buffer_data = new GLfloat[triangles.size() * 3 * 3];
-	// fill vertex_buffer_data, normals_buffer_data with data from triangles vector
+	GLfloat* uv_buffer_data = new GLfloat[triangles.size() * 3 * 2];
+	// fill vertex_buffer_data, normals_buffer_data, uv_buffer_data with data from triangles vector
 	for(int i = 0; i < (int)triangles.size(); i++){
 		const auto& triangle = triangles[i];
 		for(int j = 0; j < 3; j++){ // loop over vertices
@@ -135,6 +153,10 @@ void MeshModel::fillGLBuffers(){
 			normals_buffer_data[i*9 + j*3 + 0] = triangle.vert_normals[j].x;
 			normals_buffer_data[i*9 + j*3 + 1] = triangle.vert_normals[j].y;
 			normals_buffer_data[i*9 + j*3 + 2] = triangle.vert_normals[j].z;
+
+			uv_buffer_data[i*9 + j*3 + 0] = triangle.vert_normals[j].x;
+			uv_buffer_data[i*9 + j*3 + 1] = triangle.vert_normals[j].y;
+
 		}
 	}
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
@@ -160,13 +182,15 @@ glm::vec3 MeshModel::calcCenterOfMass() const{
 MeshModel::~MeshModel()
 {
 }
-
-void MeshModel::LoadFile(const string& fileName)
+// returns true if model has a texture
+bool MeshModel::LoadFile(const string& fileName)
 {
+	bool file_has_texture = false;
 	ifstream ifile(fileName.c_str());
 	vector<FaceIdx> faces;
 	vector<glm::vec3> vertices;
 	vector<point3d_t> normals;
+	vector<glm::vec2> texture_uvs;
 	// while not end of file
 	while (!ifile.eof())
 	{
@@ -194,6 +218,9 @@ void MeshModel::LoadFile(const string& fileName)
 			auto vec = vec3fFromStream(issLine);
 			auto vec2 = vec;
 			normals.push_back(vec2);
+		}else if(lineType == "vt"){ // vertex texture
+			texture_uvs.push_back(vec2fFromStream(issLine));
+			file_has_texture = true;
 		}
 		else if (lineType == "#" || lineType == "")
 		{
@@ -218,16 +245,23 @@ void MeshModel::LoadFile(const string& fileName)
 	{
 		vector<glm::vec3> triangle;
 		vector<glm::vec3> triangle_normals;
+		vector<glm::vec2> triangle_texture_uvs;
 		for (int i = 0; i < FACE_ELEMENTS; i++) // iterate over face's vertices
 		{
 			// append i'th vetice of current face to list of all vertices
 			// obj files are 1-indexed
 			triangle.push_back(vertices[face.v[i]-1]);
 			triangle_normals.push_back(normals[face.vn[i] - 1]);
+			if(file_has_texture){
+				triangle_texture_uvs.push_back(texture_uvs[face.vt[i] - 1]);
+			}
 		}
 		triangles.push_back(triangle);
 		triangles.back().vert_normals = triangle_normals;
+		triangles.back().vert_texture_uvs = triangle_texture_uvs;
+
 	}
+	return file_has_texture;
 }
 
 void MeshModel::Draw(Renderer& renderer, const glm::vec3& color, int model_i)

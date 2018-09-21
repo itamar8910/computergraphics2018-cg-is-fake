@@ -47,7 +47,7 @@ void setup_scene(Scene& scene){
 }
 
 
-#define TEAPOT_MODEL "../../Data/obj_examples/teapot.obj"
+#define DEFAULT_MODEL "../../Data/external/monster.obj"
 int main(int argc, char **argv)
 {
 	// Setup window
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 	if (argc < 2)
 	{
 		cout << "loading OBJ model" << endl;
-		scene.LoadOBJModel(TEAPOT_MODEL);
+		scene.LoadOBJModel(DEFAULT_MODEL);
 		cout << "loaded OBJ model" << endl;
 	}
 	

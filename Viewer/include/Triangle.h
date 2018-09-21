@@ -24,6 +24,7 @@ public:
   float xmin, xmax, ymin, ymax;
   std::vector<point3d_t> vertices;
   std::vector<point3d_t> vert_normals;
+  std::vector<glm::vec2> vert_texture_uvs;
   point3d_t center;
   point3d_t face_normal;
   color_t color;
