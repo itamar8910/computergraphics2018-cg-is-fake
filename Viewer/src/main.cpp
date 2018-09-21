@@ -47,7 +47,7 @@ void setup_scene(Scene& scene){
 }
 
 
-#define DEFAULT_MODEL "../../Data/external/monster.obj"
+#define DEFAULT_MODEL "../../Data/external/bob.obj"
 int main(int argc, char **argv)
 {
 	// Setup window

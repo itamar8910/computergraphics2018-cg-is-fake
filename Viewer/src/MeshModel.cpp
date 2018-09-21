@@ -186,14 +186,14 @@ void MeshModel::fillGLBuffers(){
 		glBindTexture(GL_TEXTURE_2D, textureID);
 
 		// Give the image to OpenGL
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->texture_width, this->texture_height, 0, GL_BGR, GL_UNSIGNED_BYTE, &this->texture_img[0]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->texture_width, this->texture_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &this->texture_img[0]);
 
 		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		// // ... which requires mipmaps. Generate them automatically.
-		// glGenerateMipmap(GL_TEXTURE_2D);
+		glGenerateMipmap(GL_TEXTURE_2D);
 	
 	}
 
