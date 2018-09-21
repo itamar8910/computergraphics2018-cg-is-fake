@@ -30,6 +30,7 @@ private:
 
 	// TODO: make these a smart pointer to avoid copying each time
 	glm::mat4x4 cTransform; // camera transform
+	glm::mat4x4 cViewTransform; // camera view transform (lookAt..)
 	glm::mat4x4 cProjection; // camera projection
 	glm::mat4x4 oTransform; // object transform
 	glm::mat4x4 nTransform; // normals transform
@@ -75,13 +76,22 @@ public:
 	int width, height;
 	int screen_width, screen_height;
 	Shading current_shading;
-	
 
-	Renderer();
-	Renderer(int w, int h);
+	GLuint programID;
+	GLuint MVPID; // MVP matrix
+	GLuint MID; // Model matrix
+	GLuint VID; // View matrix
+	GLuint numLightsID; //uniform that holds # of lights
+	GLuint lightsPositions_world_ArrayID; // lightsPos array uniform
+	GLuint lightsColors_ArrayID; // lightColor array uniform
+
+	Renderer(GLuint _programID);
+	Renderer(int w, int h, GLuint _programID);
 	~Renderer();
 	// Local initializations of your implementation
 	void Init();
+
+	void DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, int num_of_triangles);
 
 	// Draws wireframe triangles to the color buffer
 	void DrawTriangles(const vector<triangle3d_t> &triangles, int model_i = -1, bool uniform_material = true,
@@ -95,8 +105,8 @@ public:
 	glm::vec3 TransformPoint(const glm::vec3 &originalPoint) const;
 	glm::vec3 ApplyObjectTransform(const glm::vec3 &originalPoint) const;
 	// Sets the camera transformations with relation to world coordinates
-	void SetCameraTransform(const glm::vec3& camLocation, const glm::mat4x4& cTransform);
-
+	void SetCameraTransform(const glm::vec3& camLocation, const glm::mat4x4& cTransform, const glm::mat4x4& cViewTransform);
+	
 	// Sets the camera projection (perspective, orthographic etc...)
 	void SetProjection(const glm::mat4x4& projection);
 

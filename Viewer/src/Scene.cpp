@@ -48,7 +48,7 @@ void Scene::Draw()
 	// Send the renderer the current camera transform and the projection
 	Camera& activeCamera = *cameras[ActiveCamera];
 	renderer->SetProjection(activeCamera.projection);
-	renderer->SetCameraTransform(glm::vec3(activeCamera.x, activeCamera.y, activeCamera.z), activeCamera.cTransform);
+	renderer->SetCameraTransform(glm::vec3(activeCamera.x, activeCamera.y, activeCamera.z), activeCamera.cTransform, activeCamera.viewTransform);
 	renderer->setLights(ambient_light_color, lights);
 	renderer->setFog(fog_color, fog_enabled);
 	// Tell all models to draw themselves
@@ -94,8 +94,8 @@ void Scene::Draw()
 			light_model->Draw(*renderer, color_t(1, 1, 1), -1);
 		}
 	}
-	renderer->resampleColorBuffer();
-	renderer->SwapBuffers();
+	// renderer->resampleColorBuffer();
+	// renderer->SwapBuffers();
 }
 
 vector<string> Scene::get_models_names(){

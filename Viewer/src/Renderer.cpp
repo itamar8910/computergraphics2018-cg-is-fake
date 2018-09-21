@@ -3,24 +3,27 @@
 #include <imgui/imgui.h>
 #include <iostream>
 #include "utils.h"
+#include <glm/gtc/type_ptr.hpp>
 
 using namespace std;
 
 #define ABS(x) (x > 0 ? x : -x)
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 #define INIT_SUPERSAMPLING 1.0 // must be >= 1.0
-Renderer::Renderer() : supersampling_coeff(1.0), width(1280), height(720), screen_width(1280), screen_height(720)
+Renderer::Renderer(GLuint _programID) : supersampling_coeff(1.0), width(1280), height(720), screen_width(1280), screen_height(720)
 {
 	set_supersampling_coeff(INIT_SUPERSAMPLING);
+	this->programID = _programID;
 	initOpenGLRendering();
 	createBuffers(width,height);
 	current_shading = Shading::Flat;
 	fog_color = color_t(1, 1, 1);
 }
 
-Renderer::Renderer(int w, int h) : supersampling_coeff(1.0), width(w), height(h), screen_width(w), screen_height(h)
+Renderer::Renderer(int w, int h, GLuint _programID) : supersampling_coeff(1.0), width(w), height(h), screen_width(w), screen_height(h)
 {
 	set_supersampling_coeff(INIT_SUPERSAMPLING);
+	this->programID = _programID;
 	initOpenGLRendering();
 	createBuffers(width,height);
 	current_shading = Shading::Flat;
@@ -31,9 +34,10 @@ Renderer::~Renderer()
 	delete[] colorBuffer;
 }
 
-void Renderer::SetCameraTransform(const glm::vec3& camLocation, const glm::mat4x4& cTransform){
+void Renderer::SetCameraTransform(const glm::vec3& camLocation, const glm::mat4x4& cTransform, const glm::mat4x4& cViewTransform){
 	this->cTransform = cTransform;
 	this->camLocation = camLocation;
+	this->cViewTransform = cViewTransform;
 }
 
 void Renderer::SetProjection(const glm::mat4x4& projection){
@@ -43,7 +47,8 @@ void Renderer::SetProjection(const glm::mat4x4& projection){
 void Renderer::SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x4& nTransform){
 	this->oTransform = oTransform;
 	this->nTransform = nTransform;
-	this->fullTransform = getViewport() * cProjection * inverse(cTransform) * oTransform;
+	// this->fullTransform = getViewport() * cProjection * inverse(cTransform) * oTransform;
+	this->fullTransform = cProjection * cViewTransform * inverse(cTransform) * oTransform;
 }
 
 void Renderer::setObjectColors(glm::vec3 _emissive, glm::vec3 _diffusive, glm::vec3 _specular, exponent_t _specular_exponent)
@@ -63,6 +68,60 @@ void Renderer::setFog(color_t color,bool enabled)
 {
 	fog_color = color;
 	fog_enabled = enabled;
+}
+
+void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, int num_of_triangles){
+
+	glm::mat4x4 ModelMatrix = inverse(cTransform) * oTransform;
+	// Light* light = this->lights[0]; // TODO: support multiple / no lights
+
+	glm::vec3 lights_position_data[this->lights.size()];
+	glm::vec3 lights_color_data[this->lights.size()];
+	for(int light_i = 0; light_i < (int)(this->lights.size()); light_i++){
+		lights_position_data[light_i] = lights[light_i]->location;
+		lights_color_data[light_i] = lights[light_i]->color;
+	}
+
+	glUniformMatrix4fv(this->MVPID, 1, GL_FALSE, &this->fullTransform[0][0]);
+	glUniformMatrix4fv(this->MID, 1, GL_FALSE, &ModelMatrix[0][0]);
+	glUniformMatrix4fv(this->VID, 1, GL_FALSE, &this->cViewTransform[0][0]);
+	glUniform1i(this->numLightsID, this->lights.size()); // TODO: check that this is the correct way to pass uniform int
+	// see https://www.opengl.org/discussion_boards/showthread.php/198200-Passing-array-of-vec3-to-fragment-shader 
+	// for passing uniform vector
+	glUniform3fv(this->lightsPositions_world_ArrayID, this->lights.size(), glm::value_ptr(lights_position_data[0]));
+	glUniform3fv(this->lightsColors_ArrayID, this->lights.size(), glm::value_ptr(lights_color_data[0]));
+	// glUniform3f(this->lightPos_worldID, light->location.x, light->location.y, light->location.z);
+	// glUniform3f(this->lightColorID, light->color.x, light->color.y, light->color.z);
+
+
+	// set layout of vertices buffer
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
+	glVertexAttribPointer(
+			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
+			3,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+	);
+
+	// set layout of normals buffer
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, normalsBufferID);
+	glVertexAttribPointer(
+			1,                  // attribute. No particular reason for 0, but must match the layout in the shader.
+			3,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+	);
+
+	// draw the model
+	glDrawArrays(GL_TRIANGLES, 0, num_of_triangles * 3);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 }
 
 void Renderer::DrawTriangles(const vector<triangle3d_t> &triangles, int model_i, bool uniform_material, 
@@ -370,70 +429,27 @@ glm::vec3 Renderer::calc_color_shade(const glm::vec3& location, const glm::vec3&
 // don't linger here for now, we will have a few tutorials about opengl later.
 void Renderer::initOpenGLRendering()
 {
-	// Creates a unique identifier for an opengl texture.
-	glGenTextures(1, &glScreenTex);
-	// Same for vertex array object (VAO). VAO is a set of buffers that describe a renderable object.
+	
 	glGenVertexArrays(1, &glScreenVtc);
-	GLuint buffer;
-	// Makes this VAO the current one.
+	
 	glBindVertexArray(glScreenVtc);
-	// Creates a unique identifier for a buffer.
-	glGenBuffers(1, &buffer);
-	// (-1, 1)____(1, 1)
-	//	     |\  |
-	//	     | \ | <--- The exture is drawn over two triangles that stretch over the screen.
-	//	     |__\|
-	// (-1,-1)    (1,-1)
-	const GLfloat vtc[]={
-		-1, -1,
-		 1, -1,
-		-1,  1,
-		-1,  1,
-		 1, -1,
-		 1,  1
-	};
-	const GLfloat tex[]={
-		0,0,
-		1,0,
-		0,1,
-		0,1,
-		1,0,
-		1,1};
-	// Makes this buffer the current one.
-	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	// This is the opengl way for doing malloc on the gpu. 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vtc)+sizeof(tex), NULL, GL_STATIC_DRAW);
-	// memcopy vtc to buffer[0,sizeof(vtc)-1]
-	glBufferSubData( GL_ARRAY_BUFFER, 0, sizeof(vtc), vtc);
-	// memcopy tex to buffer[sizeof(vtc),sizeof(vtc)+sizeof(tex)]
-	glBufferSubData( GL_ARRAY_BUFFER, sizeof(vtc), sizeof(tex), tex);
-	// Loads and compiles a sheder.
-	GLuint program = InitShader( "vshader.glsl", "fshader.glsl" );
-	// Make this program the current one.
-	glUseProgram( program );
-	// Tells the shader where to look for the vertex position data, and the data dimensions.
-	GLint  vPosition = glGetAttribLocation( program, "vPosition" );
-	glEnableVertexAttribArray( vPosition );
-	glVertexAttribPointer( vPosition,2,GL_FLOAT,GL_FALSE,0,0 );
-	// Same for texture coordinates data.
-	GLint  vTexCoord = glGetAttribLocation( program, "vTexCoord" );
-	glEnableVertexAttribArray( vTexCoord );
-	glVertexAttribPointer( vTexCoord,2,GL_FLOAT,GL_FALSE,0,(GLvoid *)sizeof(vtc) );
-
-	//glProgramUniform1i( program, glGetUniformLocation(program, "texture"), 0 );
-
-	// Tells the shader to use GL_TEXTURE0 as the texture id.
-	glUniform1i(glGetUniformLocation(program, "texture"),0);
+	
+	this->MVPID = glGetUniformLocation(this->programID, "MVP");
+	this->MID = glGetUniformLocation(this->programID, "M");
+	this->VID = glGetUniformLocation(this->programID, "V");
+	this->numLightsID = glGetUniformLocation(this->programID, "numLights");
+	this->lightsPositions_world_ArrayID = glGetUniformLocation(this->programID, "LightPositions_worldspace");
+	this->lightsColors_ArrayID = glGetUniformLocation(this->programID, "light_colors");
 }
 
 void Renderer::createOpenGLBuffer()
 {
-	// Makes GL_TEXTURE0 the current active texture unit
-	glActiveTexture(GL_TEXTURE0);
-	// Makes glScreenTex (which was allocated earlier) the current texture.
-	glBindTexture(GL_TEXTURE_2D, glScreenTex);
-	// malloc for a texture on the gpu.
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_FLOAT, NULL);
+	// // Makes GL_TEXTURE0 the current active texture unit
+	// glActiveTexture(GL_TEXTURE0);
+	// // Makes glScreenTex (which was allocated earlier) the current texture.
+	// glBindTexture(GL_TEXTURE_2D, glScreenTex);
+	// // malloc for a texture on the gpu.
+	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_FLOAT, NULL);
 	glViewport(0, 0, width, height);
 }
 
@@ -450,7 +466,7 @@ void Renderer::SwapBuffers()
 	// Make glScreenVtc current VAO
 	glBindVertexArray(glScreenVtc);
 	// Finally renders the data.
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+	// glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void Renderer::ClearColorBuffer(const glm::vec3& color)

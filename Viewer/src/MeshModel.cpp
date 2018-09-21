@@ -26,13 +26,13 @@ struct FaceIdx
 
 	FaceIdx()
 	{
-		for (int i = 0; i < FACE_ELEMENTS + 1; i++)
+		for (int i = 0; i < FACE_ELEMENTS; i++)
 			v[i] = vn[i] = vt[i] = 0;
 	}
 
 	FaceIdx(std::istream& issLine)
 	{
-		for (int i = 0; i < FACE_ELEMENTS + 1; i++)
+		for (int i = 0; i < FACE_ELEMENTS; i++)
 			v[i] = vn[i] = vt[i] = 0;
 
 		char c;
@@ -116,6 +116,37 @@ void MeshModel::initializeInternals(){
 	diffusive_colors = getEmptyTrianglesColors();
 	specular_colors = getEmptyTrianglesColors();
 	generateRandomNonUniformMaterial();
+	glGenBuffers(1, &vertexBufferID);
+	glGenBuffers(1, &normalsBufferID);
+	fillGLBuffers();
+}
+
+void MeshModel::fillGLBuffers(){
+	GLfloat* vertex_buffer_data = new GLfloat[triangles.size() * 3 * 3];
+	GLfloat* normals_buffer_data = new GLfloat[triangles.size() * 3 * 3];
+	// fill vertex_buffer_data, normals_buffer_data with data from triangles vector
+	for(int i = 0; i < (int)triangles.size(); i++){
+		const auto& triangle = triangles[i];
+		for(int j = 0; j < 3; j++){ // loop over vertices
+			vertex_buffer_data[i*9 + j*3 + 0] = triangle.vertices[j].x;
+			vertex_buffer_data[i*9 + j*3 + 1] = triangle.vertices[j].y;
+			vertex_buffer_data[i*9 + j*3 + 2] = triangle.vertices[j].z;
+			
+			normals_buffer_data[i*9 + j*3 + 0] = triangle.vert_normals[j].x;
+			normals_buffer_data[i*9 + j*3 + 1] = triangle.vert_normals[j].y;
+			normals_buffer_data[i*9 + j*3 + 2] = triangle.vert_normals[j].z;
+		}
+	}
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
+	// put data inside vertexBuffer
+	// TODO: maybe should be DYNAMIC_DRAW because we transform?
+	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * 3 * sizeof(GLfloat) + 5000, vertex_buffer_data, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, normalsBufferID);
+	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * 3 * sizeof(GLfloat) + + 5000, normals_buffer_data, GL_STATIC_DRAW);
+
+	delete[] vertex_buffer_data;
+	delete[] normals_buffer_data;
 }
 
 glm::vec3 MeshModel::calcCenterOfMass() const{
@@ -160,7 +191,9 @@ void MeshModel::LoadFile(const string& fileName)
 		}
 		else if (lineType == "vn") // vertex normal
 		{
-			normals.push_back(vec3fFromStream(issLine));
+			auto vec = vec3fFromStream(issLine);
+			auto vec2 = vec;
+			normals.push_back(vec2);
 		}
 		else if (lineType == "#" || lineType == "")
 		{
@@ -202,29 +235,8 @@ void MeshModel::Draw(Renderer& renderer, const glm::vec3& color, int model_i)
 	// send transformation to renderer
 	renderer.SetObjectMatrices(worldTransform, normalTransform);
 	renderer.setObjectColors(ambient_color, diffusive_color, specular_color, specular_exponent);
-	if (this->draw_vertex_normals)
-	{
-		for (auto &pair : this->vertex_normals)
-		{
-			renderer.DrawLine(pair.first, pair.first + normal_length * pair.second, glm::vec3(0, 0, 1));
-		}
-	}
-	if(this->draw_triangle_normals)
-	{
-		for(auto &tri : this->triangles)
-		{
-			renderer.DrawLine(tri.center, tri.center + normal_length * tri.face_normal, glm::vec3(0, 1, 0));
-		}
-	}
-	if(draw_bbox)
-	{
-		for (const auto &a : bbox)
-		{
-			renderer.DrawLine(a.first, a.second);
-		}
-	}
-	// send triangles to renderer
-	renderer.DrawTriangles(triangles, model_i, use_uniform, ambient_colors, diffusive_colors, specular_colors);
+	
+	renderer.DrawModel(vertexBufferID, normalsBufferID, triangles.size());
 }
 
 const vector<line3d_t> MeshModel::CalcTriangeNormals() const

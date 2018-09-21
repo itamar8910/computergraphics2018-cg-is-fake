@@ -13,7 +13,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 set(CMAKE_DISABLE_SOURCE_CHANGES  ON)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
 if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   message(SEND_ERROR "In-source builds are not allowed.")
@@ -122,7 +122,7 @@ set_target_properties(${PROJECT_NAME} glad imgui
 foreach(shader ${SHADER_FILES})
 	get_filename_component(shader_name ${shader} NAME)
 	message(STATUS ">>> shader: ${shader_name} is copied to ${CMAKE_CURRENT_BINARY_DIR}/${shader_name}")
-	configure_file(${shader} ${CMAKE_CURRENT_BINARY_DIR}/${shader_name} COPYONLY)
+	configure_file(${shader} ${CMAKE_CURRENT_BINARY_DIR}/bin/${shader_name} COPYONLY)
 endforeach()
 
 # Copies the shaders from the build (out-of-source-build) directory to the current
@@ -131,7 +131,7 @@ add_custom_command(
         TARGET 	${PROJECT_NAME}		POST_BUILD
         COMMAND ${CMAKE_COMMAND}	-E copy
                 ${SHADER_FILES}
-                ${CMAKE_CURRENT_BINARY_DIR}/bin/$<CONFIG>
+                ${CMAKE_CURRENT_BINARY_DIR}/bin/
 		# DEPENDS ${SHADER_FILES}
 		COMMENT "Copying Shaders"
 		VERBATIM
