@@ -29,7 +29,7 @@ public:
 	Scene() : render_cameras(true) {};
 	Scene(Renderer *renderer) : renderer(renderer), render_cameras(true), ambient_light_color(1, 1, 1),fog_color(0.6,0.6,0.6),fog_enabled(true){};
 
-	void SpawnPrimitive(const string &primitive_name = "pyramid");
+	void SpawnPrimitive();
 	void AddCamera(Camera *c);
 
 	// Loads an obj file into the scene.

@@ -295,7 +295,7 @@ bool MeshModel::LoadFile(const string& fileName)
 	return file_has_texture;
 }
 
-void MeshModel::Draw(Renderer& renderer, const glm::vec3& color, int model_i)
+void MeshModel::Draw(Renderer& renderer)
 {
 	// send transformation to renderer
 	renderer.SetObjectMatrices(worldTransform, normalTransform);
