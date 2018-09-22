@@ -31,7 +31,7 @@ ImGuiIO& SetupDearImgui(GLFWwindow* window);
 // Takes care of all the opengl and glfw backend for rendering a new frame.
 void StartFrame();
 // Renders imgui. Takes care of screen resize, and finally renders the scene
-void RenderFrame(GLFWwindow* window, Renderer* renderer);
+void RenderFrame(GLFWwindow* window);
 // Cleanup routines of all the systems used here.
 void Cleanup(GLFWwindow* window);
 void draw_demo_triangle(GLuint MatrixID);
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
 		// Start the ImGui frame
 		StartFrame();
 		// imgui stuff here
-		DrawImguiMenus(io, &scene, argc - 1);
+		DrawImguiMenus(io, &scene);
 		// Rendering + user rendering - finishing the ImGui frame
 		// go to function implementation to add your rendering calls.
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -117,7 +117,7 @@ int main(int argc, char **argv)
 		// draw_demo_triangle(scene.renderer->MVPID);
 
 
-		RenderFrame(window, &renderer); // --> go to line 137
+		RenderFrame(window); // --> go to line 137
 		// Swap buffers
 		// glfwSwapBuffers(window);
 	}
@@ -250,7 +250,8 @@ void StartFrame()
 }
 
 // Renders imgui. Takes care of screen resize, and finally renders the scene
-void RenderFrame(GLFWwindow* window, Renderer* renderer)
+// used to be - void RenderFrame(GLFWwindow* window, Renderer* renderer) needs it for commented out code
+void RenderFrame(GLFWwindow* window)
 {
 	// creates ImGui's vertex buffers and textures
 	ImGui::Render();

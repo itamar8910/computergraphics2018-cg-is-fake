@@ -237,7 +237,7 @@ void ShowMaterialWindow(Scene *scene)
 	}
 	ImGui::End();
 }
-void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
+void DrawImguiMenus(ImGuiIO &io, Scene *scene)
 {
 	ImGui::SetNextWindowPos(ImVec2(0, 20), ImGuiCond_Once);
 
@@ -282,7 +282,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models)
 		}
 		if(ImGui::Button("Spawn pyramid"))
 		{
-			scene->SpawnPrimitive("pyramid");
+			scene->SpawnPrimitive();
 		}
 		if(ImGui::Button("Import model")){
 			char file[1024];

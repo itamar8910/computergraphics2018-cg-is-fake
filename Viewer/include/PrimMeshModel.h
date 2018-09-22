@@ -22,7 +22,7 @@ inline PrimMeshModel *PrimMeshModel::CreatePyramid()
         triangle3d_t face3 = {glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.5, 0.5, 1)};
         triangle3d_t face4 = {glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.5, 0.5, 1)};
         vector<triangle3d_t> triangles = {face1, face2, face3, face4};
-        PrimMeshModel *pyramid = new PrimMeshModel("pyramid"); // for some reason getting a link error when trying to call 
+        PrimMeshModel *pyramid = new PrimMeshModel(); // for some reason getting a link error when trying to call 
                                                  //PrimMeshModel(const vector<vector<glm::vec3> >& _triangles) constructor
         pyramid->triangles = triangles;
         pyramid->initializeInternals();

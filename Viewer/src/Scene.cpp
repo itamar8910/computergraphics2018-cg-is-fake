@@ -21,15 +21,12 @@ void Scene::AddCamera(Camera *c){
 	c->camera_model = camera_model;
 }
 
-void Scene::SpawnPrimitive(const string& primitive_name)
+void Scene::SpawnPrimitive()
 {
 	static int pyramid_i = 1;
 	PrimMeshModel *new_prim;
-	if(primitive_name=="pyramid")
-	{
-		new_prim = PrimMeshModel::CreatePyramid();
-		new_prim->name = "pyramid #" + to_string(pyramid_i++);
-	}
+	new_prim = PrimMeshModel::CreatePyramid();
+	new_prim->name = "pyramid #" + to_string(pyramid_i++);
 	addModel(new_prim);
 }
 
@@ -65,7 +62,7 @@ void Scene::Draw()
 		if(meshModel->z > active_camera_z * (-active_camera_look_z_sign)){ // behind the camera, don't render
 			continue;
 		}
-		meshModel->Draw(*renderer, color, model_i);
+		meshModel->Draw(*renderer);
 		model_i++;
 	}
 	if(render_cameras){
@@ -77,7 +74,7 @@ void Scene::Draw()
 				continue;
 			}
 			auto color = glm::vec3(0, 0 ,1);
-			cam_model->Draw(*renderer, color, -1);
+			cam_model->Draw(*renderer);
 		}
 	}
 	if(render_lights)
@@ -91,7 +88,7 @@ void Scene::Draw()
 			light_model->ambient_color = light->color;
 			light_model->diffusive_color = light->color;
 			light_model->specular_color = light->color;
-			light_model->Draw(*renderer, color_t(1, 1, 1), -1);
+			light_model->Draw(*renderer);
 		}
 	}
 	// renderer->resampleColorBuffer();

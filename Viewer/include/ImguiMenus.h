@@ -2,5 +2,5 @@
 #include <imgui/imgui.h>
 #include "Scene.h"
 
-void DrawImguiMenus(ImGuiIO &io, Scene *scene, int number_of_models);
+void DrawImguiMenus(ImGuiIO &io, Scene *scene);
 const glm::vec4& GetClearColor();
