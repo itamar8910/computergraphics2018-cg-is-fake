@@ -70,6 +70,7 @@ public:
 	GLuint lightsPositions_world_ArrayID; // lightsPos array uniform
 	GLuint lightsColors_ArrayID; // lightColor array uniform
 	GLuint hasTextureID; // boolean uniform, true if current model has a texture
+	GLuint diffusiveColorID; // vec3 uniform, passes material diffusive color
 	GLuint textureSampleID; 
 
 	Renderer(GLuint _programID);

@@ -19,6 +19,7 @@ uniform int numLights;
 uniform vec3 LightPositions_worldspace[MAX_NUM_LIGHTS];
 uniform vec3 light_colors[MAX_NUM_LIGHTS];
 uniform bool has_texture;
+uniform vec3 diffusive_color;
 uniform sampler2D textureSampler;
 
 
@@ -36,7 +37,7 @@ void main()
 		float LightPower = 50.0f;
 
 		// Material properties
-		vec3 MaterialDiffuseColor = vec3(0.8,0.1,0.1); 
+		vec3 MaterialDiffuseColor = diffusive_color;
 		if(has_texture){
 			MaterialDiffuseColor = texture( textureSampler, UV ).rgb; // diffusive color = texture color
 		}

@@ -85,6 +85,7 @@ void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint u
 	glUniform3fv(this->lightsColors_ArrayID, this->lights.size(), glm::value_ptr(lights_color_data[0]));
 	
 	glUniform1i(this->hasTextureID, hasTexture);
+	glUniform3fv(this->diffusiveColorID,1,glm::value_ptr(this->model_diffusive_color));
 
 	
 	glActiveTexture(GL_TEXTURE0);
@@ -174,16 +175,17 @@ void Renderer::initOpenGLRendering()
 	this->lightsPositions_world_ArrayID = glGetUniformLocation(this->programID, "LightPositions_worldspace");
 	this->lightsColors_ArrayID = glGetUniformLocation(this->programID, "light_colors");
 	this->hasTextureID = glGetUniformLocation(this->programID, "has_texture");
-	this->textureSampleID = glGetUniformLocation(programID, "textureSampler");
+	this->diffusiveColorID = glGetUniformLocation(this->programID, "diffusive_color");
+	this->textureSampleID = glGetUniformLocation(this->programID, "textureSampler");
 }
 
 void Renderer::createOpenGLBuffer()
 {
-	// // Makes GL_TEXTURE0 the current active texture unit
+	// Makes GL_TEXTURE0 the current active texture unit
 	// glActiveTexture(GL_TEXTURE0);
-	// // Makes glScreenTex (which was allocated earlier) the current texture.
+	// Makes glScreenTex (which was allocated earlier) the current texture.
 	// glBindTexture(GL_TEXTURE_2D, glScreenTex);
-	// // malloc for a texture on the gpu.
+	// malloc for a texture on the gpu.
 	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_FLOAT, NULL);
 	glViewport(0, 0, width, height);
 }
