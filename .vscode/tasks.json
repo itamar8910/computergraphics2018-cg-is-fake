@@ -6,7 +6,7 @@
         {
             "label": "build MeshViewer",
             "type": "shell",
-            "command": "cmake .. && make",
+            "command": "make",
             "problemMatcher": {
                 "owner": "cpp",
                 "fileLocation": "absolute",

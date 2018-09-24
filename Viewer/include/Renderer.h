@@ -69,9 +69,14 @@ public:
 	GLuint numLightsID; //uniform that holds # of lights
 	GLuint lightsPositions_world_ArrayID; // lightsPos array uniform
 	GLuint lightsColors_ArrayID; // lightColor array uniform
+	GLuint lightAmbientColorID; // lightColor array uniform
 	GLuint hasTextureID; // boolean uniform, true if current model has a texture
-	GLuint diffusiveColorID; // vec3 uniform, passes material diffusive color
+	GLuint materialDiffusiveColorID; // vec3 uniform, passes material diffusive color
+	GLuint materialSpecularColorID; // vec3 uniform, passes material specular color
+	GLuint materialAmbientColorID; // vec3 uniform, passes material ambient color
+	GLuint uniformColorID; // vec3 uniform, passes material uniform color
 	GLuint textureSampleID; 
+	GLuint materialSpecularExponentID;
 
 	Renderer(GLuint _programID);
 	Renderer(int w, int h, GLuint _programID);

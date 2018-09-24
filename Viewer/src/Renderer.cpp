@@ -83,9 +83,13 @@ void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint u
 	// for passing uniform vector
 	glUniform3fv(this->lightsPositions_world_ArrayID, this->lights.size(), glm::value_ptr(lights_position_data[0]));
 	glUniform3fv(this->lightsColors_ArrayID, this->lights.size(), glm::value_ptr(lights_color_data[0]));
-	
+	glUniform3fv(this->lightAmbientColorID, 1, glm::value_ptr(this->ambient_color_light));
+
 	glUniform1i(this->hasTextureID, hasTexture);
-	glUniform3fv(this->diffusiveColorID,1,glm::value_ptr(this->model_diffusive_color));
+	glUniform1i(this->materialSpecularExponentID, this->model_specular_exponent);
+	glUniform3fv(this->materialDiffusiveColorID,1,glm::value_ptr(this->model_diffusive_color));
+	glUniform3fv(this->materialAmbientColorID,1,glm::value_ptr(this->model_emissive_color));
+	glUniform3fv(this->materialSpecularColorID,1,glm::value_ptr(this->model_specular_color));
 
 	
 	glActiveTexture(GL_TEXTURE0);
@@ -174,9 +178,13 @@ void Renderer::initOpenGLRendering()
 	this->numLightsID = glGetUniformLocation(this->programID, "numLights");
 	this->lightsPositions_world_ArrayID = glGetUniformLocation(this->programID, "LightPositions_worldspace");
 	this->lightsColors_ArrayID = glGetUniformLocation(this->programID, "light_colors");
+	this->lightAmbientColorID =  glGetUniformLocation(this->programID, "light_ambient_color");
 	this->hasTextureID = glGetUniformLocation(this->programID, "has_texture");
-	this->diffusiveColorID = glGetUniformLocation(this->programID, "diffusive_color");
+    this->materialDiffusiveColorID = glGetUniformLocation(this->programID, "model_diffusive_color");
+	this->materialSpecularColorID = glGetUniformLocation(this->programID, "model_specular_color");
+	this->materialAmbientColorID = glGetUniformLocation(this->programID, "model_ambient_color");
 	this->textureSampleID = glGetUniformLocation(this->programID, "textureSampler");
+	this->materialSpecularExponentID =  glGetUniformLocation(this->programID, "model_specular_exponent");
 }
 
 void Renderer::createOpenGLBuffer()

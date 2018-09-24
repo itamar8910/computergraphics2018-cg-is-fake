@@ -18,15 +18,20 @@ out vec3 color;
 uniform int numLights;
 uniform vec3 LightPositions_worldspace[MAX_NUM_LIGHTS];
 uniform vec3 light_colors[MAX_NUM_LIGHTS];
+uniform vec3 light_ambient_color;
 uniform bool has_texture;
-uniform vec3 diffusive_color;
+uniform vec3 model_diffusive_color;
+uniform vec3 model_specular_color;
+uniform vec3 model_ambient_color;
 uniform sampler2D textureSampler;
-
+uniform float model_specular_exponent;
 
 void main()
 {
 	int light_i = 0;
 	vec3 total_color = vec3(0.0, 0.0, 0.0);
+	vec3 MaterialSpecularColor = model_specular_color;
+	vec3 MaterialAmbientColor =  model_ambient_color;
 	for(light_i = 0; light_i < numLights; light_i++){
 
 		// Light emission properties
@@ -37,11 +42,10 @@ void main()
 		float LightPower = 50.0f;
 
 		// Material properties
-		vec3 MaterialDiffuseColor = diffusive_color;
+		vec3 MaterialDiffuseColor = model_diffusive_color;
 		if(has_texture){
 			MaterialDiffuseColor = texture( textureSampler, UV ).rgb; // diffusive color = texture color
 		}
-		vec3 MaterialAmbientColor = vec3(0.1,0.1,0.1) * MaterialDiffuseColor;
 		vec3 MaterialSpecularColor = vec3(0.3,0.3,0.3);
 
 		// Distance to the light
@@ -70,17 +74,13 @@ void main()
 
 
 		total_color  += 
-			// Ambient : simulates indirect lighting
-			MaterialAmbientColor +
 			// Diffuse : "color" of the object
 			MaterialDiffuseColor * LightColor * LightPower * cosTheta / (distance*distance) +
 			// Specular : reflective highlight, like a mirror
-			MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,5) / (distance*distance);
-
-		//total_color = MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,5) / (distance*distance);;
+			MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha, model_specular_exponent) / (distance*distance);
 
 	}
-	color = total_color;
+	color = clamp(total_color+MaterialAmbientColor*light_ambient_color,vec3(0,0,0),vec3(1,1,1));
 	//color = texture( textureSampler, UV ).rgb;
 	// Output color = red 
 	//color = vec3(1,0,0);
