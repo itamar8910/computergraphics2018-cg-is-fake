@@ -10,7 +10,7 @@
 
 using namespace std;
 
-enum  class Shading {Flat, Gouraud, Phong};
+enum  class Shading {Flat=0, Gouraud=1, Phong=2};
 
 /*
  * Renderer class. This class takes care of all the rendering operations needed for rendering a full scene to the screen.
@@ -77,6 +77,7 @@ public:
 	GLuint uniformColorID; // vec3 uniform, passes material uniform color
 	GLuint textureSampleID; 
 	GLuint materialSpecularExponentID;
+	GLuint shadingTypeID; // int that enumerates the type of shading
 
 	Renderer(GLuint _programID);
 	Renderer(int w, int h, GLuint _programID);

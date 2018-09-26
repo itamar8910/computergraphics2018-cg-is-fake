@@ -75,6 +75,7 @@ void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint u
 		lights_color_data[light_i] = lights[light_i]->color;
 	}
 
+	glUniform1i(this->shadingTypeID, static_cast<int>(this->current_shading));
 	glUniformMatrix4fv(this->MVPID, 1, GL_FALSE, &this->fullTransform[0][0]);
 	glUniformMatrix4fv(this->MID, 1, GL_FALSE, &ModelMatrix[0][0]);
 	glUniformMatrix4fv(this->VID, 1, GL_FALSE, &this->cViewTransform[0][0]);
@@ -185,6 +186,7 @@ void Renderer::initOpenGLRendering()
 	this->materialAmbientColorID = glGetUniformLocation(this->programID, "model_ambient_color");
 	this->textureSampleID = glGetUniformLocation(this->programID, "textureSampler");
 	this->materialSpecularExponentID =  glGetUniformLocation(this->programID, "model_specular_exponent");
+	this->shadingTypeID = glGetUniformLocation(this->programID, "shading_type");
 }
 
 void Renderer::createOpenGLBuffer()

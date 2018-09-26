@@ -4,7 +4,8 @@
 
 // Interpolated values from the vertex shaders
 in vec3 Position_worldspace;
-in vec3 Normal_cameraspace;
+in vec3 Phong_Normal_cameraspace;
+flat in vec3 flat_Normal_cameraspace;
 in vec3 EyeDirection_cameraspace;
 in vec3 LightsDirection_cameraspace[MAX_NUM_LIGHTS];
 in vec2 UV;
@@ -15,6 +16,7 @@ out vec3 color;
 
 
 // Uniforms
+uniform int shading_type; // actually an enum. 0=FLAT 1=GOROUD 3=PHONG
 uniform int numLights;
 uniform vec3 LightPositions_worldspace[MAX_NUM_LIGHTS];
 uniform vec3 light_colors[MAX_NUM_LIGHTS];
@@ -29,6 +31,16 @@ void main()
 {
 	int light_i = 0;
 	vec3 total_color = vec3(0.0, 0.0, 0.0);
+	vec3 Normal_cameraspace;
+	switch(shading_type)
+	{
+		case 0:
+			Normal_cameraspace = flat_Normal_cameraspace;
+			break;
+		case 1:break;
+		case 2:Normal_cameraspace=Phong_Normal_cameraspace; break; 
+		
+	}
 	for(light_i = 0; light_i < numLights; light_i++){
 
 		// Light emission properties

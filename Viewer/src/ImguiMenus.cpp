@@ -439,6 +439,8 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene)
 		// }else{
 		// 	cam_look_factor_comulative = CAM_LOOK_MOVE_FACTOR;
 		// }
+		/* 
+		!This crashes when the model is clicked
 		if(io.MouseDown[1]){
 			int press_x =(int)io.MousePos.x;
 			float press_y = (int) (scene->renderer->height - io.MousePos.y);
@@ -455,6 +457,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene)
 				}
 			}
 		}
+		*/
 
 		prev_xRotate = xRotate;
 		prev_yRotate = yRotate;
