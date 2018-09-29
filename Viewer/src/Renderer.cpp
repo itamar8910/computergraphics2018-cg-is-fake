@@ -4,19 +4,23 @@
 #include <iostream>
 #include "utils.h"
 #include <glm/gtc/type_ptr.hpp>
+#include "InitShader.h"
+
 
 using namespace std;
 
 #define ABS(x) (x > 0 ? x : -x)
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 #define INIT_SUPERSAMPLING 1.0 // must be >= 1.0
-Renderer::Renderer(GLuint _programID) : Renderer(1280,720,_programID)
+Renderer::Renderer() : Renderer(1280,720)
 {}
 
-Renderer::Renderer(int w, int h, GLuint _programID) : supersampling_coeff(1.0), width(w), height(h), screen_width(w), screen_height(h)
+Renderer::Renderer(int w, int h) : supersampling_coeff(1.0), width(w), height(h), screen_width(w), screen_height(h)
 {
 	set_supersampling_coeff(INIT_SUPERSAMPLING);
-	this->programID = _programID;
+	this->phong_flat_programID = InitShader("phong_flat_vertex_shader.glsl", "phong_flat_fragment_shader.glsl" );
+	this->gouraud_programID = InitShader("gouraud_vertex_shader.glsl", "gouraud_fragment_shader.glsl" );
+	this->programID = this->phong_flat_programID;
 	initOpenGLRendering();
 	current_shading = Shading::Flat;
 	fog_color = color_t(1, 1, 1);
@@ -24,7 +28,6 @@ Renderer::Renderer(int w, int h, GLuint _programID) : supersampling_coeff(1.0), 
 
 Renderer::~Renderer()
 {
-	delete[] colorBuffer;
 }
 
 void Renderer::SetCameraTransform(const glm::vec3& camLocation, const glm::mat4x4& cTransform, const glm::mat4x4& cViewTransform){
@@ -63,7 +66,7 @@ void Renderer::setFog(color_t color,bool enabled)
 	fog_enabled = enabled;
 }
 
-void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint uvBufferID, GLuint textureID, bool hasTexture, int num_of_triangles){
+void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint uvBufferID, GLuint textureID, bool hasTexture, bool nonUniform, int num_of_triangles){
 
 	glm::mat4x4 ModelMatrix = inverse(cTransform) * oTransform;
 	// Light* light = this->lights[0]; // TODO: support multiple / no lights
@@ -75,6 +78,8 @@ void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint u
 		lights_color_data[light_i] = lights[light_i]->color;
 	}
 
+
+	glUniform1i(this->shadingTypeID, static_cast<int>(this->current_shading));
 	glUniformMatrix4fv(this->MVPID, 1, GL_FALSE, &this->fullTransform[0][0]);
 	glUniformMatrix4fv(this->MID, 1, GL_FALSE, &ModelMatrix[0][0]);
 	glUniformMatrix4fv(this->VID, 1, GL_FALSE, &this->cViewTransform[0][0]);
@@ -83,8 +88,14 @@ void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint u
 	// for passing uniform vector
 	glUniform3fv(this->lightsPositions_world_ArrayID, this->lights.size(), glm::value_ptr(lights_position_data[0]));
 	glUniform3fv(this->lightsColors_ArrayID, this->lights.size(), glm::value_ptr(lights_color_data[0]));
-	
+	glUniform3fv(this->lightAmbientColorID, 1, glm::value_ptr(this->ambient_color_light));
+
 	glUniform1i(this->hasTextureID, hasTexture);
+	glUniform1i(this->materialSpecularExponentID, this->model_specular_exponent);
+	glUniform3fv(this->materialDiffusiveColorID,1,glm::value_ptr(this->model_diffusive_color));
+	glUniform3fv(this->materialAmbientColorID,1,glm::value_ptr(this->model_emissive_color));
+	glUniform3fv(this->materialSpecularColorID,1,glm::value_ptr(this->model_specular_color));
+	glUniform1i(this->doNonUniformMaterialID, nonUniform);
 
 	
 	glActiveTexture(GL_TEXTURE0);
@@ -173,17 +184,24 @@ void Renderer::initOpenGLRendering()
 	this->numLightsID = glGetUniformLocation(this->programID, "numLights");
 	this->lightsPositions_world_ArrayID = glGetUniformLocation(this->programID, "LightPositions_worldspace");
 	this->lightsColors_ArrayID = glGetUniformLocation(this->programID, "light_colors");
+	this->lightAmbientColorID =  glGetUniformLocation(this->programID, "light_ambient_color");
 	this->hasTextureID = glGetUniformLocation(this->programID, "has_texture");
-	this->textureSampleID = glGetUniformLocation(programID, "textureSampler");
+    this->materialDiffusiveColorID = glGetUniformLocation(this->programID, "model_diffusive_color");
+	this->materialSpecularColorID = glGetUniformLocation(this->programID, "model_specular_color");
+	this->materialAmbientColorID = glGetUniformLocation(this->programID, "model_ambient_color");
+	this->textureSampleID = glGetUniformLocation(this->programID, "textureSampler");
+	this->materialSpecularExponentID =  glGetUniformLocation(this->programID, "model_specular_exponent");
+	this->shadingTypeID = glGetUniformLocation(this->programID, "shading_type");
+	this->doNonUniformMaterialID = glGetUniformLocation(this->programID, "nonUniform");
 }
 
 void Renderer::createOpenGLBuffer()
 {
-	// // Makes GL_TEXTURE0 the current active texture unit
+	// Makes GL_TEXTURE0 the current active texture unit
 	// glActiveTexture(GL_TEXTURE0);
-	// // Makes glScreenTex (which was allocated earlier) the current texture.
+	// Makes glScreenTex (which was allocated earlier) the current texture.
 	// glBindTexture(GL_TEXTURE_2D, glScreenTex);
-	// // malloc for a texture on the gpu.
+	// malloc for a texture on the gpu.
 	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_FLOAT, NULL);
 	glViewport(0, 0, width, height);
 }
@@ -196,8 +214,6 @@ void Renderer::Viewport(int w, int h)
 	}
 	screen_width = w;
 	screen_height = h;
-	delete[] colorBuffer;
-	// colorBuffer = new float[3 * h*w];
 	createOpenGLBuffer();
 }
 
@@ -209,4 +225,14 @@ void Renderer::set_supersampling_coeff(float _coeff){
 	height = max(height, screen_height);
 	cout << "width:" << width << "," << "height:" << height << endl;
 	supersampling_coeff = _coeff;
+}
+
+void Renderer::setShadingType(Shading shading){
+	current_shading = shading;
+	if(current_shading == Shading::Phong || current_shading == Shading::Flat){
+		this->programID = this->phong_flat_programID;
+	}else{
+		this->programID = this->gouraud_programID;
+	}
+	initOpenGLRendering(); // we need to re-bind uniforms etc because programID might have changed
 }

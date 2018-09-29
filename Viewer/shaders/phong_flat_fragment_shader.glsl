@@ -1,13 +1,16 @@
 #version 330 core
 
 #define MAX_NUM_LIGHTS 10
+#define NON_UNIFORM_SIN_FREQ 3.0
 
 // Interpolated values from the vertex shaders
 in vec3 Position_worldspace;
-in vec3 Normal_cameraspace;
+in vec3 Phong_Normal_cameraspace;
+flat in vec3 flat_Normal_cameraspace;
 in vec3 EyeDirection_cameraspace;
 in vec3 LightsDirection_cameraspace[MAX_NUM_LIGHTS];
 in vec2 UV;
+uniform bool nonUniform; // if true, use non uniform material
 
 
 // Output data
@@ -15,17 +18,31 @@ out vec3 color;
 
 
 // Uniforms
+uniform int shading_type; // actually an enum. 0=FLAT 1=GOROUD 3=PHONG
 uniform int numLights;
 uniform vec3 LightPositions_worldspace[MAX_NUM_LIGHTS];
 uniform vec3 light_colors[MAX_NUM_LIGHTS];
 uniform bool has_texture;
+uniform vec3 model_diffusive_color;
+uniform vec3 model_specular_color;
+uniform vec3 model_ambient_color;
 uniform sampler2D textureSampler;
-
+uniform int model_specular_exponent;
 
 void main()
 {
 	int light_i = 0;
 	vec3 total_color = vec3(0.0, 0.0, 0.0);
+	vec3 Normal_cameraspace;
+	switch(shading_type)
+	{
+		case 0:
+			Normal_cameraspace = flat_Normal_cameraspace;
+			break;
+		case 1:break; // case should never happen because we have separate shaders for gouraud
+		case 2:Normal_cameraspace=Phong_Normal_cameraspace; break; 
+		
+	}
 	for(light_i = 0; light_i < numLights; light_i++){
 
 		// Light emission properties
@@ -36,12 +53,13 @@ void main()
 		float LightPower = 50.0f;
 
 		// Material properties
-		vec3 MaterialDiffuseColor = vec3(0.8,0.1,0.1); 
+		vec3 MaterialDiffuseColor = model_diffusive_color;
 		if(has_texture){
 			MaterialDiffuseColor = texture( textureSampler, UV ).rgb; // diffusive color = texture color
-		}
-		vec3 MaterialAmbientColor = vec3(0.1,0.1,0.1) * MaterialDiffuseColor;
-		vec3 MaterialSpecularColor = vec3(0.3,0.3,0.3);
+		} 
+		
+		vec3 MaterialAmbientColor = model_ambient_color * MaterialDiffuseColor;
+		vec3 MaterialSpecularColor = model_specular_color;
 
 		// Distance to the light
 		float distance = length( LightPosition_worldspace - Position_worldspace );
@@ -74,12 +92,16 @@ void main()
 			// Diffuse : "color" of the object
 			MaterialDiffuseColor * LightColor * LightPower * cosTheta / (distance*distance) +
 			// Specular : reflective highlight, like a mirror
-			MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,5) / (distance*distance);
+			MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,model_specular_exponent) / (distance*distance);
 
 		//total_color = MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,5) / (distance*distance);;
 
 	}
 	color = total_color;
+	if(nonUniform){
+		vec3 nonUniformColor = vec3(sin(Position_worldspace.x * NON_UNIFORM_SIN_FREQ)*0.5 + 0.5, sin(Position_worldspace.y  * NON_UNIFORM_SIN_FREQ)*0.5 + 0.5, sin(Position_worldspace.z * NON_UNIFORM_SIN_FREQ)*0.5 + 0.5);
+		color = 0.5 * color + 0.5 * nonUniformColor;
+	}
 	//color = texture( textureSampler, UV ).rgb;
 	// Output color = red 
 	//color = vec3(1,0,0);

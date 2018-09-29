@@ -152,7 +152,7 @@ void ShowShadingWindow(Scene* scene){
 			for (int i = 0; i < (int)shading_names.size(); i++)
 			{
 				if (ImGui::Selectable( shading_names[i].c_str(), static_cast<int>(scene->renderer->current_shading) == i)){
-					scene->renderer->current_shading = static_cast<Shading>(i);
+					scene->renderer->setShadingType(static_cast<Shading>(i));
 				}
 			}
 			ImGui::TreePop();
@@ -229,10 +229,6 @@ void ShowMaterialWindow(Scene *scene)
 			ImGui::ColorEdit3("Diffusive Color", (float *)&(active_model->diffusive_color));
 			ImGui::ColorEdit3("Specular Color", (float *)&(active_model->specular_color));
 			ImGui::SliderFloat("Specular Exponent", &(active_model->specular_exponent),0,10);
-		}else{
-			if(ImGui::Button("re-generate")){
-				active_model->generateRandomNonUniformMaterial();
-			}
 		}
 	}
 	ImGui::End();
@@ -364,18 +360,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene)
 
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		
-		if(!isAnyWindowFocused && io.MouseWheel != 0.0f){ // we don't want to re-scale the model if the user scrolls the gui
-			// scale += io.MouseWheel/MOUSE_WHEEL_INCREMENT;
-			// active->scale(scale);
-			// prevScale = scale;
-			if(scene->ActiveModel != -1){
-				active->translate(0, 0, -io.MouseWheel*keyboard_step_size);
-				zPos += -io.MouseWheel*keyboard_step_size;
-			}else{
-				cam->translate(0, 0, -io.MouseWheel*keyboard_step_size);
-			}
-			
-		}
+
 		if(prevScale != scale){
 			if(scale <= 0){
 				cout << "scale must be > 0" << endl;
@@ -439,6 +424,8 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene)
 		// }else{
 		// 	cam_look_factor_comulative = CAM_LOOK_MOVE_FACTOR;
 		// }
+		/* 
+		!This crashes when the model is clicked
 		if(io.MouseDown[1]){
 			int press_x =(int)io.MousePos.x;
 			float press_y = (int) (scene->renderer->height - io.MousePos.y);
@@ -455,6 +442,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene)
 				}
 			}
 		}
+		*/
 
 		prev_xRotate = xRotate;
 		prev_yRotate = yRotate;

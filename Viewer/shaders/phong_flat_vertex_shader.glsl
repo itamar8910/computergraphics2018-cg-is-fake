@@ -8,7 +8,8 @@ layout(location = 2) in vec2 vertexUVCoords;
 
 // Output data ; will be interpolated for each fragment.
 out vec3 Position_worldspace;
-out vec3 Normal_cameraspace;
+out vec3 Phong_Normal_cameraspace;
+flat out vec3 flat_Normal_cameraspace;
 out vec3 EyeDirection_cameraspace;
 out vec3 LightsDirection_cameraspace[MAX_NUM_LIGHTS];
 out vec2 UV;
@@ -44,7 +45,8 @@ void main(){
 	}
 
   // Normal of the the vertex, in camera space
-	Normal_cameraspace = ( V * M * vec4(vertexNormal_modelspace,0)).xyz; // Only correct if ModelMatrix does not scale the model ! Use its inverse transpose if not. TODO divide by w?
+	Phong_Normal_cameraspace = ( V * M * vec4(vertexNormal_modelspace,0)).xyz; // Only correct if ModelMatrix does not scale the model ! Use its inverse transpose if not. TODO divide by w?
+	flat_Normal_cameraspace = Phong_Normal_cameraspace;
 	
 	UV = vertexUVCoords;
 }

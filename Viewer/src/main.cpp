@@ -17,7 +17,6 @@
 #include "MeshModel.h"
 #include "PrimMeshModel.h"
 #include <iostream>
-#include "InitShader.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 using namespace std;
@@ -47,7 +46,7 @@ void setup_scene(Scene& scene){
 }
 
 
-#define DEFAULT_MODEL "../../Data/external/bob.obj"
+#define DEFAULT_MODEL "../../Data/obj_examples/teapot.obj"
 int main(int argc, char **argv)
 {
 	// Setup window
@@ -57,8 +56,8 @@ int main(int argc, char **argv)
 		return 1;
 	// Setup renderer and scene
 	// Create and compile our GLSL program from the shaders
-	GLuint programID = InitShader( "vertex_shader.glsl", "fragment_shader.glsl" );
-	Renderer renderer = Renderer(w, h, programID);
+	
+	Renderer renderer = Renderer(w, h);
 	Scene scene = Scene(&renderer);
 	setup_scene(scene);
 	if (argc < 2)
@@ -98,7 +97,7 @@ int main(int argc, char **argv)
 		glfwPollEvents();
 
 		// Use our shader
-		glUseProgram(programID);
+		glUseProgram(renderer.programID);
 		// Start the ImGui frame
 		StartFrame();
 		// imgui stuff here
@@ -108,8 +107,7 @@ int main(int argc, char **argv)
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-		// Use our shader
-		glUseProgram(programID);
+		
 
 		// draw scene here
 		scene.Draw();

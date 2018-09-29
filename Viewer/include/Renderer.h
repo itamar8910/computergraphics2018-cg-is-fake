@@ -10,7 +10,7 @@
 
 using namespace std;
 
-enum  class Shading {Flat, Gouraud, Phong};
+enum  class Shading {Flat=0, Gouraud=1, Phong=2};
 
 /*
  * Renderer class. This class takes care of all the rendering operations needed for rendering a full scene to the screen.
@@ -19,11 +19,7 @@ enum  class Shading {Flat, Gouraud, Phong};
 class Renderer
 {
 private:
-	// 3*width*height
-	float *colorBuffer;
 
-	// width*height
-	float *zBuffer;
 	float supersampling_coeff;
 
 	glm::vec3 clearColor;
@@ -45,7 +41,8 @@ private:
 
 	color_t fog_color;
 	bool fog_enabled =true;
-
+	GLuint phong_flat_programID;
+	GLuint gouraud_programID;
 
 	glm::mat4x4 getViewport();
 	// Draw's a pixel in location p with color color
@@ -69,16 +66,24 @@ public:
 	GLuint numLightsID; //uniform that holds # of lights
 	GLuint lightsPositions_world_ArrayID; // lightsPos array uniform
 	GLuint lightsColors_ArrayID; // lightColor array uniform
+	GLuint lightAmbientColorID; // lightColor array uniform
 	GLuint hasTextureID; // boolean uniform, true if current model has a texture
+	GLuint materialDiffusiveColorID; // vec3 uniform, passes material diffusive color
+	GLuint materialSpecularColorID; // vec3 uniform, passes material specular color
+	GLuint materialAmbientColorID; // vec3 uniform, passes material ambient color
+	GLuint uniformColorID; // vec3 uniform, passes material uniform color
 	GLuint textureSampleID; 
+	GLuint materialSpecularExponentID;
+	GLuint shadingTypeID; // int that enumerates the type of shading
+	GLuint doNonUniformMaterialID; // boolean uniform, true if should use a non uniform material
 
-	Renderer(GLuint _programID);
-	Renderer(int w, int h, GLuint _programID);
+	Renderer();
+	Renderer(int w, int h);
 	~Renderer();
 	// Local initializations of your implementation
 	void Init();
 
-	void DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint uvBufferID, GLuint textureID, bool hasTexture, int num_of_triangles);
+	void DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint uvBufferID, GLuint textureID, bool hasTexture, bool nonUniform, int num_of_triangles);
 
 	glm::vec3 TransformPoint(const glm::vec3 &originalPoint) const;
 	glm::vec3 ApplyObjectTransform(const glm::vec3 &originalPoint) const;
@@ -99,4 +104,5 @@ public:
 	void Viewport(int w, int h);
 
 	void set_supersampling_coeff(float _coeff);
+	void setShadingType(Shading shading);
 };
