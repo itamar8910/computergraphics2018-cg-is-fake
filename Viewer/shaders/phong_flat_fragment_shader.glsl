@@ -3,6 +3,8 @@
 #define MAX_NUM_LIGHTS 10
 #define NON_UNIFORM_SIN_FREQ 3.0
 #define CANONICAL_PROJECTION_SCALE 10.0
+#define SPHERICAL_PROJECTION_SCALE 50.0
+#define PI 3.1415926
 
 // Interpolated values from the vertex shaders
 in vec3 Position_worldspace;
@@ -30,6 +32,7 @@ uniform sampler2D textureSampler;
 uniform int model_specular_exponent;
 uniform bool nonUniform; // if true, use non uniform material
 uniform bool doPlanarProjection; // if true, do planar projection
+uniform bool doSphericalProjection; // if true, do spherical projection
 
 void main()
 {
@@ -117,7 +120,29 @@ void main()
         }
 		color = 0.5 * color + 0.5 * planar_color;
 
-	}
+	}else if(doSphericalProjection){
+        // spherical projection
+        float xx = Position_worldspace.x;
+        float yy = Position_worldspace.y;
+        float zz = Position_worldspace.z;
+        float angle = atan(xx, zz);
+        angle  = (angle + PI) / (2 * PI); // normalize angle to be between 0 and 1
+        angle *= SPHERICAL_PROJECTION_SCALE;
+        bool cyl_on1 = (int(angle) % 2) == 0;
+        angle = atan(yy, zz);
+        angle  = (angle + PI) / (2 * PI); // normalize angle to be between 0 and 1
+        angle *= SPHERICAL_PROJECTION_SCALE;
+        bool cyl_on2 = (int(angle) % 2) == 0;
+        vec3 cyl_color;
+
+		if((cyl_on1 && !cyl_on2) || (!cyl_on1 && cyl_on2)){
+            cyl_color = vec3(1.0, 1.0, 1.0);
+        }else{
+            cyl_color = vec3(0.0, 0.0, 0.0);
+        }
+		color = 0.5 * color + 0.5 * cyl_color;
+
+    }
 	//color = texture( textureSampler, UV ).rgb;
 	// Output color = red 
 	//color = vec3(1,0,0);

@@ -224,6 +224,7 @@ void ShowMaterialWindow(Scene *scene)
 		MeshModel *active_model = dynamic_cast<MeshModel*>(scene->models[scene->ActiveModel]); 
 		ImGui::Checkbox("Uniform Material", &active_model->use_uniform);
 		ImGui::Checkbox("Planar projection", &scene->renderer->do_planar_projection);
+		ImGui::Checkbox("spherical projection", &scene->renderer->do_spherical_projection);
 
 		if(active_model->use_uniform){
 			ImGui::ColorEdit3("Background Color", (float*)&clearColor); // Edit 3 floats representing a color

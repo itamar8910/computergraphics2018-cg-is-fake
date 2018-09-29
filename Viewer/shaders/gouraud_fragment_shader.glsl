@@ -2,6 +2,8 @@
 
 #define NON_UNIFORM_SIN_FREQ 3.0
 #define CANONICAL_PROJECTION_SCALE 10.0
+#define SPHERICAL_PROJECTION_SCALE 50.0
+#define PI 3.1415926
 
 in vec3 vertexColor;
 in vec2 UV;
@@ -14,6 +16,7 @@ uniform sampler2D textureSampler;
 uniform bool has_texture;
 uniform bool nonUniform; // if true, use non uniform material
 uniform bool doPlanarProjection; // if true, do planar projection
+uniform bool doSphericalProjection; // if true, do spherical projection
 
 void main()
 {
@@ -34,13 +37,32 @@ void main()
         color = color * 0.5 + nonUniformColor * 0.5;
 
     }else if(doPlanarProjection){
-     // planar projection
+        // planar projection
         int x = int(Position_worldspace.x * CANONICAL_PROJECTION_SCALE);
         int z = int(Position_worldspace.z * CANONICAL_PROJECTION_SCALE);
         bool x_on = ((x % 2) == 0);
         bool z_on = ((z % 2) == 0);
         bool on  = (x_on && !z_on) || (!x_on && z_on);
         if(on){
+            color = vec3(1.0, 1.0, 1.0);
+        }else{
+            color = vec3(0.0, 0.0, 0.0);
+        }
+    } else if(doSphericalProjection){
+        // spherical projection
+        float xx = Position_worldspace.x;
+        float yy = Position_worldspace.y;
+        float zz = Position_worldspace.z;
+        float angle = atan(xx, zz);
+        angle  = (angle + PI) / (2 * PI); // normalize angle to be between 0 and 1
+        angle *= SPHERICAL_PROJECTION_SCALE;
+        bool cyl_on1 = (int(angle) % 2) == 0;
+        angle = atan(yy, zz);
+        angle  = (angle + PI) / (2 * PI); // normalize angle to be between 0 and 1
+        angle *= SPHERICAL_PROJECTION_SCALE;
+        bool cyl_on2 = (int(angle) % 2) == 0;
+
+         if((cyl_on1 && !cyl_on2) || (!cyl_on1 && cyl_on2)){
             color = vec3(1.0, 1.0, 1.0);
         }else{
             color = vec3(0.0, 0.0, 0.0);

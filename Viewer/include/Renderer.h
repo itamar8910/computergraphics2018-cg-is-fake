@@ -78,8 +78,10 @@ public:
 	GLuint shadingTypeID; // int that enumerates the type of shading
 	GLuint doNonUniformMaterialID; // boolean uniform, true if should use a non uniform material
 	GLuint doPlanarProjectionID; // boolean uniform, true if should do planar projection
+	GLuint doSphericalProjectionID; // boolean uniform, true if should do planar projection
 
 	bool do_planar_projection=false;
+	bool do_spherical_projection=false;
 
 	Renderer();
 	Renderer(int w, int h);
