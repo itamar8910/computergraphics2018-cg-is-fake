@@ -19,11 +19,7 @@ enum  class Shading {Flat=0, Gouraud=1, Phong=2};
 class Renderer
 {
 private:
-	// 3*width*height
-	float *colorBuffer;
 
-	// width*height
-	float *zBuffer;
 	float supersampling_coeff;
 
 	glm::vec3 clearColor;

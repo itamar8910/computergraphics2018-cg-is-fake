@@ -49,31 +49,19 @@ void Scene::Draw()
 	renderer->setLights(ambient_light_color, lights);
 	renderer->setFog(fog_color, fog_enabled);
 	// Tell all models to draw themselves
-	int model_i = 0;
-	float active_camera_look_z_sign = m_sign(cameras[ActiveCamera]->lookDirection.z);
-	float active_camera_z = cameras[ActiveCamera]->z;
+	
+	
 	for(Model* model : models){
-		glm::vec3 color(0, 0, 0);
-		if(model_i == ActiveModel){
-			color = glm::vec3(0.5, 0 ,0);
-		}
-		// TODO: what if model is not a MeshModel?
 		MeshModel* meshModel = static_cast<MeshModel*>(model);
-		if(meshModel->z > active_camera_z * (-active_camera_look_z_sign)){ // behind the camera, don't render
-			continue;
-		}
 		meshModel->Draw(*renderer);
-		model_i++;
+		
 	}
 	if(render_cameras){
 		for(MeshModel* cam_model : camera_models){
 			if(cam_model->name == getCameraName(ActiveCamera)){
 				continue; // don't render active camera
 			}
-			if(cam_model->z > active_camera_z * (-active_camera_look_z_sign)){ // behind the camera, don't render
-				continue;
-			}
-			auto color = glm::vec3(0, 0 ,1);
+	
 			cam_model->Draw(*renderer);
 		}
 	}

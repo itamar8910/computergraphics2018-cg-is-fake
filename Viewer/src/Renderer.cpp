@@ -28,7 +28,6 @@ Renderer::Renderer(int w, int h) : supersampling_coeff(1.0), width(w), height(h)
 
 Renderer::~Renderer()
 {
-	delete[] colorBuffer;
 }
 
 void Renderer::SetCameraTransform(const glm::vec3& camLocation, const glm::mat4x4& cTransform, const glm::mat4x4& cViewTransform){
@@ -212,8 +211,6 @@ void Renderer::Viewport(int w, int h)
 	}
 	screen_width = w;
 	screen_height = h;
-	delete[] colorBuffer;
-	// colorBuffer = new float[3 * h*w];
 	createOpenGLBuffer();
 }
 
