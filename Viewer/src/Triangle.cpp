@@ -13,6 +13,9 @@ Triangle::Triangle(point3d_t a, point3d_t b, point3d_t c, color_t color)
     xmax = max(max(vertices[0].x, vertices[1].x), vertices[2].x);
     ymin = min(min(vertices[0].y, vertices[1].y), vertices[2].y);
     ymax = max(max(vertices[0].y, vertices[1].y), vertices[2].y);
+    for(int i = 0; i <= 3; i++){
+        vert_normals.push_back(face_normal);
+    }
     }
 
 Triangle::Triangle(const std::vector<point3d_t> &vertices) : Triangle(vertices[0], vertices[1], vertices[2]) {}
