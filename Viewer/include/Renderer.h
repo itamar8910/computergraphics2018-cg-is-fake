@@ -45,7 +45,8 @@ private:
 
 	color_t fog_color;
 	bool fog_enabled =true;
-
+	GLuint phong_flat_programID;
+	GLuint gouraud_programID;
 
 	glm::mat4x4 getViewport();
 	// Draw's a pixel in location p with color color
@@ -79,8 +80,8 @@ public:
 	GLuint materialSpecularExponentID;
 	GLuint shadingTypeID; // int that enumerates the type of shading
 
-	Renderer(GLuint _programID);
-	Renderer(int w, int h, GLuint _programID);
+	Renderer();
+	Renderer(int w, int h);
 	~Renderer();
 	// Local initializations of your implementation
 	void Init();

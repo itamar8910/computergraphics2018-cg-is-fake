@@ -4,19 +4,23 @@
 #include <iostream>
 #include "utils.h"
 #include <glm/gtc/type_ptr.hpp>
+#include "InitShader.h"
+
 
 using namespace std;
 
 #define ABS(x) (x > 0 ? x : -x)
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 #define INIT_SUPERSAMPLING 1.0 // must be >= 1.0
-Renderer::Renderer(GLuint _programID) : Renderer(1280,720,_programID)
+Renderer::Renderer() : Renderer(1280,720)
 {}
 
-Renderer::Renderer(int w, int h, GLuint _programID) : supersampling_coeff(1.0), width(w), height(h), screen_width(w), screen_height(h)
+Renderer::Renderer(int w, int h) : supersampling_coeff(1.0), width(w), height(h), screen_width(w), screen_height(h)
 {
 	set_supersampling_coeff(INIT_SUPERSAMPLING);
-	this->programID = _programID;
+	this->phong_flat_programID = InitShader("phong_flat_vertex_shader.glsl", "phong_flat_fragment_shader.glsl" );
+	this->gouraud_programID = InitShader("gouraud_vertex_shader.glsl", "gouraud_fragment_shader.glsl" ); // TODO: impl. these shaders
+	this->programID = this->phong_flat_programID;
 	initOpenGLRendering();
 	current_shading = Shading::Flat;
 	fog_color = color_t(1, 1, 1);
