@@ -2,6 +2,7 @@
 
 #define MAX_NUM_LIGHTS 10
 #define NON_UNIFORM_SIN_FREQ 3.0
+#define CANONICAL_PROJECTION_SCALE 10.0
 
 // Interpolated values from the vertex shaders
 in vec3 Position_worldspace;
@@ -10,7 +11,6 @@ flat in vec3 flat_Normal_cameraspace;
 in vec3 EyeDirection_cameraspace;
 in vec3 LightsDirection_cameraspace[MAX_NUM_LIGHTS];
 in vec2 UV;
-uniform bool nonUniform; // if true, use non uniform material
 
 
 // Output data
@@ -28,6 +28,8 @@ uniform vec3 model_specular_color;
 uniform vec3 model_ambient_color;
 uniform sampler2D textureSampler;
 uniform int model_specular_exponent;
+uniform bool nonUniform; // if true, use non uniform material
+uniform bool doPlanarProjection; // if true, do planar projection
 
 void main()
 {
@@ -101,6 +103,20 @@ void main()
 	if(nonUniform){
 		vec3 nonUniformColor = vec3(sin(Position_worldspace.x * NON_UNIFORM_SIN_FREQ)*0.5 + 0.5, sin(Position_worldspace.y  * NON_UNIFORM_SIN_FREQ)*0.5 + 0.5, sin(Position_worldspace.z * NON_UNIFORM_SIN_FREQ)*0.5 + 0.5);
 		color = 0.5 * color + 0.5 * nonUniformColor;
+	}else if(doPlanarProjection){
+		int x = int(Position_worldspace.x * CANONICAL_PROJECTION_SCALE);
+        int z = int(Position_worldspace.z * CANONICAL_PROJECTION_SCALE);
+        bool x_on = ((x % 2) == 0);
+        bool z_on = ((z % 2) == 0);
+        bool on  = (x_on && !z_on) || (!x_on && z_on);
+        vec3 planar_color;
+		if(on){
+            planar_color = vec3(1.0, 1.0, 1.0);
+        }else{
+            planar_color = vec3(0.0, 0.0, 0.0);
+        }
+		color = 0.5 * color + 0.5 * planar_color;
+
 	}
 	//color = texture( textureSampler, UV ).rgb;
 	// Output color = red 

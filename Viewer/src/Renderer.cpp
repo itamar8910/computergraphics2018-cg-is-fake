@@ -96,6 +96,7 @@ void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint u
 	glUniform3fv(this->materialAmbientColorID,1,glm::value_ptr(this->model_emissive_color));
 	glUniform3fv(this->materialSpecularColorID,1,glm::value_ptr(this->model_specular_color));
 	glUniform1i(this->doNonUniformMaterialID, nonUniform);
+	glUniform1i(this->doPlanarProjectionID, do_planar_projection);
 
 	
 	glActiveTexture(GL_TEXTURE0);
@@ -193,6 +194,7 @@ void Renderer::initOpenGLRendering()
 	this->materialSpecularExponentID =  glGetUniformLocation(this->programID, "model_specular_exponent");
 	this->shadingTypeID = glGetUniformLocation(this->programID, "shading_type");
 	this->doNonUniformMaterialID = glGetUniformLocation(this->programID, "nonUniform");
+	this->doPlanarProjectionID = glGetUniformLocation(this->programID, "doPlanarProjection");
 }
 
 void Renderer::createOpenGLBuffer()
