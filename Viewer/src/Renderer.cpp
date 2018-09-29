@@ -66,7 +66,7 @@ void Renderer::setFog(color_t color,bool enabled)
 	fog_enabled = enabled;
 }
 
-void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint uvBufferID, GLuint textureID, bool hasTexture, int num_of_triangles){
+void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint uvBufferID, GLuint textureID, bool hasTexture, bool nonUniform, int num_of_triangles){
 
 	glm::mat4x4 ModelMatrix = inverse(cTransform) * oTransform;
 	// Light* light = this->lights[0]; // TODO: support multiple / no lights
@@ -95,6 +95,7 @@ void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint u
 	glUniform3fv(this->materialDiffusiveColorID,1,glm::value_ptr(this->model_diffusive_color));
 	glUniform3fv(this->materialAmbientColorID,1,glm::value_ptr(this->model_emissive_color));
 	glUniform3fv(this->materialSpecularColorID,1,glm::value_ptr(this->model_specular_color));
+	glUniform1i(this->doNonUniformMaterialID, nonUniform);
 
 	
 	glActiveTexture(GL_TEXTURE0);
@@ -191,6 +192,7 @@ void Renderer::initOpenGLRendering()
 	this->textureSampleID = glGetUniformLocation(this->programID, "textureSampler");
 	this->materialSpecularExponentID =  glGetUniformLocation(this->programID, "model_specular_exponent");
 	this->shadingTypeID = glGetUniformLocation(this->programID, "shading_type");
+	this->doNonUniformMaterialID = glGetUniformLocation(this->programID, "nonUniform");
 }
 
 void Renderer::createOpenGLBuffer()

@@ -75,6 +75,7 @@ public:
 	GLuint textureSampleID; 
 	GLuint materialSpecularExponentID;
 	GLuint shadingTypeID; // int that enumerates the type of shading
+	GLuint doNonUniformMaterialID; // boolean uniform, true if should use a non uniform material
 
 	Renderer();
 	Renderer(int w, int h);
@@ -82,7 +83,7 @@ public:
 	// Local initializations of your implementation
 	void Init();
 
-	void DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint uvBufferID, GLuint textureID, bool hasTexture, int num_of_triangles);
+	void DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint uvBufferID, GLuint textureID, bool hasTexture, bool nonUniform, int num_of_triangles);
 
 	glm::vec3 TransformPoint(const glm::vec3 &originalPoint) const;
 	glm::vec3 ApplyObjectTransform(const glm::vec3 &originalPoint) const;

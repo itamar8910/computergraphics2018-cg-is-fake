@@ -229,10 +229,6 @@ void ShowMaterialWindow(Scene *scene)
 			ImGui::ColorEdit3("Diffusive Color", (float *)&(active_model->diffusive_color));
 			ImGui::ColorEdit3("Specular Color", (float *)&(active_model->specular_color));
 			ImGui::SliderFloat("Specular Exponent", &(active_model->specular_exponent),0,10);
-		}else{
-			if(ImGui::Button("re-generate")){
-				active_model->generateRandomNonUniformMaterial();
-			}
 		}
 	}
 	ImGui::End();

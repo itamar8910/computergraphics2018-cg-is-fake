@@ -80,8 +80,8 @@ glm::vec2 vec2fFromStream(std::istream& issLine)
 
 MeshModel::MeshModel(const string& fileName, const string& _name) : name(_name), worldTransform(glm::mat4(1)), normalTransform(glm::mat4(1)), x(0), y(0), z(0),
 											   current_scale(1), centerOfMass(0),
-											   ambient_color(1, 0, 0),
-											   diffusive_color(0.5, 0.5, 0.5),
+											   ambient_color(0.5, 0.5, 0.5),
+											   diffusive_color(1, 0, 0),
 											   specular_color(0.5, 0.5, 0.5),
 											   specular_exponent(5),
 											   use_uniform(true), has_texture(false)
@@ -301,7 +301,7 @@ void MeshModel::Draw(Renderer& renderer)
 	renderer.SetObjectMatrices(worldTransform, normalTransform);
 	renderer.setObjectColors(ambient_color, diffusive_color, specular_color, specular_exponent);
 	
-	renderer.DrawModel(vertexBufferID, normalsBufferID, uvBufferID, textureID, has_texture, triangles.size());
+	renderer.DrawModel(vertexBufferID, normalsBufferID, uvBufferID, textureID, has_texture, !use_uniform, triangles.size());
 }
 
 const vector<line3d_t> MeshModel::CalcTriangeNormals() const

@@ -9,6 +9,7 @@ layout(location = 2) in vec2 vertexUVCoords;
 
 out vec2 UV;
 out vec3 vertexColor;
+out vec3 Position_worldspace;
 
 // Values that stay constant for the whole mesh.
 uniform mat4 MVP;
@@ -27,7 +28,6 @@ uniform sampler2D textureSampler;
 
 
 void main(){
-	vec3 Position_worldspace;
 	vec3 Phong_Normal_cameraspace;
 	vec3 flat_Normal_cameraspace;
 	vec3 EyeDirection_cameraspace;
