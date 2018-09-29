@@ -364,18 +364,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene)
 
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		
-		if(!isAnyWindowFocused && io.MouseWheel != 0.0f){ // we don't want to re-scale the model if the user scrolls the gui
-			// scale += io.MouseWheel/MOUSE_WHEEL_INCREMENT;
-			// active->scale(scale);
-			// prevScale = scale;
-			if(scene->ActiveModel != -1){
-				active->translate(0, 0, -io.MouseWheel*keyboard_step_size);
-				zPos += -io.MouseWheel*keyboard_step_size;
-			}else{
-				cam->translate(0, 0, -io.MouseWheel*keyboard_step_size);
-			}
-			
-		}
+
 		if(prevScale != scale){
 			if(scale <= 0){
 				cout << "scale must be > 0" << endl;
