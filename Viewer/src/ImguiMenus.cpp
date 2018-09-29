@@ -152,7 +152,7 @@ void ShowShadingWindow(Scene* scene){
 			for (int i = 0; i < (int)shading_names.size(); i++)
 			{
 				if (ImGui::Selectable( shading_names[i].c_str(), static_cast<int>(scene->renderer->current_shading) == i)){
-					scene->renderer->current_shading = static_cast<Shading>(i);
+					scene->renderer->setShadingType(static_cast<Shading>(i));
 				}
 			}
 			ImGui::TreePop();

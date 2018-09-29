@@ -103,4 +103,5 @@ public:
 	void Viewport(int w, int h);
 
 	void set_supersampling_coeff(float _coeff);
+	void setShadingType(Shading shading);
 };

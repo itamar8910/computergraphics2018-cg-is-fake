@@ -19,7 +19,7 @@ Renderer::Renderer(int w, int h) : supersampling_coeff(1.0), width(w), height(h)
 {
 	set_supersampling_coeff(INIT_SUPERSAMPLING);
 	this->phong_flat_programID = InitShader("phong_flat_vertex_shader.glsl", "phong_flat_fragment_shader.glsl" );
-	this->gouraud_programID = InitShader("gouraud_vertex_shader.glsl", "gouraud_fragment_shader.glsl" ); // TODO: impl. these shaders
+	this->gouraud_programID = InitShader("gouraud_vertex_shader.glsl", "gouraud_fragment_shader.glsl" );
 	this->programID = this->phong_flat_programID;
 	initOpenGLRendering();
 	current_shading = Shading::Flat;
@@ -77,6 +77,7 @@ void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint u
 		lights_position_data[light_i] = lights[light_i]->location;
 		lights_color_data[light_i] = lights[light_i]->color;
 	}
+
 
 	glUniform1i(this->shadingTypeID, static_cast<int>(this->current_shading));
 	glUniformMatrix4fv(this->MVPID, 1, GL_FALSE, &this->fullTransform[0][0]);
@@ -222,4 +223,14 @@ void Renderer::set_supersampling_coeff(float _coeff){
 	height = max(height, screen_height);
 	cout << "width:" << width << "," << "height:" << height << endl;
 	supersampling_coeff = _coeff;
+}
+
+void Renderer::setShadingType(Shading shading){
+	current_shading = shading;
+	if(current_shading == Shading::Phong || current_shading == Shading::Flat){
+		this->programID = this->phong_flat_programID;
+	}else{
+		this->programID = this->gouraud_programID;
+	}
+	initOpenGLRendering(); // we need to re-bind uniforms etc because programID might have changed
 }

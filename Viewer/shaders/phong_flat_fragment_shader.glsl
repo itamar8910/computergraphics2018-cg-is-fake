@@ -37,7 +37,7 @@ void main()
 		case 0:
 			Normal_cameraspace = flat_Normal_cameraspace;
 			break;
-		case 1:break;
+		case 1:break; // case should never happen because we have separate shaders for gouraud
 		case 2:Normal_cameraspace=Phong_Normal_cameraspace; break; 
 		
 	}
