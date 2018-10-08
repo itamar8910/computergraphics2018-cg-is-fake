@@ -5,7 +5,7 @@
 #include "utils.h"
 #include <glm/gtc/type_ptr.hpp>
 #include "InitShader.h"
-
+#include <glm/gtc/matrix_transform.hpp>
 
 using namespace std;
 
@@ -42,8 +42,12 @@ void Renderer::SetProjection(const glm::mat4x4& projection){
 void Renderer::SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x4& nTransform){
 	this->oTransform = oTransform;
 	this->nTransform = nTransform;
-	// this->fullTransform = getViewport() * cProjection * inverse(cTransform) * oTransform;
-	this->fullTransform = cProjection * cViewTransform * inverse(cTransform) * oTransform;
+	cProjection = glm::ortho(-8.0, 8.0, 8.0, -8.0, -30.0, 30.0);
+	// this->fullTransform = cProjection * cViewTransform * inverse(cTransform) * oTransform;
+	this->fullTransform = cProjection * inverse(cTransform) * oTransform;
+	// this->fullTransform =  inverse(cTransform) * oTransform;
+	glm::vec4 dbgVec = this->fullTransform * glm::vec4(0.5, 0.5, 0.5, 1);
+	cout << dbgVec.x << "," << dbgVec.y << endl;
 }
 
 void Renderer::setObjectColors(glm::vec3 _emissive, glm::vec3 _diffusive, glm::vec3 _specular, exponent_t _specular_exponent)

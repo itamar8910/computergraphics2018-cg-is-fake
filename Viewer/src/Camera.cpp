@@ -63,6 +63,9 @@ void Camera::Ortho( const float left, const float right,
     projection[1] = glm::vec4(0, 2 / (top-bottom), 0, 0);
     projection[2] = glm::vec4( 0, 0, (-2) / (zFar - zNear), 0);
     projection[3] = glm::vec4(-((right+left) / (right-left)), -((top+bottom) / (top-bottom)), -(zFar+zNear) / (zFar-zNear), 1);
+   
+    viewTransform = LookAt(glm::vec3(x, y, z), glm::vec3(0, 1, 0), lookDirection); 
+    viewTransform = glm::lookAt(glm::vec3(x, y, z), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1)); // this is glm's version
 }
 
 void Camera::Ortho(){
@@ -114,8 +117,8 @@ void Camera::setPerspectiveParams(float _fovY, float _aspect, float _zNear, floa
     zNear = _zNear;
     zFar = _zFar;
     if(perspective == 0){
-    Perspective();
-}
+        Perspective();
+    }
 }
 
 // void Camera::updateLookDirection(){
