@@ -92,14 +92,15 @@ void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint u
 
 	glUniform1i(this->hasTextureID, hasTexture);
 	glUniform1i(this->materialSpecularExponentID, this->model_specular_exponent);
-	glUniform3fv(this->materialDiffusiveColorID,1,glm::value_ptr(this->model_diffusive_color));
-	glUniform3fv(this->materialAmbientColorID,1,glm::value_ptr(this->model_emissive_color));
-	glUniform3fv(this->materialSpecularColorID,1,glm::value_ptr(this->model_specular_color));
+	glUniform3fv(this->materialDiffusiveColorID, 1, glm::value_ptr(this->model_diffusive_color));
+	glUniform3fv(this->materialAmbientColorID, 1, glm::value_ptr(this->model_emissive_color));
+	glUniform3fv(this->materialSpecularColorID, 1, glm::value_ptr(this->model_specular_color));
 	glUniform1i(this->doNonUniformMaterialID, nonUniform);
 	glUniform1i(this->doPlanarProjectionID, do_planar_projection);
 	glUniform1i(this->doSphericalProjectionID, do_spherical_projection);
+	glUniform1i(this->doFogEffectID, this->fog_enabled);
+	glUniform3fv(this->fogColorID, 1, glm::value_ptr(this->fog_color));
 
-	
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -197,6 +198,8 @@ void Renderer::initOpenGLRendering()
 	this->doNonUniformMaterialID = glGetUniformLocation(this->programID, "nonUniform");
 	this->doPlanarProjectionID = glGetUniformLocation(this->programID, "doPlanarProjection");
 	this->doSphericalProjectionID = glGetUniformLocation(this->programID, "doSphericalProjection");
+	this->doFogEffectID = glGetUniformLocation(this->programID, "fog_enabled");
+	this->fogColorID = glGetUniformLocation(this->programID, "fogColor");
 }
 
 void Renderer::createOpenGLBuffer()
