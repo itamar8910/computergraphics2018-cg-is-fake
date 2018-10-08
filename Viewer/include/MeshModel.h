@@ -63,7 +63,7 @@ public:
 	 * This function sends the renderer all nesessary information to draw the model
 	*/
 	void Draw(Renderer& renderer);
-	void scale(float s);
+	void scale(float s, bool model_frame=true);
 	void translate(float x, float y, float z);
 	void rotateX(float theta, bool model_frame=true);
 	void rotateY(float theta, bool model_frame=true);

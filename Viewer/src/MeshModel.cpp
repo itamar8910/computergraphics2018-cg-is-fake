@@ -317,12 +317,17 @@ const vector<line3d_t> MeshModel::CalcTriangeNormals() const
 	return triangle_normals;
 }
 
-void MeshModel::scale(float s){
+void MeshModel::scale(float s, bool model_frame){
+	if (model_frame)
+		centerOfMass = calcCenterOfMass();
+	else
+		centerOfMass = -glm::vec3(x, y, z);
 	glm::mat4x4 scale = glm::mat4(1.0);
 	scale[3][3] = 1.0 / (s / ((float)current_scale));
 	current_scale = s;
 	// glm::vec3 centerOfMass = calcCenterOfMass();
-	worldTransform = getTranslationMatrix(x , y, z) * scale * getTranslationMatrix(-x, -y , -z ) * worldTransform;
+	// worldTransform = getTranslationMatrix(x , y, z) * scale * getTranslationMatrix(-x, -y , -z ) * worldTransform;
+	worldTransform = getTranslationMatrix(x + centerOfMass.x, y + centerOfMass.y, z + centerOfMass.z) * scale * getTranslationMatrix(-x - centerOfMass.x, -y - centerOfMass.y, -z - centerOfMass.z) * worldTransform;
 	// worldTransform = scale * worldTransform;
 	// glm::vec3 newCenterOfMass = centerOfMass * s;
 	// glm::vec3 delta = centerOfMass - newCenterOfMass;
@@ -343,7 +348,7 @@ void MeshModel::rotateX(float theta, bool model_frame)
 	if (model_frame)
 		centerOfMass = calcCenterOfMass();
 	else
-		centerOfMass = glm::vec3(1);
+		centerOfMass = -glm::vec3(x, y, z);
 	// cout << "com:" << centerOfMass.x << "," << centerOfMass.y << "," << centerOfMass.z << endl;
 	glm::mat4x4 rotate = glm::mat4(1.0); // identity matrix
 	rotate[1][1] = glm::cos(glm::radians(theta));
@@ -358,7 +363,7 @@ void MeshModel::rotateY(float theta,bool model_frame)
 	if (model_frame)
 		centerOfMass = calcCenterOfMass();
 	else
-		centerOfMass = glm::vec3(1);
+		centerOfMass = -glm::vec3(x, y, z);
 	glm::mat4x4 rotate = glm::mat4(1.0); // identity matrix
 	rotate[0][0] = glm::cos(glm::radians(theta));
 	rotate[0][2] = glm::sin(glm::radians(theta));
@@ -371,7 +376,7 @@ void MeshModel::rotateZ(float theta,bool model_frame){
 	if(model_frame)
 		centerOfMass = calcCenterOfMass();
 	else
-		centerOfMass = glm::vec3(1);
+		centerOfMass = -glm::vec3(x, y, z);
 	glm::mat4x4 rotate = glm::mat4(1.0); // identity matrix
 	rotate[0][0] = glm::cos(glm::radians(theta));
 	rotate[0][1] = glm::sin(glm::radians(theta));

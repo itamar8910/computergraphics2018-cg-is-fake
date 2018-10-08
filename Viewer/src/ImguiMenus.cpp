@@ -260,7 +260,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene)
 		ImGui::Checkbox("Camera Window", &showCamPosWindow);      // Edit bools storing our windows open/close state
 		ImGui::Checkbox("Lighting&Shading Window", &showShadingWindow);      // Edit bools storing our windows open/close state
 		ImGui::Checkbox("Material Window", &showMaterialWindow);      // Edit bools storing our windows open/close state
-		ImGui::Checkbox("Rotate around model frame",&ModelFrame);
+		ImGui::Checkbox("transform around model frame",&ModelFrame);
 		ImGui::SliderFloat("translate X", &xPos, -10.0f, 10.0f);           
 		ImGui::SliderFloat("translate Y", &yPos, -10.0f, 10.0f);           
 		ImGui::SliderFloat("translate Z", &zPos, -20.0f, 20.0f);           
@@ -363,7 +363,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene)
 			if(scale <= 0){
 				cout << "scale must be > 0" << endl;
 			}else{
-				active->scale(scale);
+				active->scale(scale, ModelFrame);
 			}
 		}
 		
