@@ -142,41 +142,38 @@ void MeshModel::initializeInternals(){
 }
 
 void MeshModel::fillGLBuffers(){
-	GLfloat* vertex_buffer_data = new GLfloat[triangles.size() * 3 * 3];
-	GLfloat* normals_buffer_data = new GLfloat[triangles.size() * 3 * 3];
-	GLfloat* uv_buffer_data = new GLfloat[triangles.size() * 3 * 2];
+	vector<glm::vec3> vertex_buffer_data = vector<glm::vec3>();
+	vector<glm::vec3> normals_buffer_data = vector<glm::vec3>();
+	vector<glm::vec2> uv_buffer_data = vector<glm::vec2>();
 	// fill vertex_buffer_data, normals_buffer_data, uv_buffer_data with data from triangles vector
-	for(int i = 0; i < (int)triangles.size(); i++){
-		const auto& triangle = triangles[i];
-		for(int j = 0; j < 3; j++){ // loop over vertices
-			vertex_buffer_data[i*9 + j*3 + 0] = triangle.vertices[j].x;
-			vertex_buffer_data[i*9 + j*3 + 1] = triangle.vertices[j].y;
-			vertex_buffer_data[i*9 + j*3 + 2] = triangle.vertices[j].z;
-			
-			normals_buffer_data[i*9 + j*3 + 0] = triangle.vert_normals[j].x;
-			normals_buffer_data[i*9 + j*3 + 1] = triangle.vert_normals[j].y;
-			normals_buffer_data[i*9 + j*3 + 2] = triangle.vert_normals[j].z;
+	for (int i = 0; i < (int)triangles.size(); i++)
+	{
+		const auto &triangle = triangles[i];
+		for (int j = 0; j < 3; j++)
+		{ // loop over vertices
+			vertex_buffer_data.push_back(triangle.vertices[j]);
 
-			if(has_texture){ 
+			normals_buffer_data.push_back(triangle.vert_normals[j]);
+
+			if (has_texture)
+			{
 				// only fill texture buffer with data if model actually has a texture
 				// renderer has a uniform that will tell shaders whether to actually use texture data
 				// depending on whether the object has a texture or not
-				uv_buffer_data[i*6 + j*2 + 0] = triangle.vert_texture_uvs[j].x;
-				uv_buffer_data[i*6 + j*2 + 1] = triangle.vert_texture_uvs[j].y;
+				uv_buffer_data.push_back(triangle.vert_texture_uvs[j]);
 			}
-
 		}
 	}
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 	// put data inside vertexBuffer
-	// TODO: maybe should be DYNAMIC_DRAW because we transform?
-	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * 3 * sizeof(GLfloat), vertex_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertex_buffer_data.size() * sizeof(glm::vec3), &vertex_buffer_data[0], GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, normalsBufferID);
-	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * 3 * sizeof(GLfloat), normals_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertex_buffer_data.size() * sizeof(glm::vec3), &normals_buffer_data[0], GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, uvBufferID);
-	glBufferData(GL_ARRAY_BUFFER, triangles.size() * 3 * 2 * sizeof(GLfloat), uv_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, uv_buffer_data.size() * sizeof(glm::vec2), &uv_buffer_data[0], GL_STATIC_DRAW);
+
 
 	if(has_texture){ // fill texture buffer
 		// Create one OpenGL texture
@@ -197,10 +194,6 @@ void MeshModel::fillGLBuffers(){
 		glGenerateMipmap(GL_TEXTURE_2D);
 	
 	}
-
-	delete[] vertex_buffer_data;
-	delete[] normals_buffer_data;
-	delete[] uv_buffer_data;
 }
 
 glm::vec3 MeshModel::calcCenterOfMass() const{
