@@ -84,7 +84,7 @@ MeshModel::MeshModel(const string& fileName, const string& _name) : name(_name),
 											   diffusive_color(1, 0, 0),
 											   specular_color(0.5, 0.5, 0.5),
 											   specular_exponent(5),
-											   use_uniform(true), has_texture(false)
+											   use_non_uniform(false), has_texture(false)
 {
 	if(fileName.length() > 0){
 		has_texture = LoadFile(fileName);
@@ -302,7 +302,7 @@ void MeshModel::Draw(Renderer& renderer)
 	renderer.SetObjectMatrices(worldTransform, normalTransform);
 	renderer.setObjectColors(ambient_color, diffusive_color, specular_color, specular_exponent);
 	
-	renderer.DrawModel(vertexBufferID, normalsBufferID, uvBufferID, textureID, has_texture, !use_uniform, triangles.size());
+	renderer.DrawModel(vertexBufferID, normalsBufferID, uvBufferID, textureID, has_texture, use_non_uniform, triangles.size());
 }
 
 const vector<line3d_t> MeshModel::CalcTriangeNormals() const

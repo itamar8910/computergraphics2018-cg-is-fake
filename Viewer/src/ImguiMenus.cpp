@@ -222,11 +222,11 @@ void ShowMaterialWindow(Scene *scene)
 	if(scene->hasActiveModel())
 	{
 		MeshModel *active_model = dynamic_cast<MeshModel*>(scene->models[scene->ActiveModel]); 
-		ImGui::Checkbox("Uniform Material", &active_model->use_uniform);
+		ImGui::Checkbox("non uniform Material", &active_model->use_non_uniform);
 		ImGui::Checkbox("Planar projection", &scene->renderer->do_planar_projection);
 		ImGui::Checkbox("spherical projection", &scene->renderer->do_spherical_projection);
 
-		if(active_model->use_uniform){
+		if(!active_model->use_non_uniform){
 			ImGui::ColorEdit3("Background Color", (float*)&clearColor); // Edit 3 floats representing a color
 			ImGui::ColorEdit3("Ambient Color", (float *)&(active_model->ambient_color));
 			ImGui::ColorEdit3("Diffusive Color", (float *)&(active_model->diffusive_color));
@@ -278,6 +278,12 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene)
 			}
 			ImGui::TreePop();
 
+		}
+		if(ImGui::Button("Delete active model")){
+			if(scene->models.size() > 0){
+				scene->models.erase(scene->models.begin() + scene->ActiveModel);
+				scene->ActiveModel = 0;
+			}
 		}
 		if(ImGui::Button("Spawn pyramid"))
 		{
