@@ -33,7 +33,11 @@ uniform int model_specular_exponent;
 uniform bool nonUniform; // if true, use non uniform material
 uniform bool doPlanarProjection; // if true, do planar projection
 uniform bool doSphericalProjection; // if true, do spherical projection
+uniform bool fog_enabled;
+uniform vec3 fogColor;
 
+float fog_start = -25;
+float fog_end = 15;
 void main()
 {
 	int light_i = 0;
@@ -146,5 +150,12 @@ void main()
 	//color = texture( textureSampler, UV ).rgb;
 	// Output color = red 
 	//color = vec3(1,0,0);
+
+	//Mix in fog:
+	if(fog_enabled){ 
+		float fog_factor = clamp((fog_start-Position_worldspace.z)/(fog_start-fog_end),0.0,1.0);
+		// float fog_factor = 0.5;
+		color = mix(fogColor,color,fog_factor);
+	}
 
 }
