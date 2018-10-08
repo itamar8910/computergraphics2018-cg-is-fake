@@ -57,6 +57,7 @@ int main(int argc, char **argv)
 	
 	for (int i = 1; i < argc; i++)
 	{
+		cout << string(argv[1]) << "," <<  string(argv[i]).find("--ss=") << "," <<  (string(argv[i]).find("--ss=") != string::npos) << endl;
 		if(string(argv[i]).find("--ss=") != string::npos)
 		{
 			super_sampling = stoi(string(argv[i]).substr(string(argv[i]).find('=') + 1));
@@ -68,13 +69,8 @@ int main(int argc, char **argv)
 	Renderer renderer = Renderer(w, h);
 	Scene scene = Scene(&renderer);
 	setup_scene(scene);
-	if (argc < 2)
-	{
-		cout << "loading OBJ model" << endl;
-		scene.LoadOBJModel(DEFAULT_MODEL);
-		cout << "loaded OBJ model" << endl;
-	}
 
+	bool loaded_model_from_args = false;
 	for (int i = 1; i < argc; i++)
 	{
 		if(string(argv[i]).find("--ss=") != string::npos)
@@ -82,8 +78,15 @@ int main(int argc, char **argv)
 			continue;
 		}
 		scene.LoadOBJModel(argv[i]);
+		loaded_model_from_args = true;
 	}
 	
+	if (!loaded_model_from_args)
+	{
+		cout << "loading OBJ model" << endl;
+		scene.LoadOBJModel(DEFAULT_MODEL);
+		cout << "loaded OBJ model" << endl;
+	}
 
 	scene.ActiveModel = 0;
 	
