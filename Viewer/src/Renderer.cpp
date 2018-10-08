@@ -15,9 +15,8 @@ using namespace std;
 Renderer::Renderer() : Renderer(1280,720)
 {}
 
-Renderer::Renderer(int w, int h) : supersampling_coeff(1.0), width(w), height(h), screen_width(w), screen_height(h)
+Renderer::Renderer(int w, int h) : width(w), height(h), screen_width(w), screen_height(h)
 {
-	set_supersampling_coeff(INIT_SUPERSAMPLING);
 	this->phong_flat_programID = InitShader("phong_flat_vertex_shader.glsl", "phong_flat_fragment_shader.glsl" );
 	this->gouraud_programID = InitShader("gouraud_vertex_shader.glsl", "gouraud_fragment_shader.glsl" );
 	this->programID = this->phong_flat_programID;
@@ -222,16 +221,6 @@ void Renderer::Viewport(int w, int h)
 	screen_width = w;
 	screen_height = h;
 	createOpenGLBuffer();
-}
-
-void Renderer::set_supersampling_coeff(float _coeff){
-	width = int(width * ( _coeff / supersampling_coeff));
-	height = int(height * ( _coeff / supersampling_coeff));
-	// don't allow going below screen width, height
-	width = max(width, screen_width);
-	height = max(height, screen_height);
-	cout << "width:" << width << "," << "height:" << height << endl;
-	supersampling_coeff = _coeff;
 }
 
 void Renderer::setShadingType(Shading shading){

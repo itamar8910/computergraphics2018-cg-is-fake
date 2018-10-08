@@ -20,7 +20,6 @@ class Renderer
 {
 private:
 
-	float supersampling_coeff;
 
 	glm::vec3 clearColor;
 

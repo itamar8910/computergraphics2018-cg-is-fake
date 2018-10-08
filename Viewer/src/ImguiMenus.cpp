@@ -338,13 +338,6 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene)
 			if(prev_zRotate != zRotate){
 				active->rotateZ(zRotate - prev_zRotate, ModelFrame);
 			}
-			static float supersampling_coeff = 1.0f;
-			float prev_supersampling_coeff = supersampling_coeff;
-			ImGui::SliderFloat("Supersampling", &(supersampling_coeff), 1.0f, 3.0f);
-			if(prev_supersampling_coeff != supersampling_coeff){
-				scene->renderer->set_supersampling_coeff(supersampling_coeff);
-				prev_supersampling_coeff = supersampling_coeff;
-			}
 			// if(ImGui::Button("LookAt Active")){
 			// 	cam->lookDirection = glm::vec3(active->x, active->y, active->z);
 			// 	// camera doesn't move, model moves around camera 

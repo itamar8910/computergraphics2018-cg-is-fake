@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 	
 
 	scene.ActiveModel = 0;
-
+	
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 	// Enable depth test
 	glEnable(GL_DEPTH_TEST);
@@ -139,6 +139,7 @@ GLFWwindow* SetupGlfwWindow(int w, int h, const char* window_name)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_SAMPLES, 16);
 #if __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
