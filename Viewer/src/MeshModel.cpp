@@ -31,35 +31,25 @@ struct FaceIdx
 			v[i] = vn[i] = vt[i] = 0;
 	}
 
-	FaceIdx(std::istream& issLine)
+	FaceIdx(std::istream& issLine,bool has_texture)
 	{
 		for (int i = 0; i < FACE_ELEMENTS; i++)
 			v[i] = vn[i] = vt[i] = 0;
 
 		char c;
+		cout << "f ";
 		for(int i = 0; i < FACE_ELEMENTS; i++)
 		{
 			issLine >> std::ws >> v[i] >> std::ws;
-			if (issLine.peek() != '/')
+			if (has_texture)
 			{
-				continue;
-			}
-			issLine >> c >> std::ws;
-			if (issLine.peek() == '/')
-			{
-				issLine >> c >> std::ws >> vn[i];
-				continue;
-			}
-			else
-			{
-				issLine >> vt[i];
-			}
-			if (issLine.peek() != '/')
-			{
-				continue;
+				cout << "wew" << endl;
+				issLine >> c >> std::ws >> vt[i];
 			}
 			issLine >> c >> vn[i];
+			// cout << v[i] << "/" << vt[i] << "/" << vn[i] << " ";
 		}
+		cout << endl;
 	}
 };
 
@@ -236,7 +226,7 @@ bool MeshModel::LoadFile(const string& fileName)
 		}
 		else if (lineType == "f") // face
 		{
-			faces.push_back(issLine);
+			faces.push_back(FaceIdx(issLine, file_has_texture));
 		}
 		else if (lineType == "vn") // vertex normal
 		{
