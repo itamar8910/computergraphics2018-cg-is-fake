@@ -263,11 +263,11 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene)
 		ImGui::Checkbox("Rotate around model frame",&ModelFrame);
 		ImGui::SliderFloat("translate X", &xPos, -10.0f, 10.0f);           
 		ImGui::SliderFloat("translate Y", &yPos, -10.0f, 10.0f);           
-		ImGui::SliderFloat("translate Z", &zPos, -10.0f, 10.0f);           
+		ImGui::SliderFloat("translate Z", &zPos, -20.0f, 20.0f);           
 		ImGui::SliderFloat("rotate X", &xRotate, 0.0f, 360.0f);           
 		ImGui::SliderFloat("rotate Y", &yRotate, 0.0f, 360.0f);           
-		ImGui::SliderFloat("rotate Z", &zRotate, 0.0f, 360.0f);               
-		ImGui::SliderFloat("scale", &scale, 0.1f, 5.0f);
+		ImGui::SliderFloat("rotate Z", &zRotate, 0.1f, 360.0f);               
+		ImGui::SliderFloat("scale", &scale, -0.1f, 5.0f);
 		if (ImGui::TreeNode("Select active model")){
 			vector<string> model_names = scene->get_models_names();
 			for (int model_i = 0; model_i < (int)model_names.size(); model_i++)
@@ -337,17 +337,6 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene)
 			}
 			if(prev_zRotate != zRotate){
 				active->rotateZ(zRotate - prev_zRotate, ModelFrame);
-			}
-			ImGui::Checkbox("Vertex Normals", &(active->draw_vertex_normals));
-			ImGui::Checkbox("Face Normals", &(active->draw_triangle_normals));
-			ImGui::Checkbox("Bounding Box", &(active->draw_bbox));
-			ImGui::SliderFloat("Normal scale", &(active->normal_length), 0.1, 0.5);
-			static float supersampling_coeff = 1.0f;
-			float prev_supersampling_coeff = supersampling_coeff;
-			ImGui::SliderFloat("Supersampling", &(supersampling_coeff), 1.0f, 3.0f);
-			if(prev_supersampling_coeff != supersampling_coeff){
-				scene->renderer->set_supersampling_coeff(supersampling_coeff);
-				prev_supersampling_coeff = supersampling_coeff;
 			}
 			// if(ImGui::Button("LookAt Active")){
 			// 	cam->lookDirection = glm::vec3(active->x, active->y, active->z);

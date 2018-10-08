@@ -15,9 +15,8 @@ using namespace std;
 Renderer::Renderer() : Renderer(1280,720)
 {}
 
-Renderer::Renderer(int w, int h) : supersampling_coeff(1.0), width(w), height(h), screen_width(w), screen_height(h)
+Renderer::Renderer(int w, int h) : width(w), height(h), screen_width(w), screen_height(h)
 {
-	set_supersampling_coeff(INIT_SUPERSAMPLING);
 	this->phong_flat_programID = InitShader("phong_flat_vertex_shader.glsl", "phong_flat_fragment_shader.glsl" );
 	this->gouraud_programID = InitShader("gouraud_vertex_shader.glsl", "gouraud_fragment_shader.glsl" );
 	this->programID = this->phong_flat_programID;
@@ -92,14 +91,15 @@ void Renderer::DrawModel(GLuint vertexBufferID, GLuint normalsBufferID, GLuint u
 
 	glUniform1i(this->hasTextureID, hasTexture);
 	glUniform1i(this->materialSpecularExponentID, this->model_specular_exponent);
-	glUniform3fv(this->materialDiffusiveColorID,1,glm::value_ptr(this->model_diffusive_color));
-	glUniform3fv(this->materialAmbientColorID,1,glm::value_ptr(this->model_emissive_color));
-	glUniform3fv(this->materialSpecularColorID,1,glm::value_ptr(this->model_specular_color));
+	glUniform3fv(this->materialDiffusiveColorID, 1, glm::value_ptr(this->model_diffusive_color));
+	glUniform3fv(this->materialAmbientColorID, 1, glm::value_ptr(this->model_emissive_color));
+	glUniform3fv(this->materialSpecularColorID, 1, glm::value_ptr(this->model_specular_color));
 	glUniform1i(this->doNonUniformMaterialID, nonUniform);
 	glUniform1i(this->doPlanarProjectionID, do_planar_projection);
 	glUniform1i(this->doSphericalProjectionID, do_spherical_projection);
+	glUniform1i(this->doFogEffectID, this->fog_enabled);
+	glUniform3fv(this->fogColorID, 1, glm::value_ptr(this->fog_color));
 
-	
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -197,6 +197,8 @@ void Renderer::initOpenGLRendering()
 	this->doNonUniformMaterialID = glGetUniformLocation(this->programID, "nonUniform");
 	this->doPlanarProjectionID = glGetUniformLocation(this->programID, "doPlanarProjection");
 	this->doSphericalProjectionID = glGetUniformLocation(this->programID, "doSphericalProjection");
+	this->doFogEffectID = glGetUniformLocation(this->programID, "fog_enabled");
+	this->fogColorID = glGetUniformLocation(this->programID, "fogColor");
 }
 
 void Renderer::createOpenGLBuffer()
@@ -219,16 +221,6 @@ void Renderer::Viewport(int w, int h)
 	screen_width = w;
 	screen_height = h;
 	createOpenGLBuffer();
-}
-
-void Renderer::set_supersampling_coeff(float _coeff){
-	width = int(width * ( _coeff / supersampling_coeff));
-	height = int(height * ( _coeff / supersampling_coeff));
-	// don't allow going below screen width, height
-	width = max(width, screen_width);
-	height = max(height, screen_height);
-	cout << "width:" << width << "," << "height:" << height << endl;
-	supersampling_coeff = _coeff;
 }
 
 void Renderer::setShadingType(Shading shading){

@@ -20,7 +20,6 @@ class Renderer
 {
 private:
 
-	float supersampling_coeff;
 
 	glm::vec3 clearColor;
 
@@ -79,6 +78,9 @@ public:
 	GLuint doNonUniformMaterialID; // boolean uniform, true if should use a non uniform material
 	GLuint doPlanarProjectionID; // boolean uniform, true if should do planar projection
 	GLuint doSphericalProjectionID; // boolean uniform, true if should do planar projection
+	GLuint doFogEffectID; // boolean uniform
+	GLuint fogColorID; // vec3 uniform, fog color
+
 
 	bool do_planar_projection=false;
 	bool do_spherical_projection=false;
