@@ -24,7 +24,7 @@ using namespace std;
 // Callback for the error state of glfw
 static void GlfwErrorCallback(int error, const char* description);
 // Setups the internal state of glfw, and intializing glad.
-GLFWwindow* SetupGlfwWindow(int w, int h, const char* window_name);
+GLFWwindow* SetupGlfwWindow(int w, int h, const char* window_name,int supersampling);
 // Setup's the internal state of imgui.
 ImGuiIO& SetupDearImgui(GLFWwindow* window);
 // Takes care of all the opengl and glfw backend for rendering a new frame.
@@ -51,12 +51,20 @@ int main(int argc, char **argv)
 {
 	// Setup window
 	int w = 1280, h = 720;
-	GLFWwindow *window = SetupGlfwWindow(w, h, "Mesh Viewer");
-	if (!window)
-		return 1;
 	// Setup renderer and scene
 	// Create and compile our GLSL program from the shaders
+	int super_sampling = 16;
 	
+	for (int i = 1; i < argc; i++)
+	{
+		if(string(argv[i]).find("--ss=") != string::npos)
+		{
+			super_sampling = stoi(string(argv[i]).substr(string(argv[i]).find('=') + 1));
+		}
+	}
+	GLFWwindow *window = SetupGlfwWindow(w, h, "Mesh Viewer",super_sampling);
+	if (!window)
+		return 1;
 	Renderer renderer = Renderer(w, h);
 	Scene scene = Scene(&renderer);
 	setup_scene(scene);
@@ -66,10 +74,13 @@ int main(int argc, char **argv)
 		scene.LoadOBJModel(DEFAULT_MODEL);
 		cout << "loaded OBJ model" << endl;
 	}
-	
 
 	for (int i = 1; i < argc; i++)
 	{
+		if(string(argv[i]).find("--ss=") != string::npos)
+		{
+			continue;
+		}
 		scene.LoadOBJModel(argv[i]);
 	}
 	
@@ -131,7 +142,7 @@ static void GlfwErrorCallback(int error, const char* description)
 }
 
 // Setups the internal state of glfw, and intializing glad.
-GLFWwindow* SetupGlfwWindow(int w, int h, const char* window_name)
+GLFWwindow* SetupGlfwWindow(int w, int h, const char* window_name,int supersampling)
 {
 	glfwSetErrorCallback(GlfwErrorCallback);
 	if (!glfwInit())
@@ -139,7 +150,7 @@ GLFWwindow* SetupGlfwWindow(int w, int h, const char* window_name)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_SAMPLES, 16);
+	glfwWindowHint(GLFW_SAMPLES, supersampling);
 #if __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
