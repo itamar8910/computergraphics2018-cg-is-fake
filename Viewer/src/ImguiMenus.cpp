@@ -280,7 +280,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene)
 
 		}
 		if(ImGui::Button("Delete active model")){
-			if(scene->models.size() > 0){
+			if(scene->models.size() > 1){
 				scene->models.erase(scene->models.begin() + scene->ActiveModel);
 				scene->ActiveModel = 0;
 			}
