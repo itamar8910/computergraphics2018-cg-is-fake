@@ -113,9 +113,11 @@ void Camera::setPerspectiveParams(float _fovY, float _aspect, float _zNear, floa
     aspectRatio = _aspect;
     zNear = _zNear;
     zFar = _zFar;
+    if(perspective == 0){
     Perspective();
 }
-
-void Camera::updateLookDirection(){
-    projection = projection * LookAt(glm::vec3(x, y, z), glm::vec3(0, 1, 0), lookDirection);
 }
+
+// void Camera::updateLookDirection(){
+//     projection = projection * LookAt(glm::vec3(x, y, z), glm::vec3(0, 1, 0), lookDirection);
+// }

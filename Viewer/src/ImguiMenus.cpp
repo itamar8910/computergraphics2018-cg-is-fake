@@ -72,7 +72,7 @@ void ShowCamPosWindow(Scene* scene){
 		}else{
 			cam->Ortho();
 		}
-		cam->updateLookDirection();
+		// cam->updateLookDirection();
 	}
 
 	ImGui::SliderFloat("translate X", &xPos, -100.0f, 100.0f);           
@@ -305,7 +305,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene)
 					cam->Perspective();
 				}else{
 					cam->Ortho();
-					cam->updateLookDirection();
+					// cam->updateLookDirection();
 				}
 
 				// rotate camera model
