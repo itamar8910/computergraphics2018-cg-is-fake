@@ -65,11 +65,10 @@ void Camera::Ortho( const float left, const float right,
     projection[3] = glm::vec4(-((right+left) / (right-left)), -((top+bottom) / (top-bottom)), -(zFar+zNear) / (zFar-zNear), 1);
    
     viewTransform = LookAt(glm::vec3(x, y, z), glm::vec3(0, 1, 0), lookDirection); 
-    viewTransform = glm::lookAt(glm::vec3(x, y, z), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1)); // this is glm's version
 }
 
 void Camera::Ortho(){
-    Ortho(-1, 1, -1, 1, 1, -1);
+    Ortho(-8.0, 8.0, -8.0, 8.0, -30.0, 30.0);
 }
 
 glm::mat4x4 Camera::LookAt(const glm::vec3& eye, const glm::vec3& up, const glm::vec3& direction ){
