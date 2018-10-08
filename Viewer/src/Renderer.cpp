@@ -21,7 +21,7 @@ Renderer::Renderer(int w, int h) : width(w), height(h), screen_width(w), screen_
 	this->gouraud_programID = InitShader("gouraud_vertex_shader.glsl", "gouraud_fragment_shader.glsl" );
 	this->programID = this->phong_flat_programID;
 	initOpenGLRendering();
-	current_shading = Shading::Flat;
+	current_shading = Shading::Phong;
 	fog_color = color_t(1, 1, 1);
 }
 
