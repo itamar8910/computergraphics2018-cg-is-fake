@@ -5,7 +5,7 @@
 #include "utils.h"
 #include <glm/gtc/type_ptr.hpp>
 #include "InitShader.h"
-
+#include <glm/gtc/matrix_transform.hpp>
 
 using namespace std;
 
@@ -21,7 +21,7 @@ Renderer::Renderer(int w, int h) : width(w), height(h), screen_width(w), screen_
 	this->gouraud_programID = InitShader("gouraud_vertex_shader.glsl", "gouraud_fragment_shader.glsl" );
 	this->programID = this->phong_flat_programID;
 	initOpenGLRendering();
-	current_shading = Shading::Flat;
+	current_shading = Shading::Phong;
 	fog_color = color_t(1, 1, 1);
 }
 
@@ -42,7 +42,6 @@ void Renderer::SetProjection(const glm::mat4x4& projection){
 void Renderer::SetObjectMatrices(const glm::mat4x4& oTransform, const glm::mat4x4& nTransform){
 	this->oTransform = oTransform;
 	this->nTransform = nTransform;
-	// this->fullTransform = getViewport() * cProjection * inverse(cTransform) * oTransform;
 	this->fullTransform = cProjection * cViewTransform * inverse(cTransform) * oTransform;
 }
 

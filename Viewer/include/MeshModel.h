@@ -40,7 +40,7 @@ public:
 	color_t specular_color;
 	exponent_t specular_exponent;
 
-	bool use_uniform;
+	bool use_non_uniform;
 	// colors for non-uniform material
 	// for each triangle, holds colors of its vertices
 	vector<vector<color_t>> ambient_colors;
@@ -63,7 +63,7 @@ public:
 	 * This function sends the renderer all nesessary information to draw the model
 	*/
 	void Draw(Renderer& renderer);
-	void scale(float s);
+	void scale(float s, bool model_frame=true);
 	void translate(float x, float y, float z);
 	void rotateX(float theta, bool model_frame=true);
 	void rotateY(float theta, bool model_frame=true);

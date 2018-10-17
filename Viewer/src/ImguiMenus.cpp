@@ -72,7 +72,7 @@ void ShowCamPosWindow(Scene* scene){
 		}else{
 			cam->Ortho();
 		}
-		cam->updateLookDirection();
+		// cam->updateLookDirection();
 	}
 
 	ImGui::SliderFloat("translate X", &xPos, -100.0f, 100.0f);           
@@ -222,11 +222,11 @@ void ShowMaterialWindow(Scene *scene)
 	if(scene->hasActiveModel())
 	{
 		MeshModel *active_model = dynamic_cast<MeshModel*>(scene->models[scene->ActiveModel]); 
-		ImGui::Checkbox("Uniform Material", &active_model->use_uniform);
+		ImGui::Checkbox("non uniform Material", &active_model->use_non_uniform);
 		ImGui::Checkbox("Planar projection", &scene->renderer->do_planar_projection);
 		ImGui::Checkbox("spherical projection", &scene->renderer->do_spherical_projection);
 
-		if(active_model->use_uniform){
+		if(!active_model->use_non_uniform){
 			ImGui::ColorEdit3("Background Color", (float*)&clearColor); // Edit 3 floats representing a color
 			ImGui::ColorEdit3("Ambient Color", (float *)&(active_model->ambient_color));
 			ImGui::ColorEdit3("Diffusive Color", (float *)&(active_model->diffusive_color));
@@ -260,7 +260,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene)
 		ImGui::Checkbox("Camera Window", &showCamPosWindow);      // Edit bools storing our windows open/close state
 		ImGui::Checkbox("Lighting&Shading Window", &showShadingWindow);      // Edit bools storing our windows open/close state
 		ImGui::Checkbox("Material Window", &showMaterialWindow);      // Edit bools storing our windows open/close state
-		ImGui::Checkbox("Rotate around model frame",&ModelFrame);
+		ImGui::Checkbox("transform around model frame",&ModelFrame);
 		ImGui::SliderFloat("translate X", &xPos, -10.0f, 10.0f);           
 		ImGui::SliderFloat("translate Y", &yPos, -10.0f, 10.0f);           
 		ImGui::SliderFloat("translate Z", &zPos, -20.0f, 20.0f);           
@@ -278,6 +278,12 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene)
 			}
 			ImGui::TreePop();
 
+		}
+		if(ImGui::Button("Delete active model")){
+			if(scene->models.size() > 1){
+				scene->models.erase(scene->models.begin() + scene->ActiveModel);
+				scene->ActiveModel = 0;
+			}
 		}
 		if(ImGui::Button("Spawn pyramid"))
 		{
@@ -305,7 +311,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene)
 					cam->Perspective();
 				}else{
 					cam->Ortho();
-					cam->updateLookDirection();
+					// cam->updateLookDirection();
 				}
 
 				// rotate camera model
@@ -357,7 +363,7 @@ void DrawImguiMenus(ImGuiIO &io, Scene *scene)
 			if(scale <= 0){
 				cout << "scale must be > 0" << endl;
 			}else{
-				active->scale(scale);
+				active->scale(scale, ModelFrame);
 			}
 		}
 		

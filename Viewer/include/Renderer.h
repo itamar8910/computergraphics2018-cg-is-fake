@@ -39,7 +39,7 @@ private:
 	exponent_t model_specular_exponent;
 
 	color_t fog_color;
-	bool fog_enabled =true;
+	bool fog_enabled = false;
 	
 	GLuint phong_flat_programID;
 	GLuint gouraud_programID;

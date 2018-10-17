@@ -26,6 +26,10 @@ public:
 	bool fog_enabled;
 
 public:
+	int ActiveModel;
+	int ActiveLight;
+	int ActiveCamera;
+	
 	Scene() : render_cameras(true) {};
 	Scene(Renderer *renderer) : renderer(renderer), render_cameras(true), ambient_light_color(1, 1, 1),fog_color(0.6,0.6,0.6),fog_enabled(true){};
 
@@ -50,7 +54,4 @@ public:
 	vector<string> get_models_names();
 	bool hasActiveModel() const; 
 
-int ActiveModel;
-int ActiveLight;
-int ActiveCamera;
 };

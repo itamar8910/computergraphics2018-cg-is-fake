@@ -63,10 +63,12 @@ void Camera::Ortho( const float left, const float right,
     projection[1] = glm::vec4(0, 2 / (top-bottom), 0, 0);
     projection[2] = glm::vec4( 0, 0, (-2) / (zFar - zNear), 0);
     projection[3] = glm::vec4(-((right+left) / (right-left)), -((top+bottom) / (top-bottom)), -(zFar+zNear) / (zFar-zNear), 1);
+   
+    viewTransform = LookAt(glm::vec3(x, y, z), glm::vec3(0, 1, 0), lookDirection); 
 }
 
 void Camera::Ortho(){
-    Ortho(-1, 1, -1, 1, 1, -1);
+    Ortho(-8.0, 8.0, -8.0, 8.0, -30.0, 30.0);
 }
 
 glm::mat4x4 Camera::LookAt(const glm::vec3& eye, const glm::vec3& up, const glm::vec3& direction ){
@@ -113,9 +115,11 @@ void Camera::setPerspectiveParams(float _fovY, float _aspect, float _zNear, floa
     aspectRatio = _aspect;
     zNear = _zNear;
     zFar = _zFar;
-    Perspective();
+    if(perspective == 0){
+        Perspective();
+    }
 }
 
-void Camera::updateLookDirection(){
-    projection = projection * LookAt(glm::vec3(x, y, z), glm::vec3(0, 1, 0), lookDirection);
-}
+// void Camera::updateLookDirection(){
+//     projection = projection * LookAt(glm::vec3(x, y, z), glm::vec3(0, 1, 0), lookDirection);
+// }
