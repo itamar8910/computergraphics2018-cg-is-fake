@@ -1,15 +1,37 @@
 
 # A 3D renderer in OpenGL
 
+
+![Screenshot from scene](images/scene.png)
+
 This render is written as a project in a Computer Graphics course.
 
 ## Features
-* Rendering of .obj 3d models
+* Rendering .obj 3d models
 * Transformations in space (Translations, Rotations)
 * Camera Projections: Perspective & Orthographic 
 * Support for multiple models, multiple cameras
-* Lighting & Shading. 3 Shading models: Flat, Gouraud & Phong Shading.
+* Lighting & Shading, 3 Shading models: Flat, Gouraud & Phong Shading.
 * Texture mapping
+
+## Building:
+*Tested on Ubuntu 16.04, cmake version 3.12.0, make version 4.1*
+* Clone this repo recursively to include third party depencdencies (Located inside ThirdParty/)
+```console
+git clone --recursive git@github.com:itamar8910/ComputerGraphics.git
+cd ComputerGraphics
+```
+* Run cmake & build
+```console
+mkdir build && cd build
+cmake ..
+make
+```
+* Run the exectuable
+```console
+cd build/bin
+./MeshViewer
+```
 
 ## Releases:
 
