@@ -1,4 +1,3 @@
-
 # A 3D renderer in OpenGL
 
 
