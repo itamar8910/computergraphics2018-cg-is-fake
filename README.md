@@ -14,7 +14,7 @@ This render is written as a project in a Computer Graphics course.
 * Texture mapping
 
 ## Building:
-*Tested on Ubuntu 16.04, cmake version 3.12.0, make version 4.1*
+*Tested on Ubuntu 16.04, macOS 10.13.6, cmake version 3.12.0, make version 4.1*
 * Clone this repo recursively to include third party depencdencies (Located inside ThirdParty/)
 ```console
 git clone --recursive git@github.com:itamar8910/ComputerGraphics.git
@@ -42,7 +42,7 @@ cd build/bin
 
 Itamar Shenhar, itamar8910@gmail.com
 
-Tomer Keren, tomerpet@gmail.com
+Tomer Keren, tomer.keren.dev@gmail.com
 
 ## Course Staff 
 
