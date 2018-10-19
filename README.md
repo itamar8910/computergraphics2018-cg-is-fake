@@ -34,9 +34,9 @@ cd build/bin
 
 ## Releases:
 
-* [Assignment 3](https://github.com/itamar8910/ComputerGraphics/releases/tag/Assignment3): Full implementation in OpenGL with GLSL
-* [Assignment 2](https://github.com/itamar8910/ComputerGraphics/releases/tag/assignment2): Implementation in CPU, no texture support.
-* [Assigment 1](https://github.com/itamar8910/ComputerGraphics/releases/tag/assignment1): Mesh viewer in CPU, no lighting.
+* [Assignment 3](https://github.com/itamar8910/computergraphics2018-cg-is-fake/releases/tag/assignment3): Full implementation in OpenGL with GLSL
+* [Assignment 2](https://github.com/itamar8910/computergraphics2018-cg-is-fake/releases/tag/assignment2): Implementation in CPU, no texture support.
+* [Assigment 1](https://github.com/itamar8910/computergraphics2018-cg-is-fake/releases/tag/assignment1): Mesh viewer in CPU, no lighting.
 
 ## Contributors:
 
