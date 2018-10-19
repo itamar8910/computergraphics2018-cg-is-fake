@@ -26,7 +26,7 @@ mkdir build && cd build
 cmake ..
 make
 ```
-* Run the exectuable
+* Run the executable
 ```console
 cd build/bin
 ./MeshViewer
